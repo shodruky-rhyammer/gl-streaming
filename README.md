@@ -2,7 +2,7 @@
 
 Streaming opengl commands over network
 
-A simple,lightweight and low latency framework suitable for embedded systems. (no X server needed)
+A fast, simple, lightweight and low latency framework suitable for embedded systems. (no X server needed)
 
 ![gl-streaming summary](https://raw.github.com/shodruky-rhyammer/gl-streaming/master/www/gl-streaming_small.png)
 
@@ -13,6 +13,10 @@ A simple,lightweight and low latency framework suitable for embedded systems. (n
 * gl_server : server framework
 
   gl_server is optimized for Raspberry Pi for now. Therefore, the client system can use opengl es 2.0.
+
+## Demo Video
+
+[Demo Video](http://youtu.be/6S-Epb6m6mI)
 
 ## Quick start
 
