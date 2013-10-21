@@ -3,7 +3,7 @@ CFLAGS=-O3 -Wall
 LIBS=-lpthread -lm
 OBJS=fifo.o server.o glclient.o
 
-all: main
+all: gl_client
 
 fifo.o: fifo.c fifo.h
 	gcc -c -o fifo.o $(CFLAGS) fifo.c
@@ -14,8 +14,8 @@ server.o: server.c server.h fifo.o
 glclient.o: glclient.c glclient.h gls_command.h server.o
 	gcc -c -o glclient.o $(CFLAGS) glclient.c
 
-main: main.c glclient.o
-	gcc -o main $(CFLAGS) $(LIBS) main.c $(OBJS)
+gl_client: main.c glclient.o
+	gcc -o gl_client $(CFLAGS) $(LIBS) main.c $(OBJS)
 
 clean:
-	rm main $(OBJS)
+	rm gl_client $(OBJS)
