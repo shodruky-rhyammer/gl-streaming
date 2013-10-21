@@ -40,3 +40,5 @@ copy the gl_client directory to any computer.
     
     ./gl_client
 
+(c) Shodruky Rhyammer
+since Oct 21, 2013
