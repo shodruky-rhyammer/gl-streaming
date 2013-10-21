@@ -13,7 +13,7 @@ A simple,lightweight and low latency framework suitable for embedded systems. (n
 
   gl_server is optimized for Raspberry Pi for now. Therefore, the client system can use opengl es 2.0.
 
-Quichstart
+Quickstart
 ----------
 
 connect RPi and the client system with a ethernet cable. (straight cable is ok)
