@@ -652,12 +652,9 @@ void * glclient_thread(void * arg)
     glDisableVertexAttribArray(gc.vloc_pos);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glFlush();
-    glFinish();
-    //gls_cmd_flip(i);
+    gls_cmd_flip(i);
     gettimeofday(&timee, NULL);
     printf("%d:%f ms ", i, get_diff_time(times, timee) * 1000.0f);
-    usleep(100000);
   }
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
