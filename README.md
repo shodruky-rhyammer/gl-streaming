@@ -24,7 +24,7 @@ copy the gl_server directory to RPi.
 
     cd gl_server
     
-    (edit IP address in main.c for now ;-))
+    (edit IP address in main.c for now ;-) set_server_address() for RPi's address, set_client_address() for the client system's address.)
     
     make
     
@@ -34,7 +34,7 @@ copy the gl_client directory to any computer.
 
     cd gl_client
     
-    (edit IP address in main.c for now ;-))
+    (edit IP address in main.c. ALERT!! set_server_address() for the client system's address, set_client_address() for RPi's address.)
 
     make
     
