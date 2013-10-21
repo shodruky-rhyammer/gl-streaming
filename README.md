@@ -3,7 +3,7 @@ gl-streaming
 
 Streaming opengl commands over network
 
-A simple and lightweight and low latency framework suitable for embedded systems. (no X server needed)
+A simple,lightweight and low latency framework suitable for embedded systems. (no X server needed)
 
 * gl_client : client framework and sample program
 
