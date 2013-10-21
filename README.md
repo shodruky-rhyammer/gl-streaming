@@ -3,11 +3,11 @@ gl-streaming
 
 Streaming opengl commands over network
 
-A simple and lightweight framework suitable for embedded systems.
+A simple and lightweight and low latency framework suitable for embedded systems. (no X server needed)
 
 * gl_client : client framework and sample program
 
-  The client system does not need to have any GPU. Without GPU, opengl programs can be run on any system !
+  The client system does not need to have any GPU and heavy X server. Without GPU, opengl programs can be run on any system !
 
 * gl_server : server framework
 
@@ -17,6 +17,8 @@ Quichstart
 ----------
 
 connect RPi and the client system with a ethernet cable. (straight cable is ok)
+
+connect RPi to a display with HDMI cable. (yes, RPi do it)
 
 copy the gl_server directory to RPi.
 
