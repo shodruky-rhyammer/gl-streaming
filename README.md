@@ -8,7 +8,7 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 * gl_client : client framework and sample program
 
-  The client system does not need to have any GPU and heavy X server. Without GPU, opengl programs can be run on any system !
+  The client system does not need to have any GPU and heavy X server. Even without GPU, opengl programs can be run on any system !
 
 * gl_server : server framework
 
