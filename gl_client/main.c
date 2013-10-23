@@ -493,7 +493,7 @@ void * glclient_thread(void * arg)
   {
     printf("Error: Joystick device open\n");
   }
-  if (joy_fd != 01)
+  if (joy_fd != -1)
   {
     fcntl(joy_fd, F_SETFL, O_NONBLOCK);
   }
@@ -547,10 +547,8 @@ void * glclient_thread(void * arg)
     struct timeval times, timee;
     gettimeofday(&times, NULL);
 
-    if (joy_fd != 01)
+    if (joy_fd != -1)
     {
-      fcntl(joy_fd, F_SETFL, O_NONBLOCK);
-
       while (read(joy_fd, &joy, sizeof(struct js_event)) == sizeof(struct js_event))
       {
         if ((joy.type & JS_EVENT_BUTTON) == JS_EVENT_BUTTON)
@@ -654,7 +652,7 @@ void * glclient_thread(void * arg)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     gls_cmd_flip(i);
     gettimeofday(&timee, NULL);
-    printf("%d:%f ms ", i, get_diff_time(times, timee) * 1000.0f);
+    //printf("%d:%f ms ", i, get_diff_time(times, timee) * 1000.0f);
   }
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
