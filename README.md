@@ -48,5 +48,22 @@ copy the gl_client directory to any computer.
 
 BSD 3-Clause licence (except other's source code)
 
+## Bookmarks
+
+[Parallella](http://www.parallella.org/)
+
+[Raspberry Pi](http://www.raspberrypi.org/)
+
+## Special Thanks
+
+Thank you very much for your interest and advices.
+
+The Little Body @OpenGL forum
+Stephen A @OpenGL forum
+over9000 @Parallella forum
+LamsonNguyen @Parallella forum
+Gravis @Parallella forum
+svartalf @Parallella forum
+
 (c) Shodruky Rhyammer
 since Oct 21, 2013
