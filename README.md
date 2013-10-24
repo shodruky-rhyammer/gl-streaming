@@ -58,12 +58,12 @@ BSD 3-Clause licence (except other's source code)
 
 Thank you very much for your interest and advices.
 
-The Little Body @OpenGL forum
-Stephen A @OpenGL forum
-over9000 @Parallella forum
-LamsonNguyen @Parallella forum
-Gravis @Parallella forum
-svartalf @Parallella forum
+The Little Body @OpenGL forum / 
+Stephen A @OpenGL forum / 
+over9000 @Parallella forum / 
+LamsonNguyen @Parallella forum / 
+Gravis @Parallella forum / 
+svartalf @Parallella forum / 
 
 (c) Shodruky Rhyammer
 since Oct 21, 2013
