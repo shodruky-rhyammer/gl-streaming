@@ -64,6 +64,9 @@ over9000 @Parallella forum /
 LamsonNguyen @Parallella forum / 
 Gravis @Parallella forum / 
 svartalf @Parallella forum / 
+Raspberry Pi Foundation / 
+Adapteva / 
 
 (c) Shodruky Rhyammer
+
 since Oct 21, 2013
