@@ -44,10 +44,8 @@ int main(int argc, char * argv[])
 {
   static server_context_t sc;
   server_init(&sc);
-  set_server_address(&sc, (char*)"192.168.0.2");
-  set_server_port(&sc, 12345);
-  set_client_address(&sc, (char*)"192.168.0.3");
-  set_client_port(&sc, 12346);
+  set_server_address_port(&sc, (char*)"192.168.0.2", 12345);
+  set_client_address_port(&sc, (char*)"192.168.0.3", 12346);
 
   server_run(&sc, glserver_thread);
 

@@ -106,26 +106,16 @@ void set_max_mbps(server_context_t *c, unsigned int mbps)
 }
 
 
-void set_server_address(server_context_t *c, char * addr)
+void set_server_address_port(server_context_t *c, char * addr, uint16_t port)
 {
   strncpy(c->server_thread_arg.addr, addr, sizeof(c->server_thread_arg.addr));
-}
-
-
-void set_client_address(server_context_t *c, char * addr)
-{
-  strncpy(c->popper_thread_arg.addr, addr, sizeof(c->popper_thread_arg.addr));
-}
-
-
-void set_server_port(server_context_t *c, uint16_t port)
-{
   c->server_thread_arg.port = port;
 }
 
 
-void set_client_port(server_context_t *c, uint16_t port)
+void set_client_address_port(server_context_t *c, char * addr, uint16_t port)
 {
+  strncpy(c->popper_thread_arg.addr, addr, sizeof(c->popper_thread_arg.addr));
   c->popper_thread_arg.port = port;
 }
 

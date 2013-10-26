@@ -74,10 +74,8 @@ extern "C" {
   void * server_thread(void * arg);
   void server_init(server_context_t *c);
   void server_run(server_context_t *c, void *(*popper_thread)(void *));
-  void set_server_address(server_context_t *c, char * addr);
-  void set_client_address(server_context_t *c, char * addr);
-  void set_server_port(server_context_t *c, uint16_t port);
-  void set_client_port(server_context_t *c, uint16_t port);
+  void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
+  void set_client_address_port(server_context_t *c, char * addr, uint16_t port);
   void set_client_user_context(server_context_t *c, void *ptr);
   void set_fifo_packet_size_in_bits(server_context_t *c, unsigned int bits);
   void set_fifo_size_in_bits(server_context_t *c, unsigned int bits);

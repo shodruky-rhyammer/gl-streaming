@@ -673,10 +673,8 @@ int main(int argc, char * argv[])
   static glclient_context_t glcc;
   strncpy(glcc.joy_dev, "/dev/input/js0", GLS_STRING_SIZE);
   server_init(&sc);
-  set_server_address(&sc, (char*)"192.168.0.3");
-  set_server_port(&sc, 12346);
-  set_client_address(&sc, (char*)"192.168.0.2");
-  set_client_port(&sc, 12345);
+  set_server_address_port(&sc, (char*)"192.168.0.3", 12346);
+  set_client_address_port(&sc, (char*)"192.168.0.2", 12345);
   set_client_user_context(&sc, &glcc);
 
   server_run(&sc, glclient_thread);
