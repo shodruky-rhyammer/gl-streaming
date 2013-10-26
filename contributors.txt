@@ -1,0 +1,32 @@
+* The Little Body @OpenGL forum
+
+http://www.opengl.org/discussion_boards/showthread.php/182966-gl-streaming-Lightweight-OpenGL-ES-command-streaming-framework?p=1255697&viewfull=1#post1255697
+
+10-23-2013, 02:31 PM
+
+And about to regroup set_server_adress/set_server_port and set_client_adress/set_client_port ?
+
+void set_server_address_port(server_context_t *c, char * addr, uint16_t port)
+ 
+{
+ 
+  strncpy(c->server_thread_arg.addr, addr, sizeof(c->server_thread_arg.addr));
+ 
+  c->server_thread_arg.port = port;
+ 
+}
+ 
+ 
+void set_client_address_port(server_context_t *c, char * addr,  uint16_t port)
+ 
+{
+ 
+  strncpy(c->popper_thread_arg.addr, addr, sizeof(c->popper_thread_arg.addr));
+ 
+  c->popper_thread_arg.port = port;
+ 
+}
+
+----------------------------------------------------------------
+
+
