@@ -58,6 +58,7 @@ BSD 3-Clause licence (except other's source code)
 
 Thank you very much for your interest and advices.
 
+GClements @OpenGL forum / 
 The Little Body @OpenGL forum / 
 Stephen A @OpenGL forum / 
 over9000 @Parallella forum / 

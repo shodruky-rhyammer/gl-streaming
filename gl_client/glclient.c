@@ -28,7 +28,6 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "glclient.h"
 #include "rpi/GLES2/gl2.h"
 
-
 #define GLS_TMP_BUFFER_SIZE 2097152
 #define GLS_OUT_BUFFER_SIZE 2048
 #define TRUE 1
@@ -45,6 +43,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BATCH_AUTO_FLUSH_SIZE 8128
 #define GLS_TIMEOUT_SEC 3.0f
 
+// gls_glFunctionName_t *c = (gls_glFunctionName_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
+// c->cmd = GLSC_glFunctionName;
+#define GLS_SET_COMMAND_PTR_BATCH(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr); PTR->cmd = GLSC_##FUNCNAME
+
+// push_batch_command(sizeof(gls_glFunctionName_t));
+#define GLS_PUSH_BATCH(FUNCNAME) push_batch_command(sizeof(gls_##FUNCNAME##_t))
+
+// gls_glFunctionName_t *c = (gls_glFunctionName_t *)glsc_global.out_buf.buf;
+// c->cmd = GLSC_glFunctionName;
+#define GLS_SET_COMMAND_PTR(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)glsc_global.out_buf.buf; PTR->cmd = GLSC_##FUNCNAME
+
+// send_packet(sizeof(gls_glFunctionName_t));
+#define GLS_SEND_PACKET(FUNCNAME) send_packet(sizeof(gls_##FUNCNAME##_t))
 
 gls_context_t glsc_global;
 
@@ -252,33 +263,30 @@ int gls_cmd_flush()
 
 GL_APICALL void GL_APIENTRY glBindBuffer (GLenum target, GLuint buffer)
 {
-  gls_glBindBuffer_t *c = (gls_glBindBuffer_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glBindBuffer;
+  GLS_SET_COMMAND_PTR_BATCH(c, glBindBuffer);
   c->target = target;
   c->buffer = buffer;
-  push_batch_command(sizeof(gls_glBindBuffer_t));
+  GLS_PUSH_BATCH(glBindBuffer);
 }
 
 
 GL_APICALL void GL_APIENTRY glBlendFuncSeparate (GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
 {
-  gls_glBlendFuncSeparate_t *c = (gls_glBlendFuncSeparate_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glBlendFuncSeparate;
+  GLS_SET_COMMAND_PTR_BATCH(c, glBlendFuncSeparate);
   c->srcRGB = srcRGB;
   c->dstRGB = dstRGB;
   c->srcAlpha = srcAlpha;
   c->dstAlpha = dstAlpha;
-  push_batch_command(sizeof(gls_glBlendFuncSeparate_t));
+  GLS_PUSH_BATCH(glBlendFuncSeparate);
 }
 
 
 GL_APICALL void GL_APIENTRY glBlendEquationSeparate (GLenum modeRGB, GLenum modeAlpha)
 {
-  gls_glBlendEquationSeparate_t *c = (gls_glBlendEquationSeparate_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glBlendEquationSeparate;
+  GLS_SET_COMMAND_PTR_BATCH(c, glBlendEquationSeparate);
   c->modeRGB = modeRGB;
   c->modeAlpha = modeAlpha;
-  push_batch_command(sizeof(gls_glBlendEquationSeparate_t));
+  GLS_PUSH_BATCH(glBlendEquationSeparate);
 }
 
 
@@ -287,12 +295,11 @@ GL_APICALL void GL_APIENTRY glBufferData (GLenum target, GLsizeiptr size, const 
   gls_cmd_flush();
   gls_cmd_send_data(0, (uint32_t)size, (void *)data);
 
-  gls_glBufferData_t *c = (gls_glBufferData_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glBufferData;
+  GLS_SET_COMMAND_PTR(c, glBufferData);
   c->target = target;
   c->size = size;
   c->usage = usage;
-  send_packet(sizeof(gls_glBufferData_t));
+  GLS_SEND_PACKET(glBufferData);
 }
 
 
@@ -301,33 +308,30 @@ GL_APICALL void GL_APIENTRY glBufferSubData (GLenum target, GLintptr offset, GLs
   gls_cmd_flush();
   gls_cmd_send_data(0, (uint32_t)size, (void *)data);
 
-  gls_glBufferSubData_t *c = (gls_glBufferSubData_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glBufferSubData;
+  GLS_SET_COMMAND_PTR(c, glBufferSubData);
   c->target = target;
   c->offset = offset;
   c->size = size;
-  send_packet(sizeof(gls_glBufferSubData_t));
+  GLS_SEND_PACKET(glBufferSubData);
 }
 
 
 GL_APICALL void GL_APIENTRY glClear (GLbitfield mask)
 {
-  gls_glClear_t *c = (gls_glClear_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glClear;
+  GLS_SET_COMMAND_PTR_BATCH(c, glClear);
   c->mask = mask;
-  push_batch_command(sizeof(gls_glClear_t));
+  GLS_PUSH_BATCH(glClear);
 }
 
 
 GL_APICALL void GL_APIENTRY glClearColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 {
-  gls_glClearColor_t *c = (gls_glClearColor_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glClearColor;
+  GLS_SET_COMMAND_PTR_BATCH(c, glClearColor);
   c->red = red;
   c->green = green;
   c->blue = blue;
   c->alpha = alpha;
-  push_batch_command(sizeof(gls_glClearColor_t));
+  GLS_PUSH_BATCH(glClearColor);
 }
 
 
@@ -337,40 +341,36 @@ GL_APICALL void GL_APIENTRY glDeleteBuffers (GLsizei n, const GLuint* buffers)
   uint32_t size = n * sizeof(uint32_t);
   gls_cmd_send_data(0, size, (void *)buffers);
 
-  gls_glDeleteBuffers_t *c = (gls_glDeleteBuffers_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glDeleteBuffers;
+  GLS_SET_COMMAND_PTR(c, glDeleteBuffers);
   c->n = n;
-  send_packet(sizeof(gls_glDeleteBuffers_t));
+  GLS_SEND_PACKET(glDeleteBuffers);
 }
 
 
 GL_APICALL void GL_APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei count)
 {
-  gls_glDrawArrays_t *c = (gls_glDrawArrays_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glDrawArrays;
+  GLS_SET_COMMAND_PTR_BATCH(c, glDrawArrays);
   c->mode = mode;
   c->first = first;
   c->count = count;
-  push_batch_command(sizeof(gls_glDrawArrays_t));
+  GLS_PUSH_BATCH(glDrawArrays);
 }
 
 
 GL_APICALL void GL_APIENTRY glEnable (GLenum cap)
 {
-  gls_glEnable_t *c = (gls_glEnable_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glEnable;
+  GLS_SET_COMMAND_PTR_BATCH(c, glEnable);
   c->cap = cap;
-  push_batch_command(sizeof(gls_glEnable_t));
+  GLS_PUSH_BATCH(glEnable);
 }
 
 
 GL_APICALL void GL_APIENTRY glGenBuffers (GLsizei n, GLuint* buffers)
 {
   gls_cmd_flush();
-  gls_glGenBuffers_t *c = (gls_glGenBuffers_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glGenBuffers;
+  GLS_SET_COMMAND_PTR(c, glGenBuffers);
   c->n = n;
-  send_packet(sizeof(gls_glGenBuffers_t));
+  GLS_SEND_PACKET(glGenBuffers);
 
   wait_for_data("timeout:glGenBuffers");
   memcpy(buffers, glsc_global.tmp_buf.buf, c->n * sizeof(uint32_t));
@@ -380,12 +380,11 @@ GL_APICALL void GL_APIENTRY glGenBuffers (GLsizei n, GLuint* buffers)
 GL_APICALL int GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* name)
 {
   gls_cmd_flush();
-  gls_glGetAttribLocation_t *c = (gls_glGetAttribLocation_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glGetAttribLocation;
+  GLS_SET_COMMAND_PTR(c, glGetAttribLocation);
   c->program = program;
   c->name[GLS_STRING_SIZE_PLUS - 1] = '\0';
   strncpy(c->name, name, GLS_STRING_SIZE);
-  send_packet(sizeof(gls_glGetAttribLocation_t));
+  GLS_SEND_PACKET(glGetAttribLocation);
 
   wait_for_data("timeout:glGetAttribLocation");
   gls_ret_glGetAttribLocation_t *ret = (gls_ret_glGetAttribLocation_t *)glsc_global.tmp_buf.buf;
@@ -395,65 +394,59 @@ GL_APICALL int GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* na
 
 GL_APICALL void GL_APIENTRY glEnableVertexAttribArray (GLuint index)
 {
-  gls_glEnableVertexAttribArray_t *c = (gls_glEnableVertexAttribArray_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glEnableVertexAttribArray;
+  GLS_SET_COMMAND_PTR_BATCH(c, glEnableVertexAttribArray);
   c->index = index;
-  push_batch_command(sizeof(gls_glEnableVertexAttribArray_t));
+  GLS_PUSH_BATCH(glEnableVertexAttribArray);
 }
 
 
 GL_APICALL void GL_APIENTRY glVertexAttribPointer (GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr)
 {
-  gls_glVertexAttribPointer_t *c = (gls_glVertexAttribPointer_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glVertexAttribPointer;
+  GLS_SET_COMMAND_PTR_BATCH(c, glVertexAttribPointer);
   c->indx = indx;
   c->size = size;
   c->type = type;
   c->normalized = normalized;
   c->stride = stride;
   c->ptr = (uint32_t)ptr;
-  push_batch_command(sizeof(gls_glVertexAttribPointer_t));
+  GLS_PUSH_BATCH(glVertexAttribPointer);
 }
 
 
 GL_APICALL void GL_APIENTRY glBindFramebuffer (GLenum target, GLuint framebuffer)
 {
-  gls_glBindFramebuffer_t *c = (gls_glBindFramebuffer_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glBindFramebuffer;
+  GLS_SET_COMMAND_PTR_BATCH(c, glBindFramebuffer);
   c->target = target;
   c->framebuffer = framebuffer;
-  push_batch_command(sizeof(gls_glBindFramebuffer_t));
+  GLS_PUSH_BATCH(glBindFramebuffer);
 }
 
 
 GL_APICALL void GL_APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei height)
 {
-  gls_glViewport_t *c = (gls_glViewport_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glViewport;
+  GLS_SET_COMMAND_PTR_BATCH(c, glViewport);
   c->x = x;
   c->y = y;
   c->width = width;
   c->height = height;
-  push_batch_command(sizeof(gls_glViewport_t));
+  GLS_PUSH_BATCH(glViewport);
 }
 
 
 GL_APICALL void GL_APIENTRY glUseProgram (GLuint program)
 {
-  gls_glUseProgram_t *c = (gls_glUseProgram_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glUseProgram;
+  GLS_SET_COMMAND_PTR_BATCH(c, glUseProgram);
   c->program = program;
-  push_batch_command(sizeof(gls_glUseProgram_t));
+  GLS_PUSH_BATCH(glUseProgram);
 }
 
 
 GL_APICALL GLuint GL_APIENTRY glCreateShader (GLenum type)
 {
   gls_cmd_flush();
-  gls_glCreateShader_t *c = (gls_glCreateShader_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glCreateShader;
+  GLS_SET_COMMAND_PTR(c, glCreateShader);
   c->type = type;
-  send_packet(sizeof(gls_glCreateShader_t));
+  GLS_SEND_PACKET(glCreateShader);
 
   wait_for_data("timeout:glCreateShader");
   gls_ret_glCreateShader_t *ret = (gls_ret_glCreateShader_t *)glsc_global.tmp_buf.buf;
@@ -505,29 +498,26 @@ GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const 
   }
 
   gls_cmd_send_data(0, size_all, glsc_global.tmp_buf.buf);
-  gls_glShaderSource_t *c = (gls_glShaderSource_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glShaderSource;
+  GLS_SET_COMMAND_PTR(c, glShaderSource);
   c->shader = shader;
   c->count = count;
-  send_packet(sizeof(gls_glShaderSource_t));
+  GLS_SEND_PACKET(glShaderSource);
 }
 
 
 GL_APICALL void GL_APIENTRY glCompileShader (GLuint shader)
 {
-  gls_glCompileShader_t *c = (gls_glCompileShader_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glCompileShader;
+  GLS_SET_COMMAND_PTR_BATCH(c, glCompileShader);
   c->shader = shader;
-  push_batch_command(sizeof(gls_glCompileShader_t));
+  GLS_PUSH_BATCH(glCompileShader);
 }
 
 
 GL_APICALL GLuint GL_APIENTRY glCreateProgram (void)
 {
   gls_cmd_flush();
-  gls_glCreateProgram_t *c = (gls_glCreateProgram_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glCreateProgram;
-  send_packet(sizeof(gls_glCreateProgram_t));
+  GLS_SET_COMMAND_PTR(c, glCreateProgram);
+  GLS_SEND_PACKET(glCreateProgram);
 
   wait_for_data("timeout:glCreateProgram");
   gls_ret_glCreateProgram_t *ret = (gls_ret_glCreateProgram_t *)glsc_global.tmp_buf.buf;
@@ -537,89 +527,80 @@ GL_APICALL GLuint GL_APIENTRY glCreateProgram (void)
 
 GL_APICALL void GL_APIENTRY glAttachShader (GLuint program, GLuint shader)
 {
-  gls_glAttachShader_t *c = (gls_glAttachShader_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glAttachShader;
+  GLS_SET_COMMAND_PTR_BATCH(c, glAttachShader);
   c->program = program;
   c->shader = shader;
-  push_batch_command(sizeof(gls_glAttachShader_t));
+  GLS_PUSH_BATCH(glAttachShader);
 }
 
 
 GL_APICALL void GL_APIENTRY glLinkProgram (GLuint program)
 {
-  gls_glLinkProgram_t *c = (gls_glLinkProgram_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glLinkProgram;
+  GLS_SET_COMMAND_PTR_BATCH(c, glLinkProgram);
   c->program = program;
-  push_batch_command(sizeof(gls_glLinkProgram_t));
+  GLS_PUSH_BATCH(glLinkProgram);
 }
 
 
 GL_APICALL void GL_APIENTRY glDeleteProgram (GLuint program)
 {
-  gls_glDeleteProgram_t *c = (gls_glDeleteProgram_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glDeleteProgram;
+  GLS_SET_COMMAND_PTR_BATCH(c, glDeleteProgram);
   c->program = program;
-  push_batch_command(sizeof(gls_glDeleteProgram_t));
+  GLS_PUSH_BATCH(glDeleteProgram);
 }
 
 
 GL_APICALL void GL_APIENTRY glDeleteShader (GLuint shader)
 {
-  gls_glDeleteShader_t *c = (gls_glDeleteShader_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glDeleteShader;
+  GLS_SET_COMMAND_PTR_BATCH(c, glDeleteShader);
   c->shader = shader;
-  push_batch_command(sizeof(gls_glDeleteShader_t));
+  GLS_PUSH_BATCH(glDeleteShader);
 }
 
 
 GL_APICALL void GL_APIENTRY glUniform1f (GLint location, GLfloat x)
 {
-  gls_glUniform1f_t *c = (gls_glUniform1f_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glUniform1f;
+  GLS_SET_COMMAND_PTR_BATCH(c, glUniform1f);
   c->location = location;
   c->x = x;
-  push_batch_command(sizeof(gls_glUniform1f_t));
+  GLS_PUSH_BATCH(glUniform1f);
 }
 
 
 GL_APICALL void GL_APIENTRY glDisableVertexAttribArray (GLuint index)
 {
-  gls_glDisableVertexAttribArray_t *c = (gls_glDisableVertexAttribArray_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glDisableVertexAttribArray;
+  GLS_SET_COMMAND_PTR_BATCH(c, glDisableVertexAttribArray);
   c->index = index;
-  push_batch_command(sizeof(gls_glDisableVertexAttribArray_t));
+  GLS_PUSH_BATCH(glDisableVertexAttribArray);
 }
 
 
 GL_APICALL void GL_APIENTRY glDisable (GLenum cap)
 {
-  gls_glDisable_t *c = (gls_glDisable_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glDisable;
+  GLS_SET_COMMAND_PTR_BATCH(c, glDisable);
   c->cap = cap;
-  push_batch_command(sizeof(gls_glDisable_t));
+  GLS_PUSH_BATCH(glDisable);
 }
 
 
 GL_APICALL void GL_APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
 {
-  gls_glDrawElements_t *c = (gls_glDrawElements_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glDrawElements;
+  GLS_SET_COMMAND_PTR_BATCH(c, glDrawElements);
   c->mode = mode;
   c->count = count;
   c->type = type;
   c->indices = (uint32_t)indices;
-  push_batch_command(sizeof(gls_glDrawElements_t));
+  GLS_PUSH_BATCH(glDrawElements);
 }
 
 
 GL_APICALL void GL_APIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog)
 {
   gls_cmd_flush();
-  gls_glGetShaderInfoLog_t *c = (gls_glGetShaderInfoLog_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glGetShaderInfoLog;
+  GLS_SET_COMMAND_PTR(c, glGetShaderInfoLog);
   c->shader = shader;
   c->bufsize = bufsize;
-  send_packet(sizeof(gls_glGetShaderInfoLog_t));
+  GLS_SEND_PACKET(glGetShaderInfoLog);
 
   wait_for_data("timeout:glGetShaderInfoLog");
   gls_ret_glGetShaderInfoLog_t *ret = (gls_ret_glGetShaderInfoLog_t *)glsc_global.tmp_buf.buf;
@@ -633,24 +614,22 @@ GL_APICALL void GL_APIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufsize, 
 
 GL_APICALL void GL_APIENTRY glBindAttribLocation (GLuint program, GLuint index, const GLchar* name)
 {
-  gls_glBindAttribLocation_t *c = (gls_glBindAttribLocation_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glBindAttribLocation;
+  GLS_SET_COMMAND_PTR_BATCH(c, glBindAttribLocation);
   c->program = program;
   c->index = index;
   c->name[GLS_STRING_SIZE_PLUS - 1] = '\0';
   strncpy(c->name, name, GLS_STRING_SIZE);
-  push_batch_command(sizeof(gls_glBindAttribLocation_t));
+  GLS_PUSH_BATCH(glBindAttribLocation);
 }
 
 
 GL_APICALL void GL_APIENTRY glGetProgramInfoLog (GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog)
 {
   gls_cmd_flush();
-  gls_glGetProgramInfoLog_t *c = (gls_glGetProgramInfoLog_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glGetProgramInfoLog;
+  GLS_SET_COMMAND_PTR(c, glGetProgramInfoLog);
   c->program = program;
   c->bufsize = bufsize;
-  send_packet(sizeof(gls_glGetProgramInfoLog_t));
+  GLS_SEND_PACKET(glGetProgramInfoLog);
 
   wait_for_data("timeout:glGetProgramInfoLog");
   gls_ret_glGetProgramInfoLog_t *ret = (gls_ret_glGetProgramInfoLog_t *)glsc_global.tmp_buf.buf;
@@ -669,12 +648,11 @@ GL_APICALL void GL_APIENTRY glGetProgramInfoLog (GLuint program, GLsizei bufsize
 GL_APICALL int GL_APIENTRY glGetUniformLocation (GLuint program, const GLchar* name)
 {
   gls_cmd_flush();
-  gls_glGetUniformLocation_t *c = (gls_glGetUniformLocation_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glGetUniformLocation;
+  GLS_SET_COMMAND_PTR(c, glGetUniformLocation);
   c->program = program;
   c->name[GLS_STRING_SIZE_PLUS - 1] = '\0';
   strncpy(c->name, name, GLS_STRING_SIZE);
-  send_packet(sizeof(gls_glGetUniformLocation_t));
+  GLS_SEND_PACKET(glGetUniformLocation);
 
   wait_for_data("timeout:glGetUniformLocation");
   gls_ret_glGetUniformLocation_t *ret = (gls_ret_glGetUniformLocation_t *)glsc_global.tmp_buf.buf;
@@ -696,24 +674,22 @@ GL_APICALL void GL_APIENTRY glUniform4fv (GLint location, GLsizei count, const G
     uint32_t size = (uint32_t)((char *)&dat->v[i] - (char *)dat);
     gls_cmd_send_data(0, size, glsc_global.tmp_buf.buf);
 
-    gls_glUniform4fv_2_t *c = (gls_glUniform4fv_2_t *)glsc_global.out_buf.buf;
-    c->cmd = GLSC_glUniform4fv_2;
+    GLS_SET_COMMAND_PTR(c, glUniform4fv);
     c->location = location;
     c->count = count;
-    send_packet(sizeof(gls_glUniform4fv_2_t));
+    GLS_SEND_PACKET(glUniform4fv);
   }
   else
   {
-    gls_glUniform4fv_t *c = (gls_glUniform4fv_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-    c->cmd = GLSC_glUniform4fv;
+    GLS_SET_COMMAND_PTR_BATCH(c, glUniform4fv);
     c->location = location;
     c->count = count;
     int i;
     for (i = 0; i < 4; i++)
     {
       c->v[i] = v[i];
-    }  
-    push_batch_command(sizeof(gls_glUniform4fv_t));
+    }
+    GLS_PUSH_BATCH(glUniform4fv);
   }
 }
 
@@ -732,17 +708,15 @@ GL_APICALL void GL_APIENTRY glUniformMatrix4fv (GLint location, GLsizei count, G
     uint32_t size = (uint32_t)((char *)&dat->value[i] - (char *)dat);
     gls_cmd_send_data(0, size, glsc_global.tmp_buf.buf);
 
-    gls_glUniformMatrix4fv_2_t *c = (gls_glUniformMatrix4fv_2_t *)glsc_global.out_buf.buf;
-    c->cmd = GLSC_glUniformMatrix4fv_2;
+    GLS_SET_COMMAND_PTR(c, glUniformMatrix4fv_2);
     c->location = location;
     c->count = count;
     c->transpose = transpose;
-    send_packet(sizeof(gls_glUniformMatrix4fv_2_t));
+    GLS_SEND_PACKET(glUniformMatrix4fv_2);
   }
   else
   {
-    gls_glUniformMatrix4fv_t *c = (gls_glUniformMatrix4fv_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-    c->cmd = GLSC_glUniformMatrix4fv;
+    GLS_SET_COMMAND_PTR_BATCH(c, glUniformMatrix4fv);
     c->location = location;
     c->count = count;
     c->transpose = transpose;
@@ -751,7 +725,7 @@ GL_APICALL void GL_APIENTRY glUniformMatrix4fv (GLint location, GLsizei count, G
     {
       c->value[i] = value[i];
     }  
-    push_batch_command(sizeof(gls_glUniformMatrix4fv_t));
+    GLS_PUSH_BATCH(glUniformMatrix4fv);
   }
 }
 
@@ -759,27 +733,24 @@ GL_APICALL void GL_APIENTRY glUniformMatrix4fv (GLint location, GLsizei count, G
 GL_APICALL void GL_APIENTRY glFinish (void)
 {
   gls_cmd_flush();
-  gls_command_t *c = (gls_command_t *)glsc_global.out_buf.buf;
-  c->cmd = GLSC_glFinish;
-  send_packet(sizeof(gls_command_t));
+  GLS_SET_COMMAND_PTR(c, glFinish);
+  GLS_SEND_PACKET(glFinish);
   wait_for_data("timeout:glFinish");
 }
 
 
 GL_APICALL void GL_APIENTRY glFlush (void)
 {
-  gls_command_t *c = (gls_command_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_glFlush;
-  push_batch_command(sizeof(gls_command_t));
+  GLS_SET_COMMAND_PTR_BATCH(c, glFlush);
+  GLS_PUSH_BATCH(glFlush);
 }
 
 
 
 /*
 {
-  gls__t *c = (gls__t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-  c->cmd = GLSC_;
+  GLS_SET_COMMAND_PTR_BATCH(c, );
   c-> = ;
-  push_batch_command(sizeof(gls__t));
+  GLS_PUSH_BATCH();
 }
  */

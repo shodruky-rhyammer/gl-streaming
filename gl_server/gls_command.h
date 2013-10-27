@@ -340,6 +340,18 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+} gls_glFinish_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_glFlush_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   int32_t n;
 } gls_glGenBuffers_t;
 
