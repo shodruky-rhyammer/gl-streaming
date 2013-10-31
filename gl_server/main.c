@@ -43,9 +43,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int main(int argc, char * argv[])
 {
   static server_context_t sc;
+  int opt;
+  char my_ip[GLS_STRING_SIZE_PLUS];
+  char his_ip[GLS_STRING_SIZE_PLUS];
+  uint16_t my_port = 12345;
+  uint16_t his_port = 12346;
+  strncpy(my_ip, "127.0.0.1", GLS_STRING_SIZE);
+  strncpy(his_ip, "127.0.0.1", GLS_STRING_SIZE);
+  while ((opt = getopt(argc, argv, "s:c:h")) != -1)
+  {
+    switch (opt)
+    {
+      case 's':
+        strncpy(my_ip, strtok(optarg, ":"), GLS_STRING_SIZE);
+        my_port = atoi(strtok(NULL, ":"));
+        break;
+      case 'c':
+        strncpy(his_ip, strtok(optarg, ":"), GLS_STRING_SIZE);
+        his_port = atoi(strtok(NULL, ":"));
+        break;
+      case 'h':
+      default:
+        printf("Usage: %s [-s my_ip_address:port] [-c client_ip_address:port]\n", argv[0]);
+        return 0;
+    }
+  }
   server_init(&sc);
-  set_server_address_port(&sc, (char*)"192.168.0.2", 12345);
-  set_client_address_port(&sc, (char*)"192.168.0.3", 12346);
+  set_server_address_port(&sc, my_ip, my_port);
+  set_client_address_port(&sc, his_ip, his_port);
 
   server_run(&sc, glserver_thread);
 

@@ -28,21 +28,21 @@ copy the gl_server directory to RPi.
 
 ``cd gl_server``
     
-(edit IP address in main.c for now ;-) set_server_address() for RPi's address, set_client_address() for the client system's address.)
-    
 ``make``
     
-``./gl_server``
+``./gl_server -s 192.168.0.2:12345 -c 192.168.0.3:12346``
+
+(Usage: ./gl_server [-s my_ip_address:port] [-c client_ip_address:port])
 
 copy the gl_client directory to any computer.
 
 ``cd gl_client``
     
-(edit IP address in main.c. ALERT!! set_server_address() for the client system's address, set_client_address() for RPi's address.)
-
 ``make``
     
-``./gl_client``
+``./gl_client -s 192.168.0.2:12345 -c 192.168.0.3:12346 -j /dev/input/js0``
+
+(Usage: ./gl_client [-c my_ip_address:port] [-s server_ip_address:port] [-j joystick_device])
 
 ## Licence
 
