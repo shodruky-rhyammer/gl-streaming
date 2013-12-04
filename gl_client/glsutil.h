@@ -29,39 +29,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-#include <stdlib.h>
 #include <stdint.h>
 
-#include "fifo.h"
 
-int fifo_init(fifo_t *fifo, unsigned int fifo_size_in_bits, unsigned int fifo_packet_size_in_bits)
+typedef struct
 {
-  fifo->fifo_size = 1 << fifo_size_in_bits;
-  fifo->fifo_packet_size = 1 << fifo_packet_size_in_bits;
-  unsigned int alignment = fifo->fifo_packet_size;
-  fifo->buffer = (char *)malloc(fifo->fifo_size * fifo->fifo_packet_size + alignment);
-  if (fifo->buffer == NULL)
-  {
-    return -1;
-  }
-#if __WORDSIZE == 64
-  fifo->p_start = (char *)(((uint64_t)fifo->buffer + alignment - 1) & (~ ((uint64_t)alignment - 1)));
-#else
-  fifo->p_start = (char *)(((uint32_t)fifo->buffer + alignment - 1) & (~ ((uint32_t)alignment - 1)));
+  uint16_t file_type;
+  uint32_t file_size;
+  uint16_t reserved1;
+  uint16_t reserved2;
+  uint32_t data_offset;
+  uint32_t header_size;
+  uint32_t width;
+  uint32_t height;
+  uint16_t plane;
+  uint16_t bpp;
+  uint32_t compression;
+  uint32_t image_size;
+} __attribute__ ((__packed__)) gls_bmp_header_t;
+
+
+typedef struct
+{
+  unsigned int width;
+  unsigned int height;
+  char *bitmap;
+} gls_bitmap_t;
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
-  fifo->idx_reader = 0;
-  fifo->idx_writer = 0;
-  return 0;
-}
 
-int fifo_delete(fifo_t *fifo)
-{
-  free(fifo->buffer);
-  fifo->buffer = NULL;
-  fifo->p_start = NULL;
-  fifo->idx_reader = 0;
-  fifo->idx_writer = 0;
-  fifo->fifo_size = 0;
-  fifo->fifo_packet_size = 0;
-  return 0;
+void mat_mul(float *a, float *b);
+void mat_rotate_x(float *a, float angle);
+void mat_rotate_y(float *a, float angle);
+void mat_rotate_z(float *a, float angle);
+void mat_translate(float *a, float x, float y, float z);
+void mat_identity(float *m);
+void mat_transpose(float *m);
+void mat_invert(float *m);
+void mat_perspective(float *m, float aspect, float near, float far, float fview);
+void mat_copy(float *a, float *b);
+int gls_load_bitmap(gls_bitmap_t *bitmap, const char *filename);
+void gls_delete_bitmap(gls_bitmap_t *bitmap);
+
+#ifdef __cplusplus
 }
+#endif
+

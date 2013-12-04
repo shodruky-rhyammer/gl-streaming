@@ -46,9 +46,11 @@ enum GL_Server_Command
   GLSC_SEND_DATA,
   GLSC_FLUSH,
   GLSC_get_context,
+  GLSC_glActiveTexture,
   GLSC_glAttachShader,
   GLSC_glBindAttribLocation,
   GLSC_glBindBuffer,
+  GLSC_glBindTexture,
   GLSC_glBindFramebuffer,
   GLSC_glBlendEquationSeparate,
   GLSC_glBlendFuncSeparate,
@@ -62,6 +64,7 @@ enum GL_Server_Command
   GLSC_glDeleteBuffers,
   GLSC_glDeleteProgram,
   GLSC_glDeleteShader,
+  GLSC_glDeleteTextures,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
   GLSC_glDrawArrays,
@@ -71,17 +74,19 @@ enum GL_Server_Command
   GLSC_glFinish,
   GLSC_glFlush,
   GLSC_glGenBuffers,
+  GLSC_glGenTextures,
   GLSC_glGetAttribLocation,
   GLSC_glGetProgramInfoLog,
   GLSC_glGetShaderInfoLog,
   GLSC_glGetUniformLocation,
   GLSC_glLinkProgram,
+  GLSC_glPixelStorei,
   GLSC_glShaderSource,
+  GLSC_glTexImage2D,
+  GLSC_glTexParameteri,
   GLSC_glUniform1f,
   GLSC_glUniform4fv,
-  GLSC_glUniform4fv_2,
   GLSC_glUniformMatrix4fv,
-  GLSC_glUniformMatrix4fv_2,
   GLSC_glUseProgram,
   GLSC_glVertexAttribPointer,
   GLSC_glViewport,
@@ -152,6 +157,13 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t texture;
+} gls_glActiveTexture_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t program;
   uint32_t shader;
 } gls_glAttachShader_t;
@@ -172,6 +184,14 @@ typedef struct
   uint32_t target;
   uint32_t buffer;
 } gls_glBindBuffer_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t target;
+  uint32_t texture;
+} gls_glBindTexture_t;
 
 
 typedef struct
@@ -293,6 +313,15 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t cmd_size;
+  int32_t n;
+  uint32_t textures[1];
+} gls_glDeleteTextures_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t cap;
 } gls_glDisable_t;
 
@@ -353,7 +382,15 @@ typedef struct
 {
   uint32_t cmd;
   int32_t n;
+  uint32_t buffers;
 } gls_glGenBuffers_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t n;
+} gls_glGenTextures_t;
 
 
 typedef struct
@@ -428,6 +465,14 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t pname;
+  int32_t param;
+} gls_glPixelStorei_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t shader;
   int32_t count;
 } gls_glShaderSource_t;
@@ -444,6 +489,31 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t cmd_size;
+  uint32_t target;
+  int32_t level;
+  int32_t internalformat;
+  int32_t width;
+  int32_t height;
+  int32_t border;
+  uint32_t format;
+  uint32_t type;
+  char pixels[4];
+} gls_glTexImage2D_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t target;
+  uint32_t pname;
+  int32_t param;
+} gls_glTexParameteri_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   int32_t location;
   float x;
 } gls_glUniform1f_t;
@@ -452,51 +522,22 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t cmd_size;
   int32_t location;
   int32_t count;
-  float v[4];
+  float v[1];
 } gls_glUniform4fv_t;
 
 
 typedef struct
 {
   uint32_t cmd;
+  uint32_t cmd_size;
   int32_t location;
   int32_t count;
-} gls_glUniform4fv_2_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  float v[256];
-} gls_data_glUniform4fv_2_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  int32_t location;
-  int32_t count;
-  uint8_t transpose;
-  float value[16];
+  uint32_t transpose;
+  float value[1];
 } gls_glUniformMatrix4fv_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  int32_t location;
-  int32_t count;
-  uint8_t transpose;
-} gls_glUniformMatrix4fv_2_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  float value[256];
-} gls_data_glUniformMatrix4fv_2_t;
 
 
 typedef struct
@@ -514,7 +555,7 @@ typedef struct
   uint32_t type;
   int32_t stride;
   uint32_t ptr;
-  uint8_t normalized;
+  uint32_t normalized;
 } gls_glVertexAttribPointer_t;
 
 
@@ -526,6 +567,8 @@ typedef struct
   int32_t width;
   int32_t height;
 } gls_glViewport_t;
+
+
 
 
 

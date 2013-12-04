@@ -139,7 +139,15 @@ int glse_cmd_recv_data()
 void glse_glBindBuffer()
 {
   GLSE_SET_COMMAND_PTR(c, glBindBuffer);
-  glBindBuffer (c->target, c->buffer);
+  glBindBuffer(c->target, c->buffer);
+  check_gl_err();
+}
+
+
+void glse_glBindTexture()
+{
+  GLSE_SET_COMMAND_PTR(c, glBindTexture);
+  glBindTexture(c->target, c->texture);
   check_gl_err();
 }
 
@@ -220,6 +228,16 @@ void glse_glGenBuffers()
 {
   GLSE_SET_COMMAND_PTR(c, glGenBuffers);
   glGenBuffers(c->n, (GLuint*)glsec_global.tmp_buf.buf);
+  check_gl_err();
+  uint32_t size = c->n * sizeof(uint32_t);
+  glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGenTextures()
+{
+  GLSE_SET_COMMAND_PTR(c, glGenTextures);
+  glGenTextures(c->n, (GLuint*)glsec_global.tmp_buf.buf);
   check_gl_err();
   uint32_t size = c->n * sizeof(uint32_t);
   glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
@@ -451,28 +469,10 @@ void glse_glUniform4fv()
 }
 
 
-void glse_glUniform4fv_2()
-{
-  GLSE_SET_COMMAND_PTR(c, glUniform4fv_2);
-  gls_data_glUniform4fv_2_t *dat = (gls_data_glUniform4fv_2_t *)glsec_global.tmp_buf.buf;
-  glUniform4fv (c->location, c->count, (const GLfloat *)dat->v);
-  check_gl_err();
-}
-
-
 void glse_glUniformMatrix4fv()
 {
   GLSE_SET_COMMAND_PTR(c, glUniformMatrix4fv);
   glUniformMatrix4fv(c->location, c->count, c->transpose, (const GLfloat *)c->value);
-  check_gl_err();
-}
-
-
-void glse_glUniformMatrix4fv_2()
-{
-  GLSE_SET_COMMAND_PTR(c, glUniformMatrix4fv_2);
-  gls_data_glUniformMatrix4fv_2_t *dat = (gls_data_glUniformMatrix4fv_2_t *)glsec_global.tmp_buf.buf;
-  glUniformMatrix4fv(c->location, c->count, c->transpose, (const GLfloat *)dat->value);
   check_gl_err();
 }
 
@@ -494,6 +494,47 @@ void glse_glFlush()
   glFlush();
   check_gl_err();
 }
+
+
+void glse_glTexParameteri()
+{
+  GLSE_SET_COMMAND_PTR(c, glTexParameteri);
+  glTexParameteri (c->target, c->pname, c->param);
+  check_gl_err();
+}
+
+
+void glse_glTexImage2D()
+{
+  GLSE_SET_COMMAND_PTR(c, glTexImage2D);
+  glTexImage2D(c->target, c->level, c->internalformat, c->width, c->height, c->border, c->format, c->type, c->pixels);
+  check_gl_err();
+}
+
+
+void glse_glDeleteTextures()
+{
+  GLSE_SET_COMMAND_PTR(c, glDeleteTextures);
+  glDeleteTextures(c->n, c->textures);
+  check_gl_err();
+}
+
+
+void glse_glPixelStorei()
+{
+  GLSE_SET_COMMAND_PTR(c, glPixelStorei);
+  glPixelStorei(c->pname, c->param);
+  check_gl_err();
+}
+
+
+void glse_glActiveTexture()
+{
+  GLSE_SET_COMMAND_PTR(c, glActiveTexture);
+  glActiveTexture(c->texture);
+  check_gl_err();
+}
+
 
 
 /*
@@ -528,9 +569,17 @@ void glse_cmd_flush()
         glse_glAttachShader();
         pop_batch_command(sizeof(gls_glAttachShader_t));
         break;
+      case GLSC_glActiveTexture:
+        glse_glActiveTexture();
+        pop_batch_command(sizeof(gls_glActiveTexture_t));
+        break;
       case GLSC_glBindBuffer:
         glse_glBindBuffer();
         pop_batch_command(sizeof(gls_glBindBuffer_t));
+        break;
+      case GLSC_glBindTexture:
+        glse_glBindTexture();
+        pop_batch_command(sizeof(gls_glBindTexture_t));
         break;
       case GLSC_glBindAttribLocation:
         glse_glBindAttribLocation();
@@ -568,6 +617,10 @@ void glse_cmd_flush()
         glse_glDeleteShader();
         pop_batch_command(sizeof(gls_glDeleteShader_t));
         break;
+      case GLSC_glDeleteTextures:
+        glse_glDeleteTextures();
+        pop_batch_command(((gls_glDeleteTextures_t *)c)->cmd_size);
+        break;
       case GLSC_glDisable:
         glse_glDisable();
         pop_batch_command(sizeof(gls_glDisable_t));
@@ -600,17 +653,29 @@ void glse_cmd_flush()
         glse_glLinkProgram();
         pop_batch_command(sizeof(gls_glLinkProgram_t));
         break;
+      case GLSC_glPixelStorei:
+        glse_glPixelStorei();
+        pop_batch_command(sizeof(gls_glPixelStorei_t));
+        break;
+      case GLSC_glTexImage2D:
+        glse_glTexImage2D();
+        pop_batch_command(((gls_glTexImage2D_t *)c)->cmd_size);
+        break;
+      case GLSC_glTexParameteri:
+        glse_glTexParameteri();
+        pop_batch_command(sizeof(gls_glTexParameteri_t));
+        break;
       case GLSC_glUniform1f:
         glse_glUniform1f();
         pop_batch_command(sizeof(gls_glUniform1f_t));
         break;
       case GLSC_glUniform4fv:
         glse_glUniform4fv();
-        pop_batch_command(sizeof(gls_glUniform4fv_t));
+        pop_batch_command(((gls_glUniform4fv_t *)c)->cmd_size);
         break;
       case GLSC_glUniformMatrix4fv:
         glse_glUniformMatrix4fv();
-        pop_batch_command(sizeof(gls_glUniformMatrix4fv_t));
+        pop_batch_command(((gls_glUniformMatrix4fv_t *)c)->cmd_size);
         break;
       case GLSC_glUseProgram:
         glse_glUseProgram();
@@ -702,6 +767,9 @@ void * glserver_thread(void * arg)
         case GLSC_glGenBuffers:
           glse_glGenBuffers();
           break;
+        case GLSC_glGenTextures:
+          glse_glGenTextures();
+          break;
         case GLSC_glGetAttribLocation:
           glse_glGetAttribLocation();
           break;
@@ -716,12 +784,6 @@ void * glserver_thread(void * arg)
           break;
         case GLSC_glShaderSource:
           glse_glShaderSource();
-          break;
-        case GLSC_glUniform4fv_2:
-          glse_glUniform4fv_2();
-          break;
-        case GLSC_glUniformMatrix4fv_2:
-          glse_glUniformMatrix4fv_2();
           break;
         default:
           printf("Error: Command\n");

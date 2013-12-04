@@ -70,6 +70,22 @@ static inline float get_diff_time(struct timeval start, struct timeval end)
 }
 
 
+static inline int check_batch_overflow(size_t size, const char *msg)
+{
+  if (size >= GLS_TMP_BUFFER_SIZE - BATCH_AUTO_FLUSH_SIZE)
+  {
+    perror(msg);
+    return FALSE;
+  }
+  uint32_t ptr = next_ptr(glsc_global.tmp_buf.ptr, size, GLS_ALIGNMENT_BITS);
+  if (ptr >= GLS_TMP_BUFFER_SIZE - BATCH_AUTO_FLUSH_SIZE)
+  {
+    gls_cmd_flush();
+  }
+  return TRUE;
+}
+
+
 static inline void push_batch_command(size_t size)
 {
   glsc_global.tmp_buf.ptr = next_ptr(glsc_global.tmp_buf.ptr, size, GLS_ALIGNMENT_BITS);
@@ -84,6 +100,10 @@ int gls_init(server_thread_args_t *arg)
 {
   memset(&glsc_global, 0, sizeof(glsc_global));
   glsc_global.sta = arg;
+  glsc_global.pack_alignment = 4;
+  glsc_global.unpack_alignment = 4;
+  glsc_global.screen_width = 0;
+  glsc_global.screen_height = 0;
   glsc_global.out_buf.buf = (char *)malloc(GLS_OUT_BUFFER_SIZE);
   if (glsc_global.out_buf.buf == NULL)
   {
@@ -270,6 +290,15 @@ GL_APICALL void GL_APIENTRY glBindBuffer (GLenum target, GLuint buffer)
 }
 
 
+GL_APICALL void GL_APIENTRY glBindTexture (GLenum target, GLuint texture)
+{
+  GLS_SET_COMMAND_PTR_BATCH(c, glBindTexture);
+  c->target = target;
+  c->texture = texture;
+  GLS_PUSH_BATCH(glBindTexture);
+}
+
+
 GL_APICALL void GL_APIENTRY glBlendFuncSeparate (GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
 {
   GLS_SET_COMMAND_PTR_BATCH(c, glBlendFuncSeparate);
@@ -377,6 +406,18 @@ GL_APICALL void GL_APIENTRY glGenBuffers (GLsizei n, GLuint* buffers)
 }
 
 
+GL_APICALL void GL_APIENTRY glGenTextures (GLsizei n, GLuint* textures)
+{
+  gls_cmd_flush();
+  GLS_SET_COMMAND_PTR(c, glGenTextures);
+  c->n = n;
+  GLS_SEND_PACKET(glGenTextures);
+
+  wait_for_data("timeout:glGenTextures");
+  memcpy(textures, glsc_global.tmp_buf.buf, c->n * sizeof(uint32_t));
+}
+
+
 GL_APICALL int GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* name)
 {
   gls_cmd_flush();
@@ -408,7 +449,11 @@ GL_APICALL void GL_APIENTRY glVertexAttribPointer (GLuint indx, GLint size, GLen
   c->type = type;
   c->normalized = normalized;
   c->stride = stride;
+#if __WORDSIZE == 64
+  c->ptr = (uint32_t)(uint64_t)ptr;
+#else
   c->ptr = (uint32_t)ptr;
+#endif
   GLS_PUSH_BATCH(glVertexAttribPointer);
 }
 
@@ -589,7 +634,11 @@ GL_APICALL void GL_APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum t
   c->mode = mode;
   c->count = count;
   c->type = type;
+#if __WORDSIZE == 64
+  c->indices = (uint32_t)(uint64_t)indices;
+#else
   c->indices = (uint32_t)indices;
+#endif
   GLS_PUSH_BATCH(glDrawElements);
 }
 
@@ -662,71 +711,36 @@ GL_APICALL int GL_APIENTRY glGetUniformLocation (GLuint program, const GLchar* n
 
 GL_APICALL void GL_APIENTRY glUniform4fv (GLint location, GLsizei count, const GLfloat* v)
 {
-  if (count > 1)
+  uint32_t datasize = count * 4 * sizeof(GLfloat);
+  GLS_SET_COMMAND_PTR_BATCH(c, glUniform4fv);
+  uint32_t cmd_size = (uint32_t)(((char *)c->v + datasize) - (char *)c);
+  if (check_batch_overflow(cmd_size, "glUniform4fv: buffer overflow") != TRUE)
   {
-    gls_cmd_flush();
-    gls_data_glUniform4fv_2_t *dat = (gls_data_glUniform4fv_2_t *)glsc_global.tmp_buf.buf;
-    int i;
-    for (i = 0; i < count * 4; i++)
-    {
-      dat->v[i] = v[i];
-    }  
-    uint32_t size = (uint32_t)((char *)&dat->v[i] - (char *)dat);
-    gls_cmd_send_data(0, size, glsc_global.tmp_buf.buf);
-
-    GLS_SET_COMMAND_PTR(c, glUniform4fv);
-    c->location = location;
-    c->count = count;
-    GLS_SEND_PACKET(glUniform4fv);
+    return;
   }
-  else
-  {
-    GLS_SET_COMMAND_PTR_BATCH(c, glUniform4fv);
-    c->location = location;
-    c->count = count;
-    int i;
-    for (i = 0; i < 4; i++)
-    {
-      c->v[i] = v[i];
-    }
-    GLS_PUSH_BATCH(glUniform4fv);
-  }
+  c->cmd_size = cmd_size;
+  c->location = location;
+  c->count = count;
+  memcpy(c->v, v, datasize);
+  push_batch_command(cmd_size);
 }
 
 
 GL_APICALL void GL_APIENTRY glUniformMatrix4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
 {
-  if (count > 1)
+  uint32_t datasize = count * 16 * sizeof(GLfloat);
+  GLS_SET_COMMAND_PTR_BATCH(c, glUniformMatrix4fv);
+  uint32_t cmd_size = (uint32_t)(((char *)c->value + datasize) - (char *)c);
+  if (check_batch_overflow(cmd_size, "glUniformMatrix4fv: buffer overflow") != TRUE)
   {
-    gls_cmd_flush();
-    gls_data_glUniformMatrix4fv_2_t *dat = (gls_data_glUniformMatrix4fv_2_t *)glsc_global.tmp_buf.buf;
-    int i;
-    for (i = 0; i < count * 16; i++)
-    {
-      dat->value[i] = value[i];
-    }  
-    uint32_t size = (uint32_t)((char *)&dat->value[i] - (char *)dat);
-    gls_cmd_send_data(0, size, glsc_global.tmp_buf.buf);
-
-    GLS_SET_COMMAND_PTR(c, glUniformMatrix4fv_2);
-    c->location = location;
-    c->count = count;
-    c->transpose = transpose;
-    GLS_SEND_PACKET(glUniformMatrix4fv_2);
+    return;
   }
-  else
-  {
-    GLS_SET_COMMAND_PTR_BATCH(c, glUniformMatrix4fv);
-    c->location = location;
-    c->count = count;
-    c->transpose = transpose;
-    int i;
-    for (i = 0; i < 16; i++)
-    {
-      c->value[i] = value[i];
-    }  
-    GLS_PUSH_BATCH(glUniformMatrix4fv);
-  }
+  c->cmd_size = cmd_size;
+  c->location = location;
+  c->count = count;
+  c->transpose = transpose;
+  memcpy(c->value, value, datasize);
+  push_batch_command(cmd_size);
 }
 
 
@@ -745,6 +759,124 @@ GL_APICALL void GL_APIENTRY glFlush (void)
   GLS_PUSH_BATCH(glFlush);
 }
 
+
+GL_APICALL void GL_APIENTRY glTexParameteri (GLenum target, GLenum pname, GLint param)
+{
+  GLS_SET_COMMAND_PTR_BATCH(c, glTexParameteri);
+  c->target = target;
+  c->pname = pname;
+  c->param = param;
+  GLS_PUSH_BATCH(glTexParameteri);
+}
+
+
+GL_APICALL void GL_APIENTRY glTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels)
+{
+  uint32_t pixelbytes, linebytes, datasize;
+  switch (type)
+  {
+    case GL_UNSIGNED_BYTE:
+      switch (format)
+      {
+        case GL_ALPHA:
+          pixelbytes = 1;
+          break;
+        case GL_RGB:
+          pixelbytes = 3;
+          break;
+        case GL_RGBA:
+          pixelbytes = 4;
+          break;
+        case GL_LUMINANCE:
+          pixelbytes = 1;
+          break;
+        case GL_LUMINANCE_ALPHA:
+          pixelbytes = 2;
+          break;
+        default:
+          pixelbytes = 4;
+          break;
+      }
+      break;
+    case GL_UNSIGNED_SHORT_5_6_5:
+      pixelbytes = 2;
+      break;
+    case GL_UNSIGNED_SHORT_4_4_4_4:
+      pixelbytes = 2;
+      break;
+    case GL_UNSIGNED_SHORT_5_5_5_1:
+      pixelbytes = 2;
+      break;
+    default:
+      pixelbytes = 4;
+      break;
+  }
+  linebytes = (pixelbytes * width + glsc_global.unpack_alignment - 1) & (~ (glsc_global.unpack_alignment - 1));
+  datasize = linebytes * height;
+  GLS_SET_COMMAND_PTR_BATCH(c, glTexImage2D);
+  uint32_t cmd_size = (uint32_t)(((char *)c->pixels + datasize) - (char *)c);
+  if (check_batch_overflow(cmd_size, "glTexImage2D: buffer overflow") != TRUE)
+  {
+    return;
+  }
+  c->cmd_size = cmd_size;
+  c->target = target;
+  c->level = level;
+  c->internalformat = internalformat;
+  c->width = width;
+  c->height = height;
+  c->border = border;
+  c->format = format;
+  c->type = type;
+  memcpy(c->pixels, pixels, datasize);
+  push_batch_command(cmd_size);
+  gls_cmd_flush();
+}
+
+
+GL_APICALL void GL_APIENTRY glDeleteTextures (GLsizei n, const GLuint* textures)
+{
+  uint32_t datasize = n * sizeof(uint32_t);
+  GLS_SET_COMMAND_PTR_BATCH(c, glDeleteTextures);
+  uint32_t cmd_size = (uint32_t)(((char *)c->textures + datasize) - (char *)c);
+  if (check_batch_overflow(cmd_size, "glDeleteTextures: buffer overflow") != TRUE)
+  {
+    return;
+  }
+  c->cmd_size = cmd_size;
+  c->n = n;
+  memcpy(c->textures, textures, datasize);
+  push_batch_command(cmd_size);
+  gls_cmd_flush();
+}
+
+
+GL_APICALL void GL_APIENTRY glPixelStorei (GLenum pname, GLint param)
+{
+  switch (pname)
+  {
+    case GL_PACK_ALIGNMENT:
+      glsc_global.pack_alignment = param;
+      break;
+    case GL_UNPACK_ALIGNMENT:
+      glsc_global.unpack_alignment = param;
+      break;
+    default:
+      break;
+  }
+  GLS_SET_COMMAND_PTR_BATCH(c, glPixelStorei);
+  c->pname = pname;
+  c->param = param;
+  GLS_PUSH_BATCH(glPixelStorei);
+}
+
+
+GL_APICALL void GL_APIENTRY glActiveTexture (GLenum texture)
+{
+  GLS_SET_COMMAND_PTR_BATCH(c, glActiveTexture);
+  c->texture = texture;
+  GLS_PUSH_BATCH(glActiveTexture);
+}
 
 
 /*

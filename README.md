@@ -40,13 +40,20 @@ copy the gl_client directory to any computer.
     
 ``make``
     
-``./gl_client -s 192.168.0.2:12345 -c 192.168.0.3:12346 -j /dev/input/js0``
+``./sample1 -s 192.168.0.2:12345 -c 192.168.0.3:12346 -j /dev/input/js0``
 
-(Usage: ./gl_client [-c my_ip_address:port] [-s server_ip_address:port] [-j joystick_device])
+``./sample2 -s 192.168.0.2:12345 -c 192.168.0.3:12346 -j /dev/input/js0``
 
-## Licence
+(Usage: ./sampleX [-c my_ip_address:port] [-s server_ip_address:port] [-j joystick_device])
 
-BSD 3-Clause licence (except other's source code)
+## License
+
+BSD 3-Clause license (except other's source code)
+
+about sample2 camel model:
+original model from http://opengameart.org/content/camel
+License:CC0 author: noway, sandsound
+(Thanks for sharing!)
 
 ## Bookmarks
 
@@ -58,6 +65,8 @@ BSD 3-Clause licence (except other's source code)
 
 Thank you very much for your interest and advices.
 
+noway @opengameart.org /
+sandsound @opengameart.org /
 GClements @OpenGL forum / 
 The Little Body @OpenGL forum / 
 Stephen A @OpenGL forum / 

@@ -39,7 +39,9 @@ typedef struct
   server_thread_args_t *sta;
   void *cmd_data;
   uint32_t screen_width;
-  uint32_t screen_height;  
+  uint32_t screen_height;
+  int32_t pack_alignment;
+  int32_t unpack_alignment;
 } gls_context_t;
 
 

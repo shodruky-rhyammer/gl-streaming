@@ -45,9 +45,9 @@ int fifo_init(fifo_t *fifo, unsigned int fifo_size_in_bits, unsigned int fifo_pa
     return -1;
   }
 #if __WORDSIZE == 64
-  fifo->p_start = (char *)(((uint64_t)fifo->buffer + alignment - 1) & (uint64_t)(~ (alignment - 1)));
+  fifo->p_start = (char *)(((uint64_t)fifo->buffer + alignment - 1) & (~ ((uint64_t)alignment - 1)));
 #else
-  fifo->p_start = (char *)(((uint32_t)fifo->buffer + alignment - 1) & (uint32_t)(~ (alignment - 1)));
+  fifo->p_start = (char *)(((uint32_t)fifo->buffer + alignment - 1) & (~ ((uint32_t)alignment - 1)));
 #endif
   fifo->idx_reader = 0;
   fifo->idx_writer = 0;

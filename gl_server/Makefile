@@ -19,7 +19,7 @@ glserver.o: glserver.c glserver.h gls_command.h glcontrol.o server.o
 	gcc -c -o glserver.o $(CFLAGS) $(INCLUDES) glserver.c
 
 gl_server: main.c glserver.o
-	gcc -o gl_server $(CFLAGS) $(INCLUDES) $(LIBS) main.c $(OBJS)
+	gcc -o gl_server $(CFLAGS) $(INCLUDES) main.c $(OBJS) $(LIBS)
 
 clean:
 	rm gl_server $(OBJS)
