@@ -16,7 +16,9 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 ## Demo Video
 
-[Demo Video](http://youtu.be/6S-Epb6m6mI)
+[Demo Video1](http://youtu.be/6S-Epb6m6mI)
+
+[Demo Video2](http://youtu.be/y0eRwrwetcA)
 
 ## Quick start
 
