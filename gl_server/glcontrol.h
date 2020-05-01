@@ -43,10 +43,6 @@ typedef struct
   EGLDisplay display;
   EGLSurface surface;
   EGLContext context;
-  EGL_DISPMANX_WINDOW_T d_window;
-  DISPMANX_ELEMENT_HANDLE_T d_element;
-  DISPMANX_DISPLAY_HANDLE_T d_display;
-  DISPMANX_UPDATE_HANDLE_T d_update;
 } graphics_context_t;
 
 
