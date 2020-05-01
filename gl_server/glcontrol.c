@@ -42,6 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void init_egl(graphics_context_t *gc)
 {
+  /*
   EGLBoolean r;
   EGLint num_config;
 
@@ -64,11 +65,11 @@ void init_egl(graphics_context_t *gc)
   EGLConfig config;
 
   bcm_host_init();
-
+ */
   gc->display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   assert(gc->display != EGL_NO_DISPLAY);
-  check_gl_err();
-
+ /*
+ 
   r = eglInitialize(gc->display, NULL, NULL);
   assert(EGL_FALSE != r);
   check_gl_err();
@@ -84,7 +85,7 @@ void init_egl(graphics_context_t *gc)
   gc->context = eglCreateContext(gc->display, config, EGL_NO_CONTEXT, context_attrib);
   assert(gc->context != EGL_NO_CONTEXT);
   check_gl_err();
-
+  
   int32_t ri = graphics_get_display_size(0, &gc->screen_width, &gc->screen_height);
   assert(ri >= 0);
 
@@ -97,7 +98,7 @@ void init_egl(graphics_context_t *gc)
   src_rect.y = 0;
   src_rect.width = gc->screen_width << 16;
   src_rect.height = gc->screen_height << 16;
-
+  */
   gc->d_display = vc_dispmanx_display_open(0);
   gc->d_update = vc_dispmanx_update_start(0);
   gc->d_element = vc_dispmanx_element_add(
@@ -108,16 +109,17 @@ void init_egl(graphics_context_t *gc)
   gc->d_window.element = gc->d_element;
   gc->d_window.width = gc->screen_width;
   gc->d_window.height = gc->screen_height;
-  vc_dispmanx_update_submit_sync(gc->d_update);
   check_gl_err();
 
   gc->surface = eglCreateWindowSurface(gc->display, config, &gc->d_window, NULL);
   assert(gc->surface != EGL_NO_SURFACE);
   check_gl_err();
-
+  
   r = eglMakeCurrent(gc->display, gc->surface, gc->surface, gc->context);
   assert(EGL_FALSE != r);
   check_gl_err();
+  
+  
 }
 
 
