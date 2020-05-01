@@ -48,22 +48,18 @@ void init_egl(graphics_context_t *gc)
   gc->surface = eglGetCurrentSurface(EGL_DRAW);
   assert(gc->surface != EGL_NO_SURFACE);
   check_gl_err();
-  
-  
-  
+  gc->context = eglGetCurrentContext();
+  assert(gc->surface != EGL_NO_CONTEXT);
+  check_gl_err();
+  eglQuerySurface(gc->display, gc->surface, EGL_WIDTH, &gc->width);
+  eglQuerySurface(gc->display, gc->surface, EGL_WIDTH, &gc->width);
+  check_gl_err();
 }
 
 
 void release_egl(graphics_context_t *gc)
 {
-  vc_dispmanx_element_remove(gc->d_update, gc->d_element);
-  vc_dispmanx_display_close(gc->d_display);
 
-  eglMakeCurrent(gc->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-  eglDestroySurface(gc->display, gc->surface);
-  eglDestroyContext(gc->display, gc->context);
-  eglTerminate(gc->display);
-  eglReleaseThread();
 }
 
 
