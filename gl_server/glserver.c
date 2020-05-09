@@ -39,6 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 
 #include "glserver.h"
+#include "fastlog.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -696,7 +697,7 @@ void glse_cmd_flush()
         break;
 */
       default:
-        printf("Error: Command Flush\n");
+        LOGE("Error: Command Flush");
         quit = TRUE;
         break;
     }
@@ -786,7 +787,7 @@ void * glserver_thread(void * arg)
           glse_glShaderSource();
           break;
         default:
-          printf("Error: Command\n");
+          LOGE("Error: Command");
           break;
       }
       fifo_pop_ptr_next(a->fifo);

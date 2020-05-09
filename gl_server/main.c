@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "glserver.h"
+#include "main.h"
 
 
 int main(int argc, char * argv[])
@@ -75,5 +76,24 @@ int main(int argc, char * argv[])
   server_run(&sc, glserver_thread);
 
   return 0;
+}
+
+void initGLStreamMain()
+{
+  static server_context_t sc;
+  int opt;
+  char server_ip[GLS_STRING_SIZE_PLUS];
+  char client_ip[GLS_STRING_SIZE_PLUS];
+  uint16_t server_port = 12345;
+  uint16_t client_port = 12346;
+  strncpy(server_ip, "127.0.0.1", GLS_STRING_SIZE);
+  strncpy(client_ip, "127.0.0.1", GLS_STRING_SIZE);
+  server_init(&sc);
+  set_server_address_port(&sc, server_ip, server_port);
+  set_client_address_port(&sc, client_ip, client_port);
+
+  server_run(&sc, glserver_thread);
+
+  // return 0;
 }
 

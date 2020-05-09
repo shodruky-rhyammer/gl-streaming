@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "server.h"
+#include "fastlog.h"
 
 
 #define TRUE 1
@@ -63,7 +64,7 @@ void * server_thread(void * arg)
     char* pushptr = fifo_push_ptr_get(a->fifo);
     if (pushptr == NULL)
     {
-      printf("FIFO full!\n");
+      LOGW("FIFO full!");
       usleep(a->sleep_usec);
     }
     else
@@ -71,7 +72,7 @@ void * server_thread(void * arg)
       int recive_size = recvfrom(a->sock_fd, pushptr, a->max_packet_size, 0, NULL, NULL);
       if (recive_size == -1)
       {
-        printf("Socket recvfrom Error.\n");
+        LOGE("Socket recvfrom Error.");
         quit = TRUE;
       }
       fifo_push_ptr_next(a->fifo);
@@ -131,15 +132,15 @@ void socket_open(server_context_t *c)
   c->server_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (c->server_thread_arg.sock_fd == -1)
   {
-    printf("Server Socket Open Error.\n");
-    exit(EXIT_FAILURE);
+    LOGE("Server Socket Open Error.");
+    // exit(EXIT_FAILURE);
   }
 
   c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (c->popper_thread_arg.sock_fd == -1)
   {
-    printf("Client Socket Open Error.\n");
-    exit(EXIT_FAILURE);
+    LOGE("Client Socket Open Error.");
+    // exit(EXIT_FAILURE);
   }
 
   c->server_thread_arg.sai.sin_family = AF_INET;
@@ -152,8 +153,8 @@ void socket_open(server_context_t *c)
 
   if (bind(c->server_thread_arg.sock_fd, (struct sockaddr *)&c->server_thread_arg.sai, sizeof(struct sockaddr_in)) == -1)
   {
-    printf("Socket Bind Error.\n");
-    exit(EXIT_FAILURE);
+    LOGE("Socket Bind Error.");
+    // exit(EXIT_FAILURE);
   }
 }
 
@@ -184,8 +185,9 @@ void server_run(server_context_t *c, void *(*popper_thread)(void *))
   pthread_create(&c->popper_th, NULL, popper_thread, &c->popper_thread_arg);
 
   pthread_join(c->popper_th, NULL);
-  pthread_cancel(c->server_th);
-
+  // pthread_cancel(c->server_th);
+  pthread_kill(c->server_th, SIGUSR1);
+  
   socket_close(c);
   fifo_delete(&c->fifo);
 }

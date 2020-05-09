@@ -42,6 +42,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void init_egl(graphics_context_t *gc)
 {
+	/*
+	 * Android GLSurfaceView already pre-initialized EGL
+	 * so don't need to initialize again in native code.
+	 */
+	
+/*
   gc->display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   assert(gc->display != EGL_NO_DISPLAY);
   check_gl_err();  
@@ -51,9 +57,10 @@ void init_egl(graphics_context_t *gc)
   gc->context = eglGetCurrentContext();
   assert(gc->surface != EGL_NO_CONTEXT);
   check_gl_err();
-  eglQuerySurface(gc->display, gc->surface, EGL_WIDTH, &gc->width);
-  eglQuerySurface(gc->display, gc->surface, EGL_WIDTH, &gc->width);
+  eglQuerySurface(gc->display, gc->surface, EGL_WIDTH, &gc->screen_width);
+  eglQuerySurface(gc->display, gc->surface, EGL_WIDTH, &gc->screen_height);
   check_gl_err();
+*/
 }
 
 
