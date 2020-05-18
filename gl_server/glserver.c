@@ -38,8 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <assert.h>
 
-#include "glserver.h"
 #include "fastlog.h"
+#include "glserver.h"
+#include "glsurfaceview_size.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -104,8 +105,8 @@ void glse_cmd_get_context()
 
   gls_ret_get_context_t *ret = (gls_ret_get_context_t *)glsec_global.tmp_buf.buf;
   ret->cmd = c->cmd;
-  ret->screen_width = gc->screen_width;
-  ret->screen_height = gc->screen_height;
+  ret->screen_width = gc->screen_width = glsurfaceview_width;
+  ret->screen_height = gc->screen_height = glsurfaceview_height;
   size_t size = sizeof(gls_ret_get_context_t);
   glse_cmd_send_data(0, size, glsec_global.tmp_buf.buf);
 }
@@ -691,9 +692,9 @@ void glse_cmd_flush()
         pop_batch_command(sizeof(gls_glViewport_t));
         break;
 /*
-      case GLSC_:
-        glse_();
-        pop_batch_command(sizeof(gls__t));
+      case GLSC_glXXX:
+        glse_glXXX();
+        pop_batch_command(sizeof(gls_glXXX_t));
         break;
 */
       default:
@@ -704,6 +705,7 @@ void glse_cmd_flush()
   }
 }
 
+#include "glsurfaceview_size.h"
 
 void * glserver_thread(void * arg)
 {
@@ -712,6 +714,8 @@ void * glserver_thread(void * arg)
   static graphics_context_t gc;
   memset(&glsec_global, 0, sizeof(glsec_global));
   memset(&gc, 0, sizeof(gc));
+  assert (glsurfaceview_window != NULL);
+  gc.d_window = glsurfaceview_window;
   init_egl(&gc);
 
   glsec_global.sta = a;

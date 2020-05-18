@@ -181,12 +181,19 @@ void server_run(server_context_t *c, void *(*popper_thread)(void *))
   socket_open(c);
 
   pthread_create(&c->server_th, NULL, (void* (*)(void*))server_thread, &c->server_thread_arg);
-
   pthread_create(&c->popper_th, NULL, popper_thread, &c->popper_thread_arg);
-
   pthread_join(c->popper_th, NULL);
-  // pthread_cancel(c->server_th);
-  pthread_kill(c->server_th, SIGUSR1);
+  
+  // From https://github.com/tinmaniac/gl-streaming/blob/master/gl_server/server.c#L188
+#ifdef __ANDROID__
+  // this is wrong, but android has no pthread_cancel
+  // see stack overflow for a better solution that uses a SIGUSR1 handler
+  // that I don't have time to implement right now
+  // http://stackoverflow.com/questions/4610086/pthread-cancel-alternatives-in-android-ndk
+  // pthread_kill(c->server_th, SIGUSR1);
+#else
+  pthread_cancel(c->server_th);
+#endif
   
   socket_close(c);
   fifo_delete(&c->fifo);

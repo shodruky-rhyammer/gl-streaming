@@ -40,6 +40,7 @@ typedef struct
   EGLDisplay display;
   EGLSurface surface;
   EGLContext context;
+  ANativeWindow* d_window;
 } graphics_context_t;
 
 
