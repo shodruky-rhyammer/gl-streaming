@@ -16,3 +16,8 @@
 *.exe
 *.out
 *.app
+
+# Android app generated files
+android_gl_server/bin
+android_gl_server/gen
+android_gl_server/obj

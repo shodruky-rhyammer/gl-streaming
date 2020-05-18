@@ -30,6 +30,7 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 import android.view.*;
+import android.opengl.GLES20;
 
 /**
  * A simple GLSurfaceView sub-class that demonstrate how to perform

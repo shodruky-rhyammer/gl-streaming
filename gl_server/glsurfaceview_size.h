@@ -4,5 +4,6 @@
 
 int glsurfaceview_width;
 int glsurfaceview_height;
+JNIEnv* glmain_jnienv;
 
 ANativeWindow* glsurfaceview_window;
