@@ -8,12 +8,14 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 > ![gl-streaming summary](https://raw.github.com/shodruky-rhyammer/gl-streaming/master/www/gl-streaming_small.png)
 
 * gl_client : client framework and sample program
-
+ 
   The client system does not need to have any GPU and heavy X server. Even without GPU, opengl programs can be run on any system !
 
 * gl_server : server framework
-
+ 
   gl_server is optimized for Android for now. Therefore, the client system can use opengl es 2.0.
+
+* android_gl_server : Android demo port app.
 
 ## Demo Video (RPi original video)
 
@@ -21,10 +23,9 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 [Demo Video2](http://youtu.be/y0eRwrwetcA)
 
-## Note
-Default port of server and client:
-+ Server: 18145
-+ Client: 18146
+## Notes
+- **This Android port is experimental and will not work!**
+- Default port of server: 18145, client: 18146.
 
 ## Quick start
 
