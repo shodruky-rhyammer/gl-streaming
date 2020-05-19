@@ -26,19 +26,19 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 [Demo Video2](http://youtu.be/y0eRwrwetcA)
 
 ## Notes
-- **This Android port is experimental and will not work!**
 - Default port of server: 18145, client: 18146.
+
+## Known issue (Android)
+- Rotate or put app to background cause app to spawn huge memory usage in a short time.
 
 ## Quick start
 
 ### Server
-
 - Build android_gl_server use Android Studio or other similar to.
 - Install android_gl_server apk to Android device or Emulator.
 - Run it.
 
 ### Client
-
 - copy the gl_client directory to any computer.
 
 ``cd gl_client``
