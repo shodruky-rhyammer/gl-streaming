@@ -7,7 +7,7 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 > Original image
 > ![gl-streaming summary](https://raw.github.com/shodruky-rhyammer/gl-streaming/master/www/gl-streaming_small.png)
 
-![android-screenshot](https://github.com/khanhduytran0/gl-streaming/raw/master/www/Screenshot_2020-05-19-09-42-24.png)
+![sample-screenshot](https://github.com/khanhduytran0/gl-streaming/raw/master/www/Screenshot_2020-05-19-09-42-24.png)
 
 * gl_client : client framework and sample program
  
