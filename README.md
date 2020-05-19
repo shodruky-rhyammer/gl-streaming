@@ -21,9 +21,13 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 ## Demo Video (RPi original video)
 
-[Demo Video1](http://youtu.be/6S-Epb6m6mI)
+[Demo Video1](https://youtu.be/6S-Epb6m6mI)
 
-[Demo Video2](http://youtu.be/y0eRwrwetcA)
+[Demo Video2](https://youtu.be/y0eRwrwetcA)
+
+## Demo Video (Android port)
+
+[Demo Video](https://youtu.be/uwM9uxLHH1M)
 
 ## Notes
 - Current minimum SDK level is set to 21 (Android 5) but it may work on older Android devices by some modify.
