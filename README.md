@@ -34,7 +34,7 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 - Default port of server: 18145, client: 18146.
 
 ## Known issue (Android)
-- Rotate or put app to background cause app to spawn huge memory usage in a short time.
+- Rotate screen (change orientation) or put app to background cause app to spawn huge memory usage in a short time.
 
 ## Quick start
 
