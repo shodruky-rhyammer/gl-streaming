@@ -185,7 +185,7 @@ int wait_for_data(char *str)
       if (diff_time > GLS_TIMEOUT_SEC)
       {
         printf("\n%s\n", str);
-		// quit = true;
+		exit(EXIT_FAILURE);
         return FALSE;
       }
       usleep(a->sleep_usec);
