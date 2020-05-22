@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 
 #include "glclient.h"
-#include "rpi/GLES2/gl2.h"
+#include "GLES2/gl2.h"
 
 #define GLS_TMP_BUFFER_SIZE 2097152
 #define GLS_OUT_BUFFER_SIZE 2048
@@ -58,7 +58,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define GLS_SEND_PACKET(FUNCNAME) send_packet(sizeof(gls_##FUNCNAME##_t))
 
 gls_context_t glsc_global;
+static struct vbo_state
+{
+    GLuint vbo, ibo, ibo_emu;
+} vbo;
 
+struct attrib_ptr_s {
+    GLboolean   isenabled;
+    GLint       size;
+    GLenum      type;
+    GLsizei     stride;
+    GLboolean   normalized;
+    const GLvoid *ptr;
+    GLuint vbo_id;
+    GLuint webgl_vbo_id;
+} vt_attrib_pointer[16];
 
 int gls_cmd_flush();
 
@@ -96,7 +110,7 @@ static inline void push_batch_command(size_t size)
 }
 
 
-int gls_init(server_thread_args_t *arg)
+int gls_init(server_context_t *arg)
 {
   memset(&glsc_global, 0, sizeof(glsc_global));
   glsc_global.sta = arg;
@@ -133,7 +147,7 @@ int gls_free()
 
 int send_packet(size_t size)
 {
-  server_thread_args_t *a = glsc_global.sta;
+  server_context_t *a = glsc_global.sta;
   if (sendto(a->sock_fd, glsc_global.out_buf.buf, size, 0, (struct sockaddr *)&a->sai, sizeof(struct sockaddr_in)) == -1)
   {
     return FALSE;
@@ -157,13 +171,13 @@ int gls_cmd_recv_data()
 
 int wait_for_data(char *str)
 {
-  server_thread_args_t *a = glsc_global.sta;
+  server_context_t *a = glsc_global.sta;
   struct timeval start_time, end_time;
   gettimeofday(&start_time, NULL);
   int quit = FALSE;
   while (quit == FALSE)
   {
-    void *popptr = (void *)fifo_pop_ptr_get(a->fifo);
+    void *popptr = (void *)fifo_pop_ptr_get(&a->fifo);
     if (popptr == NULL)
     {
       gettimeofday(&end_time, NULL);
@@ -171,6 +185,7 @@ int wait_for_data(char *str)
       if (diff_time > GLS_TIMEOUT_SEC)
       {
         printf("\n%s\n", str);
+		// quit = true;
         return FALSE;
       }
       usleep(a->sleep_usec);
@@ -182,15 +197,14 @@ int wait_for_data(char *str)
       switch (c->cmd)
       {
         case GLSC_SEND_DATA:
-          if (gls_cmd_recv_data() == TRUE)
-          {
+          if (gls_cmd_recv_data() == TRUE) {
             quit = TRUE;
           }
           break;
         default:
           break;
       }
-      fifo_pop_ptr_next(a->fifo);
+      fifo_pop_ptr_next(&a->fifo);
     }
   }
   return TRUE;
@@ -261,7 +275,6 @@ int gls_cmd_flip(unsigned int frame)
   return TRUE;
 }
 
-
 int gls_cmd_flush()
 {
   if (glsc_global.tmp_buf.ptr == 0)
@@ -286,6 +299,11 @@ GL_APICALL void GL_APIENTRY glBindBuffer (GLenum target, GLuint buffer)
   GLS_SET_COMMAND_PTR_BATCH(c, glBindBuffer);
   c->target = target;
   c->buffer = buffer;
+  if( target == GL_ARRAY_BUFFER )
+      vbo.vbo = buffer;
+  else if( target == GL_ELEMENT_ARRAY_BUFFER )
+      vbo.ibo = buffer;
+  else printf("gls: unsupported buffer type!\n");
   GLS_PUSH_BATCH(glBindBuffer);
 }
 
@@ -374,10 +392,55 @@ GL_APICALL void GL_APIENTRY glDeleteBuffers (GLsizei n, const GLuint* buffers)
   c->n = n;
   GLS_SEND_PACKET(glDeleteBuffers);
 }
+static void wes_vertex_attrib_pointer(int i, int count)
+{
+    long ptrdiff;
+    int stride;
 
+    if( !vt_attrib_pointer[i].isenabled || vt_attrib_pointer[i].vbo_id )
+        return;
+
+    if( !vt_attrib_pointer[i].webgl_vbo_id )
+        glGenBuffers(1, &vt_attrib_pointer[i].webgl_vbo_id );
+
+    // detect if we can fit multiple arrays to single VBO
+    ptrdiff = (char*)vt_attrib_pointer[i].ptr - (char*)vt_attrib_pointer[0].ptr;
+    stride = vt_attrib_pointer[i].stride;
+
+    // detect stride by type
+    if( stride == 0 )
+    {
+        if( vt_attrib_pointer[i].type == GL_UNSIGNED_BYTE )
+            stride = vt_attrib_pointer[i].size;
+        else
+            stride = vt_attrib_pointer[i].size * 4;
+    }
+
+    if( i && vt_attrib_pointer[0].isenabled && !vt_attrib_pointer[0].vbo_id && ptrdiff > 0 && ptrdiff < stride )
+    {
+        // reuse existing array
+        glBindBuffer( GL_ARRAY_BUFFER, vt_attrib_pointer[0].webgl_vbo_id );
+        glVertexAttribPointer(i, vt_attrib_pointer[i].size, vt_attrib_pointer[i].type, vt_attrib_pointer[i].normalized, vt_attrib_pointer[i].stride, ptrdiff);
+    }
+    else
+    {
+        glBindBuffer( GL_ARRAY_BUFFER, vt_attrib_pointer[i].webgl_vbo_id );
+        //printf("BufferData %d %d\n",vt_attrib_pointer[i].webgl_vbo_id, (count + 4) * stride );
+        glBufferData( GL_ARRAY_BUFFER, (count + 4) * stride, (void*)vt_attrib_pointer[i].ptr, GL_STREAM_DRAW);
+        glVertexAttribPointer(i, vt_attrib_pointer[i].size, vt_attrib_pointer[i].type, vt_attrib_pointer[i].normalized, vt_attrib_pointer[i].stride, 0);
+    }
+}
 
 GL_APICALL void GL_APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei count)
 {
+    int vbo_bkp = vbo.vbo;
+    int i;
+    for( i = 0;i < 16; i++ )
+    {
+        if( vt_attrib_pointer[i].isenabled )
+            wes_vertex_attrib_pointer(i, first +count);
+    }
+    glBindBuffer( GL_ARRAY_BUFFER, vbo_bkp );
   GLS_SET_COMMAND_PTR_BATCH(c, glDrawArrays);
   c->mode = mode;
   c->first = first;
@@ -435,14 +498,33 @@ GL_APICALL int GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* na
 
 GL_APICALL void GL_APIENTRY glEnableVertexAttribArray (GLuint index)
 {
+    vt_attrib_pointer[index].isenabled = GL_TRUE;
   GLS_SET_COMMAND_PTR_BATCH(c, glEnableVertexAttribArray);
   c->index = index;
   GLS_PUSH_BATCH(glEnableVertexAttribArray);
 }
 
 
+GL_APICALL void GL_APIENTRY glVertexAttribPointer_vbo (GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr)
+{
+    vt_attrib_pointer[indx].size = size;
+    vt_attrib_pointer[indx].type = type;
+    vt_attrib_pointer[indx].stride = stride;
+    vt_attrib_pointer[indx].normalized = normalized;
+    vt_attrib_pointer[indx].ptr = ptr;
+    vt_attrib_pointer[indx].vbo_id = vbo.vbo;
+}
+
+
+
 GL_APICALL void GL_APIENTRY glVertexAttribPointer (GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* ptr)
 {
+  if( !vbo.vbo ) // ignore non-vbo
+  {
+      glVertexAttribPointer_vbo(indx, size, type, normalized, stride, ptr);
+      return;
+  }
+  vt_attrib_pointer[indx].vbo_id = vbo.vbo;
   GLS_SET_COMMAND_PTR_BATCH(c, glVertexAttribPointer);
   c->indx = indx;
   c->size = size;
@@ -496,6 +578,12 @@ GL_APICALL GLuint GL_APIENTRY glCreateShader (GLenum type)
   wait_for_data("timeout:glCreateShader");
   gls_ret_glCreateShader_t *ret = (gls_ret_glCreateShader_t *)glsc_global.tmp_buf.buf;
   return ret->obj;
+}
+
+
+GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* params) {
+  *params = GL_TRUE;
+  // printf("FIXME glGetShaderiv(%p, %p, ??)", shader, pname);
 }
 
 
@@ -614,6 +702,7 @@ GL_APICALL void GL_APIENTRY glUniform1f (GLint location, GLfloat x)
 
 GL_APICALL void GL_APIENTRY glDisableVertexAttribArray (GLuint index)
 {
+  vt_attrib_pointer[index].isenabled = GL_FALSE;
   GLS_SET_COMMAND_PTR_BATCH(c, glDisableVertexAttribArray);
   c->index = index;
   GLS_PUSH_BATCH(glDisableVertexAttribArray);
@@ -626,10 +715,60 @@ GL_APICALL void GL_APIENTRY glDisable (GLenum cap)
   c->cap = cap;
   GLS_PUSH_BATCH(glDisable);
 }
+GLvoid glDrawRangeElements( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices )
+{
+    int vbo_bkp = vbo.vbo;
+    int ibo_bkp = vbo.ibo;
+    int i;
+    for( i = 0;i < 16; i++ )
+        wes_vertex_attrib_pointer(i, end);
+    if( !vbo.ibo )
+    {
+        if( !vbo.ibo_emu )
+            glGenBuffers(1, &vbo.ibo_emu);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo.ibo_emu);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  type == GL_UNSIGNED_SHORT?count * 2:count*4, indices, GL_STREAM_DRAW);
+        indices = 0;
+
+      }
+
+
+    GLS_SET_COMMAND_PTR_BATCH(c, glDrawElements);
+    c->mode = mode;
+    c->count = count;
+    c->type = type;
+  #if __WORDSIZE == 64
+    c->indices = (uint32_t)(uint64_t)indices;
+  #else
+    c->indices = (uint32_t)indices;
+  #endif
+    GLS_PUSH_BATCH(glDrawElements);
+    if( !ibo_bkp )
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+       glBindBuffer( GL_ARRAY_BUFFER, vbo_bkp );
+}
 
 
 GL_APICALL void GL_APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
 {
+  int vbo_bkp = vbo.vbo;
+  int ibo_bkp = vbo.ibo;
+  int i;
+  for( i = 0;i < 16; i++ )
+  {
+      if( vt_attrib_pointer[i].isenabled )
+          wes_vertex_attrib_pointer(i, 65536);
+  }
+  if( !vbo.ibo )
+  {
+      if( !vbo.ibo_emu )
+          glGenBuffers(1, &vbo.ibo_emu);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo.ibo_emu);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, type == GL_UNSIGNED_SHORT?count * 2:count*4, indices, GL_STREAM_DRAW);
+      indices = 0;
+
+    }
+
   GLS_SET_COMMAND_PTR_BATCH(c, glDrawElements);
   c->mode = mode;
   c->count = count;
@@ -640,6 +779,9 @@ GL_APICALL void GL_APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum t
   c->indices = (uint32_t)indices;
 #endif
   GLS_PUSH_BATCH(glDrawElements);
+  if( !ibo_bkp )
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer( GL_ARRAY_BUFFER, vbo_bkp );
 }
 
 
@@ -886,3 +1028,112 @@ GL_APICALL void GL_APIENTRY glActiveTexture (GLenum texture)
   GLS_PUSH_BATCH();
 }
  */
+
+GL_APICALL const GLubyte GL_APIENTRY *glGetString(GLenum name)
+{
+    switch (name) {
+		case GL_EXTENSIONS: return "GL_IMG_texture_npot";
+		case GL_VENDOR: return "gl-streaming";
+		default:
+			printf("Implement: %p", name);
+			return "unknown";
+	}
+}
+
+GL_APICALL void GL_APIENTRY glGetIntegerv(GLenum name, GLint *params)
+{
+    *params = 4;
+}
+
+GL_APICALL void GL_APIENTRY glGetFloatv(GLenum name, GLfloat *params)
+{
+    if( name == GL_VIEWPORT )
+    {
+        params[0] = 0;
+        params[1] = 0;
+        params[2] = 100;
+        params[3] = 100;
+    }
+}
+
+GL_APICALL GLenum GL_APIENTRY glGetError()
+{
+    return GL_NO_ERROR;
+}
+
+GL_APICALL void         GL_APIENTRY glDepthFunc (GLenum func)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glDepthMask (GLboolean flag)
+{
+
+}
+GL_APICALL void         GL_APIENTRY glDepthRangef (GLclampf zNear, GLclampf zFar)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glStencilFunc(GLenum func, GLint r, GLuint m)
+{
+
+}
+
+
+GL_APICALL void         GL_APIENTRY glStencilOp (GLenum fail, GLenum zfail, GLenum zpass)
+{
+
+}
+
+
+GL_APICALL void         GL_APIENTRY glPolygonOffset (GLfloat factor, GLfloat units)
+{
+
+}
+GL_APICALL void         GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glStencilMask (GLuint mask)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glLineWidth (GLfloat width)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glHint (GLenum target, GLenum mode)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
+{
+    if( pname == GL_LINK_STATUS )
+        *params = 1;
+    else
+    *params = 0;
+}
+
+
+GL_APICALL void         GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glBlendFunc (GLenum sfactor, GLenum dfactor)
+{
+
+}
+
+GL_APICALL void         GL_APIENTRY glCullFace (GLenum mode)
+{
+}
+GL_APICALL void         GL_APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
+{
+
+}

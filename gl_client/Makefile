@@ -1,28 +1,25 @@
-CFLAGS=-O3 -Wall
+CFLAGS=-O3 -Wall -I../common -I. -I./include -fPIC
 
 LIBS=-lpthread -lm
-OBJS=fifo.o server.o glclient.o glsutil.o
-EXES=sample1 sample2
-TOOLCHAIN=aarch64-linux-gnu-gcc
+OBJS=fifo.o server.o glclient.o
+
+LIB_GLES=libGLESv2.so.2
+
+EXES=$(LIB_GLES)
+
 all: $(EXES)
 
-fifo.o: fifo.c fifo.h
-	$(TOOLCHAIN) -c -o fifo.o $(CFLAGS) fifo.c
+fifo.o: ../common/fifo.c ../common/fifo.h
+	gcc -c -o fifo.o $(CFLAGS) ../common/fifo.c
 
-server.o: server.c server.h fifo.o
-	$(TOOLCHAIN) -c -o server.o $(CFLAGS) server.c
+server.o: ../common/server.c ../common/server.h fifo.o
+	gcc -c -o server.o $(CFLAGS) ../common/server.c
 
-glclient.o: glclient.c glclient.h gls_command.h server.o
-	$(TOOLCHAIN) -c -o glclient.o $(CFLAGS) glclient.c
+glclient.o: glclient.c glclient.h ../common/gls_command.h server.o
+	gcc -c -o glclient.o $(CFLAGS) glclient.c
 
-glsutil.o: glsutil.c glsutil.h
-	$(TOOLCHAIN) -c -o glsutil.o $(CFLAGS) glsutil.c
-
-sample1: sample1.c glclient.o glsutil.o
-	$(TOOLCHAIN) -o sample1 $(CFLAGS) sample1.c $(OBJS) $(LIBS)
-
-sample2: sample2.c glclient.o glsutil.o
-	$(TOOLCHAIN) -o sample2 $(CFLAGS) sample2.c $(OBJS) $(LIBS)
+$(LIB_GLES): $(OBJS) glsshared.c
+	gcc -shared -o $(LIB_GLES) $(CFLAGS) glsshared.c $(OBJS) -Wl,--no-undefined -pthread -ldl
 
 clean:
 	rm $(EXES) $(OBJS)
