@@ -7,6 +7,8 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 > Original image
 > ![gl-streaming summary](https://raw.github.com/shodruky-rhyammer/gl-streaming/master/www/gl-streaming_small.png)
 
+![sample-screenshot](https://github.com/khanhduytran0/gl-streaming/raw/master/www/Screenshot_2020-05-19-09-42-24.png)
+
 * gl_client : client framework and sample program
  
   The client system does not need to have any GPU and heavy X server. Even without GPU, opengl programs can be run on any system !
@@ -19,24 +21,29 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 ## Demo Video (RPi original video)
 
-[Demo Video1](http://youtu.be/6S-Epb6m6mI)
+[Demo Video1](https://youtu.be/6S-Epb6m6mI)
 
-[Demo Video2](http://youtu.be/y0eRwrwetcA)
+[Demo Video2](https://youtu.be/y0eRwrwetcA)
+
+## Demo Video (Android port)
+
+[Demo Video](https://youtu.be/uwM9uxLHH1M)
 
 ## Notes
-- **This Android port is experimental and will not work!**
+- Current minimum SDK level is set to 21 (Android 5) but it may work on older Android devices by some modify.
 - Default port of server: 18145, client: 18146.
+
+## Known issue (Android)
+- Rotate screen (change orientation) or put app to background cause app to spawn huge memory usage in a short time.
 
 ## Quick start
 
 ### Server
-
 - Build android_gl_server use Android Studio or other similar to.
 - Install android_gl_server apk to Android device or Emulator.
 - Run it.
 
 ### Client
-
 - copy the gl_client directory to any computer.
 
 ``cd gl_client``
