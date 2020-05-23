@@ -631,6 +631,10 @@ void glse_cmd_flush()
         glse_glDeleteTextures();
         pop_batch_command(((gls_glDeleteTextures_t *)c)->cmd_size);
         break;
+      case GLSC_glDepthFunc:
+        glse_glDepthFunc();
+        pop_batch_command(sizeof(gls_glDepthFunc_t));
+        break;
       case GLSC_glDisable:
         glse_glDisable();
         pop_batch_command(sizeof(gls_glDisable_t));
