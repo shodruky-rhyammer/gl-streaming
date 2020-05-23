@@ -210,6 +210,14 @@ void glse_glDeleteBuffers()
 }
 
 
+void glse_glDepthFunc()
+{
+  GLSE_SET_COMMAND_PTR(c, glDepthFunc);
+  glDepthFunc(c->func);
+  check_gl_err();
+}
+
+
 void glse_glDrawArrays()
 {
   GLSE_SET_COMMAND_PTR(c, glDrawArrays);

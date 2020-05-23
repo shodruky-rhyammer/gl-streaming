@@ -1061,9 +1061,11 @@ GL_APICALL GLenum GL_APIENTRY glGetError()
     return GL_NO_ERROR;
 }
 
-GL_APICALL void         GL_APIENTRY glDepthFunc (GLenum func)
+GL_APICALL void GL_APIENTRY glDepthFunc (GLenum func)
 {
-
+  GLS_SET_COMMAND_PTR_BATCH(c, glDepthFunc);
+  c->func = func;
+  GLS_PUSH_BATCH(glDepthFunc);
 }
 
 GL_APICALL void         GL_APIENTRY glDepthMask (GLboolean flag)
@@ -1137,3 +1139,6 @@ GL_APICALL void         GL_APIENTRY glTexSubImage2D (GLenum target, GLint level,
 {
 
 }
+
+
+

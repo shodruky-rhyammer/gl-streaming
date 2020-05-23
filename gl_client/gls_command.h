@@ -50,8 +50,8 @@ enum GL_Server_Command
   GLSC_glAttachShader,
   GLSC_glBindAttribLocation,
   GLSC_glBindBuffer,
-  GLSC_glBindTexture,
   GLSC_glBindFramebuffer,
+  GLSC_glBindTexture,
   GLSC_glBlendEquationSeparate,
   GLSC_glBlendFuncSeparate,
   GLSC_glBufferData,
@@ -65,6 +65,7 @@ enum GL_Server_Command
   GLSC_glDeleteProgram,
   GLSC_glDeleteShader,
   GLSC_glDeleteTextures,
+  GLSC_glDepthFunc,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
   GLSC_glDrawArrays,
@@ -317,6 +318,13 @@ typedef struct
   int32_t n;
   uint32_t textures[1];
 } gls_glDeleteTextures_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t func;
+} gls_glDepthFunc_t;
 
 
 typedef struct

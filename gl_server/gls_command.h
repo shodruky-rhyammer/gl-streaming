@@ -67,6 +67,7 @@ enum GL_Server_Command
   GLSC_glDeleteTextures,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
+  GLSC_glDepthFunc,
   GLSC_glDrawArrays,
   GLSC_glDrawElements,
   GLSC_glEnable,
@@ -317,6 +318,13 @@ typedef struct
   int32_t n;
   uint32_t textures[1];
 } gls_glDeleteTextures_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t func;
+} gls_glDepthFunc_t;
 
 
 typedef struct
