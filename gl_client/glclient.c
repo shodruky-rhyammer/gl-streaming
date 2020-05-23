@@ -582,8 +582,8 @@ GL_APICALL GLuint GL_APIENTRY glCreateShader (GLenum type)
 
 
 GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* params) {
-  *params = GL_TRUE;
-  // printf("FIXME glGetShaderiv(%p, %p, ??)", shader, pname);
+  *params = GL_FALSE;
+  printf("FIXME glGetShaderiv(%p, %p, ??)\n", shader, pname);
 }
 
 
