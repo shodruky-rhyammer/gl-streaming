@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "fastlog.h"
 #include "glserver.h"
-#include "glsurfaceview_size.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -710,7 +709,7 @@ void glse_cmd_flush()
         break;
 */
       default:
-        LOGE("Error: Command Flush");
+          LOGE("Error: Command Flush %p", c->cmd);
         quit = TRUE;
         break;
     }
@@ -719,6 +718,8 @@ void glse_cmd_flush()
 
 void * glserver_thread(void * arg)
 {
+  FILE *fl;
+  fl = fopen("/sdcard/mthr_log.txt", "w");
   int quit = FALSE;
   server_thread_args_t * a = (server_thread_args_t *)arg;
   static graphics_context_t gc;
@@ -747,6 +748,7 @@ void * glserver_thread(void * arg)
     {
       gls_command_t *c = (gls_command_t *)popptr;
       glsec_global.cmd_data = c;
+      fprintf(fl,"@MainLoop: Attempting to execute command %i \n",c->cmd);
       switch (c->cmd)
       {
         case GLSC_FLIP:
@@ -756,9 +758,11 @@ void * glserver_thread(void * arg)
           glse_cmd_recv_data();
           break;
         case GLSC_FLUSH:
+          fprintf(fl,"@Exec: Flushing command buffer...\n");
           glse_cmd_flush();
           break;
         case GLSC_get_context:
+          fprintf(fl,"@Exec: Feeding context to client...\n");
           glse_cmd_get_context();
           break;
         case GLSC_glBufferData:
@@ -801,7 +805,7 @@ void * glserver_thread(void * arg)
           glse_glShaderSource();
           break;
         default:
-          LOGE("Error: Command");
+          fprintf(fl,"@Exec: %i : Undefined command\n",c->cmd);
           break;
       }
       fifo_pop_ptr_next(a->fifo);
@@ -812,7 +816,7 @@ void * glserver_thread(void * arg)
 
   free(glsec_global.tmp_buf.buf);
   free(glsec_global.out_buf.buf);
-
+  fclose(fl);
   pthread_exit(NULL);
 }
 

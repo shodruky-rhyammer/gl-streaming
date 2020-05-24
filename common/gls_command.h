@@ -38,6 +38,80 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define GLS_STRING_SIZE 254
 #define GLS_ALIGNMENT_BITS 3
 
+/*
+enum GL_Server_Command
+{
+  GLSC_BREAK,
+  GLSC_FLIP,
+  GLSC_SEND_DATA,
+  GLSC_FLUSH,
+  GLSC_get_context,
+  GLSC_glActiveTexture,
+  GLSC_glAttachShader,
+  GLSC_glBindAttribLocation,
+  GLSC_glBindBuffer,
+  GLSC_glBindFramebuffer,
+  GLSC_glBindTexture,
+  GLSC_glBlendEquationSeparate,
+  GLSC_glBlendFuncSeparate,
+  GLSC_glBlendFunc,
+  GLSC_glBufferData,
+  GLSC_glBufferSubData,
+  GLSC_glClear,
+  GLSC_glClearColor,
+  GLSC_glCompileShader,
+  GLSC_glCreateProgram,
+  GLSC_glCreateShader,
+  GLSC_glCullFace,
+  GLSC_glDeleteBuffers,
+  GLSC_glDeleteProgram,
+  GLSC_glDeleteShader,
+  GLSC_glDeleteTextures,
+  GLSC_glDepthFunc,
+  GLSC_glDepthMask,
+  GLSC_glDepthRangef,
+  GLSC_glDisable,
+  GLSC_glDisableVertexAttribArray,
+  GLSC_glDrawArrays,
+  GLSC_glDrawElements,
+  GLSC_glEnable,
+  GLSC_glEnableVertexAttribArray,
+  GLSC_glFinish,
+  GLSC_glFlush,
+  GLSC_glGenBuffers,
+  GLSC_glGenTextures,
+  GLSC_glGetActiveUniform,
+  GLSC_glGetAttribLocation,
+  GLSC_glGetError,
+  GLSC_glGetFloatv,
+  GLSC_glGetProgramiv,
+  GLSC_glGetIntegerv,
+  GLSC_glGetProgramInfoLog,
+  GLSC_glGetShaderInfoLog,
+  GLSC_glGetString,
+  GLSC_glGetUniformLocation,
+  GLSC_glHint,
+  GLSC_glLineWidth,
+  GLSC_glLinkProgram,
+  GLSC_glPixelStorei,
+  GLSC_glPolygonOffset,
+  GLSC_glReadPixels,
+  GLSC_glShaderSource,
+  GLSC_glStencilFunc,
+  GLSC_glStencilMask,
+  GLSC_glStencilOp,
+  GLSC_glTexImage2D,
+  GLSC_glTexParameteri,
+  GLSC_glTexSubImage2D,
+  GLSC_glUniform1f,
+  GLSC_glUniform4fv,
+  GLSC_glUniformMatrix4fv,
+  GLSC_glUseProgram,
+  GLSC_glVertexAttribPointer,
+  GLSC_glViewport,
+};
+*/
+
 
 enum GL_Server_Command
 {
@@ -318,6 +392,13 @@ typedef struct
   int32_t n;
   uint32_t textures[1];
 } gls_glDeleteTextures_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t func;
+} gls_glDepthFunc_t;
 
 
 typedef struct
