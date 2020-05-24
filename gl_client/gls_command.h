@@ -65,6 +65,7 @@ enum GL_Server_Command
   GLSC_glDeleteProgram,
   GLSC_glDeleteShader,
   GLSC_glDeleteTextures,
+  GLSC_glDepthFunc,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
   GLSC_glDrawArrays,
@@ -89,9 +90,8 @@ enum GL_Server_Command
   GLSC_glUniformMatrix4fv,
   GLSC_glUseProgram,
   GLSC_glVertexAttribPointer,
-  GLSC_glViewport,
+  GLSC_glViewport
 };
-
 
 typedef struct
 {
@@ -317,6 +317,13 @@ typedef struct
   int32_t n;
   uint32_t textures[1];
 } gls_glDeleteTextures_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t func;
+} gls_glDepthFunc_t;
 
 
 typedef struct

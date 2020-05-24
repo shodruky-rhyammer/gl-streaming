@@ -39,31 +39,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FIFO_PACKET_SIZE_IN_BITS 11
 #define MAX_MBPS 100
 
-
 typedef struct
 {
-  struct sockaddr_in sai;
-  int sock_fd;
-  char addr[256];
-  uint16_t port;
-  fifo_t * fifo;
-  size_t max_packet_size;
-  useconds_t sleep_usec;
-  int max_mbps;
-  void * user_context_ptr;
-} server_thread_args_t;
-
-
-typedef struct
-{
-  server_thread_args_t server_thread_arg, popper_thread_arg;
-  pthread_t server_th, popper_th;
+  pthread_t server_th;
   int err;
   fifo_t fifo;
   unsigned int fifo_packet_size_in_bits;
   unsigned int fifo_size_in_bits;
   unsigned int sleep_usec;
   unsigned int max_mbps;
+  size_t max_packet_size;
+  uint16_t port;
+  char addr[256];
+  char bind_addr[256];
+  uint16_t bind_port;
+  int sock_fd;
+  struct sockaddr_in sai;
 } server_context_t;
 
 
@@ -73,10 +64,10 @@ extern "C" {
 
   void * server_thread(void * arg);
   void server_init(server_context_t *c);
-  void server_run(server_context_t *c, void *(*popper_thread)(void *));
-  void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
-  void set_client_address_port(server_context_t *c, char * addr, uint16_t port);
-  void set_client_user_context(server_context_t *c, void *ptr);
+  void *server_start(server_context_t *c);
+  void server_stop(server_context_t *sc);
+  void set_address_port(server_context_t *c, char * addr, uint16_t port);
+  void set_bind_address_port(server_context_t *c, char * addr, uint16_t port);
   void set_fifo_packet_size_in_bits(server_context_t *c, unsigned int bits);
   void set_fifo_size_in_bits(server_context_t *c, unsigned int bits);
   void set_sleep_time(server_context_t *c, unsigned int usec);

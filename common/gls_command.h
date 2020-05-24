@@ -323,13 +323,6 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
-  uint32_t func;
-} gls_glDepthFunc_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
   uint32_t cap;
 } gls_glDisable_t;
 

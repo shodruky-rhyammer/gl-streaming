@@ -36,7 +36,7 @@ typedef struct
 {
   gls_buffer_t tmp_buf;
   gls_buffer_t out_buf;
-  server_thread_args_t *sta;
+  server_context_t *sta;
   void *cmd_data;
   uint32_t screen_width;
   uint32_t screen_height;
@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 extern gls_context_t glsc_global;
-int gls_init(server_thread_args_t *arg);
+int gls_init(server_context_t *arg);
 int gls_free();
 int send_packet(size_t size);
 int gls_cmd_flip(unsigned int frame);

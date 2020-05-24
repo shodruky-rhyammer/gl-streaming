@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <arpa/inet.h>
 
 #include "fifo.h"
-
+#include "pthread.h"
 
 #define SLEEP_USEC 1000
 #define FIFO_SIZE_IN_BITS 10
@@ -71,7 +71,7 @@ typedef struct
 extern "C" {
 #endif
 
-  void * server_thread(void * arg);
+  void* server_thread(void* arg);
   void server_init(server_context_t *c);
   void server_run(server_context_t *c, void *(*popper_thread)(void *));
   void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
