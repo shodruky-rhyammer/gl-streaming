@@ -37,14 +37,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "server.h"
-
-#ifdef __ANDROID__
 #include "fastlog.h"
-#endif
-
 
 #define TRUE 1
 #define FALSE 0
+
 
 void server_init(server_context_t *c)
 {
@@ -58,11 +55,19 @@ void server_init(server_context_t *c)
 
 void * server_thread(void * arg)
 {
+#ifdef __ANDROID__ // GL_SERVER
+  server_thread_args_t * a = (server_thread_args_t *)arg;
+#else // GL_CLIENT
   server_context_t * a = (server_context_t *)arg;
+#endif // GL_CLIENT
   int quit = FALSE;
 
   while (quit == FALSE) {
+#ifdef __ANDROID__ // GL_SERVER
+    char* pushptr = fifo_push_ptr_get(a->fifo);
+#else // GL_CLIENT
     char* pushptr = fifo_push_ptr_get(&a->fifo);
+#endif // GL_CLIENT
     if (pushptr == NULL) {
       LOGW("FIFO full!\n");
       usleep(a->sleep_usec);
@@ -154,7 +159,7 @@ void socket_open(server_context_t *c)
     LOGE("Server Socket Open Error.");
     // exit(EXIT_FAILURE);
   } else {
-    LOGI("Server Socket Open Success!\n");
+    // LOGI("Server Socket Open Success!\n");
   }
 
   c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -163,7 +168,7 @@ void socket_open(server_context_t *c)
     LOGE("Client Socket Open Error.");
     // exit(EXIT_FAILURE);
   } else {
-    LOGI("Client Socket Open Success!\n");
+    // LOGI("Client Socket Open Success!\n");
   }
 
   c->server_thread_arg.sai.sin_family = AF_INET;
@@ -179,7 +184,7 @@ void socket_open(server_context_t *c)
     LOGE("Socket Bind Error.");
     // exit(EXIT_FAILURE);
   } else {
-    printf("Socket Bind Success!\n");
+    // printf("Socket Bind Success!\n");
   }
 #else // GL_CLIENT
   struct sockaddr_in sai;
@@ -189,7 +194,7 @@ void socket_open(server_context_t *c)
     printf("Server Socket Open Error.\n");
     exit(EXIT_FAILURE);
   } else {
-    printf("Server Socket Open Success!\n");
+    // printf("Server Socket Open Success!\n");
   }
 
   c->sai.sin_family = AF_INET;
@@ -205,7 +210,7 @@ void socket_open(server_context_t *c)
     printf("Socket Bind Error.\n");
     exit(EXIT_FAILURE);
   } else {
-    printf("Socket Bind Success!\n");
+    // printf("Socket Bind Success!\n");
   }
 #endif // GL_CLIENT
 }
