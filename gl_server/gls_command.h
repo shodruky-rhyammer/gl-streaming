@@ -67,7 +67,7 @@ enum GL_Server_Command
   GLSC_glDeleteTextures,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
-  GLSC_glDepthFunc,
+  // GLSC_glDepthFunc,
   GLSC_glDrawArrays,
   GLSC_glDrawElements,
   GLSC_glEnable,

@@ -50,8 +50,8 @@ enum GL_Server_Command
   GLSC_glAttachShader,
   GLSC_glBindAttribLocation,
   GLSC_glBindBuffer,
-  GLSC_glBindFramebuffer,
   GLSC_glBindTexture,
+  GLSC_glBindFramebuffer,
   GLSC_glBlendEquationSeparate,
   GLSC_glBlendFuncSeparate,
   GLSC_glBufferData,
@@ -65,9 +65,9 @@ enum GL_Server_Command
   GLSC_glDeleteProgram,
   GLSC_glDeleteShader,
   GLSC_glDeleteTextures,
-  GLSC_glDepthFunc,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
+  // GLSC_glDepthFunc,
   GLSC_glDrawArrays,
   GLSC_glDrawElements,
   GLSC_glEnable,
@@ -92,7 +92,6 @@ enum GL_Server_Command
   GLSC_glVertexAttribPointer,
   GLSC_glViewport,
 };
-
 
 typedef struct
 {
