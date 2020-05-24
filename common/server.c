@@ -61,22 +61,19 @@ void * server_thread(void * arg)
   server_context_t * a = (server_context_t *)arg;
   int quit = FALSE;
 
-  while (quit == FALSE)
-  {
+  while (quit == FALSE) {
     char* pushptr = fifo_push_ptr_get(&a->fifo);
-    if (pushptr == NULL)
-    {
-      printf("FIFO full!\n");
+    if (pushptr == NULL) {
+      LOGW("FIFO full!\n");
       usleep(a->sleep_usec);
-    }
-    else
-    {
+    } else {
       int recive_size = recvfrom(a->sock_fd, pushptr, a->max_packet_size, 0, NULL, NULL);
-      if (recive_size == -1)
-      {
-        printf("Socket recvfrom Error.\n");
+      if (recive_size == -1) {
+        LOGE("Socket recvfrom Error.\n");
         quit = TRUE;
-      }
+      } else {
+        LOGI("Socket recvfrom Success!\n");
+	  }
       fifo_push_ptr_next(&a->fifo);
     }
   }
@@ -156,6 +153,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Server Socket Open Error.");
     // exit(EXIT_FAILURE);
+  } else {
+    LOGI("Server Socket Open Success!\n");
   }
 
   c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -163,6 +162,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Client Socket Open Error.");
     // exit(EXIT_FAILURE);
+  } else {
+    LOGI("Client Socket Open Success!\n");
   }
 
   c->server_thread_arg.sai.sin_family = AF_INET;
@@ -177,6 +178,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Socket Bind Error.");
     // exit(EXIT_FAILURE);
+  } else {
+    printf("Socket Bind Success!\n");
   }
 #else // GL_CLIENT
   struct sockaddr_in sai;
@@ -185,6 +188,8 @@ void socket_open(server_context_t *c)
   {
     printf("Server Socket Open Error.\n");
     exit(EXIT_FAILURE);
+  } else {
+    printf("Server Socket Open Success!\n");
   }
 
   c->sai.sin_family = AF_INET;
@@ -199,6 +204,8 @@ void socket_open(server_context_t *c)
   {
     printf("Socket Bind Error.\n");
     exit(EXIT_FAILURE);
+  } else {
+    printf("Socket Bind Success!\n");
   }
 #endif // GL_CLIENT
 }
