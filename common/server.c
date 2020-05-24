@@ -76,10 +76,12 @@ void * server_thread(void * arg)
       if (recive_size == -1) {
         LOGE("Socket recvfrom Error.\n");
         quit = TRUE;
-      } else {
-        LOGI("Socket recvfrom Success!\n");
-	  }
-      fifo_push_ptr_next(&a->fifo);
+      }
+#ifdef __ANDROID__ // GL_SERVER
+    fifo_push_ptr_next(a->fifo);
+#else // GL_CLIENT
+    fifo_push_ptr_next(&a->fifo);
+#endif // GL_CLIENT
     }
   }
 
@@ -158,8 +160,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Server Socket Open Error.");
     // exit(EXIT_FAILURE);
-  } else {
-    // LOGI("Server Socket Open Success!\n");
+	
+	return;
   }
 
   c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -167,8 +169,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Client Socket Open Error.");
     // exit(EXIT_FAILURE);
-  } else {
-    // LOGI("Client Socket Open Success!\n");
+	
+	return;
   }
 
   c->server_thread_arg.sai.sin_family = AF_INET;
@@ -183,8 +185,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Socket Bind Error.");
     // exit(EXIT_FAILURE);
-  } else {
-    // printf("Socket Bind Success!\n");
+	
+	return;
   }
 #else // GL_CLIENT
   struct sockaddr_in sai;
@@ -193,8 +195,6 @@ void socket_open(server_context_t *c)
   {
     printf("Server Socket Open Error.\n");
     exit(EXIT_FAILURE);
-  } else {
-    // printf("Server Socket Open Success!\n");
   }
 
   c->sai.sin_family = AF_INET;
@@ -209,8 +209,6 @@ void socket_open(server_context_t *c)
   {
     printf("Socket Bind Error.\n");
     exit(EXIT_FAILURE);
-  } else {
-    // printf("Socket Bind Success!\n");
   }
 #endif // GL_CLIENT
 }
