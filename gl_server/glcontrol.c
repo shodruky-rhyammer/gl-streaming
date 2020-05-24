@@ -38,8 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 
 #include "glcontrol.h"
-#include "glsurfaceview_size.h"
-
 
 void init_egl(graphics_context_t *gc)
 {

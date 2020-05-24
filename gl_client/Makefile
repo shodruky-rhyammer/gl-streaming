@@ -1,4 +1,6 @@
 CFLAGS=-O3 -Wall -I../common -I. -I./include -fPIC
+# Move to define in C code.
+# -DGL_CLIENT=1
 
 LIBS=-lpthread -lm
 OBJS=fifo.o server.o glclient.o

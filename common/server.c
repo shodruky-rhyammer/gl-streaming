@@ -38,6 +38,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "server.h"
 
+#ifdef __ANDROID__
+#include "fastlog.h"
+#endif
+
 
 #define TRUE 1
 #define FALSE 0
@@ -105,11 +109,34 @@ void set_max_mbps(server_context_t *c, unsigned int mbps)
 }
 
 
+#ifdef __ANDROID__ // GL_SERVER
+void set_server_address_port(server_context_t *c, char * addr, uint16_t port)
+{
+  strncpy(c->server_thread_arg.addr, addr, sizeof(c->server_thread_arg.addr));
+  c->server_thread_arg.port = port;
+}
+
+
+void set_client_address_port(server_context_t *c, char * addr, uint16_t port)
+{
+  strncpy(c->popper_thread_arg.addr, addr, sizeof(c->popper_thread_arg.addr));
+  c->popper_thread_arg.port = port;
+}
+
+
+void set_client_user_context(server_context_t *c, void *ptr)
+{
+  c->popper_thread_arg.user_context_ptr = ptr;
+}
+
+
+#else // GL_CLIENT
 void set_address_port(server_context_t *c, char * addr, uint16_t port)
 {
   strncpy(c->addr, addr, sizeof(c->addr));
   c->port = port;
 }
+
 
 void set_bind_address_port(server_context_t *c, char * addr, uint16_t port)
 {
@@ -117,9 +144,41 @@ void set_bind_address_port(server_context_t *c, char * addr, uint16_t port)
   c->bind_port = port;
 }
 
+#endif // GL_CLIENT
+
 
 void socket_open(server_context_t *c)
 {
+// There's nothing same to merge
+#ifdef __ANDROID__ // GL_SERVER
+  c->server_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (c->server_thread_arg.sock_fd == -1)
+  {
+    LOGE("Server Socket Open Error.");
+    // exit(EXIT_FAILURE);
+  }
+
+  c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (c->popper_thread_arg.sock_fd == -1)
+  {
+    LOGE("Client Socket Open Error.");
+    // exit(EXIT_FAILURE);
+  }
+
+  c->server_thread_arg.sai.sin_family = AF_INET;
+  c->server_thread_arg.sai.sin_port = htons(c->server_thread_arg.port);
+  c->server_thread_arg.sai.sin_addr.s_addr = inet_addr(c->server_thread_arg.addr);
+
+  c->popper_thread_arg.sai.sin_family = AF_INET;
+  c->popper_thread_arg.sai.sin_port = htons(c->popper_thread_arg.port);
+  c->popper_thread_arg.sai.sin_addr.s_addr = inet_addr(c->popper_thread_arg.addr);
+
+  if (bind(c->server_thread_arg.sock_fd, (struct sockaddr *)&c->server_thread_arg.sai, sizeof(struct sockaddr_in)) == -1)
+  {
+    LOGE("Socket Bind Error.");
+    // exit(EXIT_FAILURE);
+  }
+#else // GL_CLIENT
   struct sockaddr_in sai;
   c->sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (c->sock_fd == -1)
@@ -141,15 +200,55 @@ void socket_open(server_context_t *c)
     printf("Socket Bind Error.\n");
     exit(EXIT_FAILURE);
   }
+#endif // GL_CLIENT
 }
 
 
 void socket_close(server_context_t *c)
 {
+#ifdef __ANDROID__ // GL_SERVER
+  close(c->server_thread_arg.sock_fd);
+  close(c->popper_thread_arg.sock_fd);
+#else // GL_CLIENT
   close(c->sock_fd);
+#endif // GL_CLIENT
 }
 
 
+#ifdef __ANDROID__ // GL_SERVER
+void server_run(server_context_t *c, void *(*popper_thread)(void *))
+{
+  fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
+  c->server_thread_arg.fifo = &c->fifo;
+  c->popper_thread_arg.fifo = &c->fifo;
+  c->server_thread_arg.max_packet_size = 1 << c->fifo_packet_size_in_bits;
+  c->popper_thread_arg.max_packet_size = 1 << c->fifo_packet_size_in_bits;
+  c->server_thread_arg.sleep_usec = c->sleep_usec;
+  c->popper_thread_arg.sleep_usec = c->sleep_usec;
+  c->server_thread_arg.max_mbps = c->max_mbps;
+  c->popper_thread_arg.max_mbps = c->max_mbps;
+  socket_open(c);
+  pthread_create(&c->server_th, NULL, (void* (*)(void*))server_thread, &c->server_thread_arg);
+  pthread_create(&c->popper_th, NULL, popper_thread, &c->popper_thread_arg);
+  pthread_join(c->popper_th, NULL);
+  
+  // From https://github.com/tinmaniac/gl-streaming/blob/master/gl_server/server.c#L188
+// #ifdef __ANDROID__
+  // this is wrong, but android has no pthread_cancel
+  // see stack overflow for a better solution that uses a SIGUSR1 handler
+  // that I don't have time to implement right now
+  // http://stackoverflow.com/questions/4610086/pthread-cancel-alternatives-in-android-ndk
+//   pthread_kill(c->server_th, SIGUSR1);
+// #else
+//   pthread_cancel(c->server_th);
+// #endif
+  
+  socket_close(c);
+  fifo_delete(&c->fifo);
+}
+
+
+#else // GL_CLIENT
 void *server_start(server_context_t *c)
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
@@ -161,6 +260,7 @@ void *server_start(server_context_t *c)
   return c;
 }
 
+
 void server_stop(server_context_t *c)
 {
     pthread_cancel(c->server_th);
@@ -168,3 +268,4 @@ void server_stop(server_context_t *c)
     socket_close(c);
     fifo_delete(&c->fifo);
 }
+#endif // GL_CLIENT

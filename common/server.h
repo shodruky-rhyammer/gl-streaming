@@ -32,29 +32,51 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <arpa/inet.h>
 
 #include "fifo.h"
-
+#include "pthread.h"
 
 #define SLEEP_USEC 1000
 #define FIFO_SIZE_IN_BITS 10
 #define FIFO_PACKET_SIZE_IN_BITS 11
 #define MAX_MBPS 100
 
+
+#ifdef __ANDROID__ // GL_SERVER
 typedef struct
 {
-  pthread_t server_th;
+  struct sockaddr_in sai;
+  int sock_fd;
+  char addr[256];
+  uint16_t port;
+  fifo_t * fifo;
+  size_t max_packet_size;
+  useconds_t sleep_usec;
+  int max_mbps;
+  void * user_context_ptr;
+} server_thread_args_t;
+#endif // GL_SERVER
+
+
+typedef struct
+{
+  pthread_t server_th, popper_th;
   int err;
   fifo_t fifo;
+  int sock_fd;
+  size_t max_packet_size;
   unsigned int fifo_packet_size_in_bits;
   unsigned int fifo_size_in_bits;
   unsigned int sleep_usec;
   unsigned int max_mbps;
-  size_t max_packet_size;
+  
+#ifdef __ANDROID__ // GL_SERVER
+  server_thread_args_t server_thread_arg, popper_thread_arg;
+#else // GL_CLIENT
   uint16_t port;
   char addr[256];
   char bind_addr[256];
   uint16_t bind_port;
-  int sock_fd;
   struct sockaddr_in sai;
+#endif // GL_CLIENT
 } server_context_t;
 
 
@@ -62,21 +84,26 @@ typedef struct
 extern "C" {
 #endif
 
-  void * server_thread(void * arg);
+  void* server_thread(void* arg);
   void server_init(server_context_t *c);
-  void *server_start(server_context_t *c);
-  void server_stop(server_context_t *sc);
-  void set_address_port(server_context_t *c, char * addr, uint16_t port);
-  void set_bind_address_port(server_context_t *c, char * addr, uint16_t port);
   void set_fifo_packet_size_in_bits(server_context_t *c, unsigned int bits);
   void set_fifo_size_in_bits(server_context_t *c, unsigned int bits);
   void set_sleep_time(server_context_t *c, unsigned int usec);
   void set_max_mbps(server_context_t *c, unsigned int mbps);
+  
+#ifdef __ANDROID__ // GL_SERVER
+  void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
+  void set_client_address_port(server_context_t *c, char * addr, uint16_t port);
+  void set_client_user_context(server_context_t *c, void *ptr);
+  void server_run(server_context_t *c, void *(*popper_thread)(void *));
+#else // GL_CLIENT
   void socket_open(server_context_t *c);
   void socket_close(server_context_t *c);
+#endif // GL_CLIENT
 
 #ifdef __cplusplus
 }
 #endif
+
 
 

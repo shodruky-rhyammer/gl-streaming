@@ -1029,6 +1029,7 @@ GL_APICALL void GL_APIENTRY glActiveTexture (GLenum texture)
 }
  */
 
+// Stubs since here
 GL_APICALL const GLubyte GL_APIENTRY *glGetString(GLenum name)
 {
     switch (name) {
@@ -1070,47 +1071,92 @@ GL_APICALL void GL_APIENTRY glDepthFunc (GLenum func)
 
 GL_APICALL void         GL_APIENTRY glDepthMask (GLboolean flag)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glDepthMask);
+  c->flag = flag;
+  GLS_PUSH_BATCH(glDepthMask);
+  */
 }
 GL_APICALL void         GL_APIENTRY glDepthRangef (GLclampf zNear, GLclampf zFar)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glDepthRangef);
+  c->zNear = zNear;
+  c->zFar = zFar;
+  GLS_PUSH_BATCH(glDepthRangef);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glStencilFunc(GLenum func, GLint r, GLuint m)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glStencilFunc);
+  c->func = func;
+  c->r = r;
+  c->m = m;
+  GLS_PUSH_BATCH(glStencilFunc);
+  */
 }
 
 
 GL_APICALL void         GL_APIENTRY glStencilOp (GLenum fail, GLenum zfail, GLenum zpass)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glStencilOp);
+  c->fail = fail;
+  c->zfail = zfail;
+  c->zpass = zpass;
+  GLS_PUSH_BATCH(glStencilOp);
+  */
 }
 
 
 GL_APICALL void         GL_APIENTRY glPolygonOffset (GLfloat factor, GLfloat units)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glPolygonOffset);
+  c->factor = factor;
+  c->units = units;
+  GLS_PUSH_BATCH(glPolygonOffset);
+  */
 }
 GL_APICALL void         GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 {
-
+		// unimplemented
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glReadPixels);
+  c->zNear = zNear;
+  c->zFar = zFar;
+  GLS_PUSH_BATCH(glReadPixels);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glStencilMask (GLuint mask)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glStencilMask);
+  c->mask = mask;
+  GLS_PUSH_BATCH(glStencilMask);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glLineWidth (GLfloat width)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glLineWidth);
+  c->width = width;
+  GLS_PUSH_BATCH(glLineWidth);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glHint (GLenum target, GLenum mode)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glHint);
+  c->target = target;
+  c->mode = mode;
+  GLS_PUSH_BATCH(glHint);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
@@ -1124,20 +1170,43 @@ GL_APICALL void         GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname
 
 GL_APICALL void         GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 {
-
+		// unimplemented
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glDepthRangef);
+  c->zNear = zNear;
+  c->zFar = zFar;
+  GLS_PUSH_BATCH(glDepthRangef);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glBlendFunc (GLenum sfactor, GLenum dfactor)
 {
-
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glBlendFunc);
+  c->sfactor = sfactor;
+  c->dfactor = dfactor;
+  GLS_PUSH_BATCH(glBlendFunc);
+  */
 }
 
 GL_APICALL void         GL_APIENTRY glCullFace (GLenum mode)
 {
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glCullFace);
+  c->mode = mode;
+  GLS_PUSH_BATCH(glCullFace);
+  */
 }
+
 GL_APICALL void         GL_APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
 {
-
+	// unimplemented
+	/*
+  GLS_SET_COMMAND_PTR_BATCH(c, glTexSubImage2D);
+  c->zNear = zNear;
+  c->zFar = zFar;
+  GLS_PUSH_BATCH(glTexSubImage2D);
+  */
 }
 
 

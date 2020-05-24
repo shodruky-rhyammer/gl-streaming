@@ -41,7 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 // #include "fastlog.h"
 
-
 int main(int argc, char * argv[])
 {
   static server_context_t sc;
