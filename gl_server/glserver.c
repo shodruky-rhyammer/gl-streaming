@@ -106,6 +106,7 @@ void glse_cmd_get_context()
   ret->cmd = c->cmd;
   ret->screen_width = gc->screen_width = glsurfaceview_width;
   ret->screen_height = gc->screen_height = glsurfaceview_height;
+  ret->server_version = GLS_VERSION;
   size_t size = sizeof(gls_ret_get_context_t);
   glse_cmd_send_data(0, size, glsec_global.tmp_buf.buf);
 }

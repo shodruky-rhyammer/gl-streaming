@@ -255,6 +255,9 @@ int gls_cmd_get_context()
   {
     glsc_global.screen_width = ret->screen_width;
     glsc_global.screen_height = ret->screen_height;
+	if (ret->server_version != GLS_VERSION) {
+		printf("\e[33m\e[1mgls warning\e[0m: Incompatile version, server version %p but client version %p.\n", ret->server_version, GLS_VERSION);
+	}
   }
   return TRUE;
 }

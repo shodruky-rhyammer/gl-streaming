@@ -38,7 +38,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define GLS_STRING_SIZE 254
 #define GLS_ALIGNMENT_BITS 3
 
-/*
+
+// To prevent incompatible version, change every
+#define GLS_VERSION 3
+// #define GL_MAJOR_VERSION 1
+// #define GL_MINOR_VERSION 2
+
+
 enum GL_Server_Command
 {
   GLSC_BREAK,
@@ -110,62 +116,6 @@ enum GL_Server_Command
   GLSC_glVertexAttribPointer,
   GLSC_glViewport,
 };
-*/
-
-
-enum GL_Server_Command
-{
-  GLSC_BREAK,
-  GLSC_FLIP,
-  GLSC_SEND_DATA,
-  GLSC_FLUSH,
-  GLSC_get_context,
-  GLSC_glActiveTexture,
-  GLSC_glAttachShader,
-  GLSC_glBindAttribLocation,
-  GLSC_glBindBuffer,
-  GLSC_glBindTexture,
-  GLSC_glBindFramebuffer,
-  GLSC_glBlendEquationSeparate,
-  GLSC_glBlendFuncSeparate,
-  GLSC_glBufferData,
-  GLSC_glBufferSubData,
-  GLSC_glClear,
-  GLSC_glClearColor,
-  GLSC_glCompileShader,
-  GLSC_glCreateProgram,
-  GLSC_glCreateShader,
-  GLSC_glDeleteBuffers,
-  GLSC_glDeleteProgram,
-  GLSC_glDeleteShader,
-  GLSC_glDeleteTextures,
-  GLSC_glDepthFunc,
-  GLSC_glDisable,
-  GLSC_glDisableVertexAttribArray,
-  GLSC_glDrawArrays,
-  GLSC_glDrawElements,
-  GLSC_glEnable,
-  GLSC_glEnableVertexAttribArray,
-  GLSC_glFinish,
-  GLSC_glFlush,
-  GLSC_glGenBuffers,
-  GLSC_glGenTextures,
-  GLSC_glGetAttribLocation,
-  GLSC_glGetProgramInfoLog,
-  GLSC_glGetShaderInfoLog,
-  GLSC_glGetUniformLocation,
-  GLSC_glLinkProgram,
-  GLSC_glPixelStorei,
-  GLSC_glShaderSource,
-  GLSC_glTexImage2D,
-  GLSC_glTexParameteri,
-  GLSC_glUniform1f,
-  GLSC_glUniform4fv,
-  GLSC_glUniformMatrix4fv,
-  GLSC_glUseProgram,
-  GLSC_glVertexAttribPointer,
-  GLSC_glViewport
-};
 
 
 typedef struct
@@ -205,6 +155,7 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t server_version;
   uint32_t screen_width;
   uint32_t screen_height;
 } gls_ret_get_context_t;
