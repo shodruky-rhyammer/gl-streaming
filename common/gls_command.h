@@ -139,6 +139,7 @@ enum GL_Server_Command
   GLSC_glDeleteProgram,
   GLSC_glDeleteShader,
   GLSC_glDeleteTextures,
+  GLSC_glDepthFunc,
   GLSC_glDisable,
   GLSC_glDisableVertexAttribArray,
   GLSC_glDepthFunc,
@@ -164,7 +165,7 @@ enum GL_Server_Command
   GLSC_glUniformMatrix4fv,
   GLSC_glUseProgram,
   GLSC_glVertexAttribPointer,
-  GLSC_glViewport,
+  GLSC_glViewport
 };
 
 
