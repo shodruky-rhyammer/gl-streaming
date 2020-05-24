@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "fastlog.h"
 #include "glserver.h"
-#include "glsurfaceview_size.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -710,14 +709,12 @@ void glse_cmd_flush()
         break;
 */
       default:
-        LOGE("Error: Command Flush");
+          LOGE("Error: Command Flush %p", c->cmd);
         quit = TRUE;
         break;
     }
   }
 }
-
-#include "glsurfaceview_size.h"
 
 void * glserver_thread(void * arg)
 {
@@ -803,7 +800,7 @@ void * glserver_thread(void * arg)
           glse_glShaderSource();
           break;
         default:
-          LOGE("Error: Command");
+          LOGE("Error: Command %p", c->cmd);
           break;
       }
       fifo_pop_ptr_next(a->fifo);

@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
 
+#include "glsurfaceview_utils.h"
 
 typedef struct
 {
