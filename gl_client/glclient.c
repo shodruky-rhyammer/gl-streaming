@@ -1141,8 +1141,16 @@ GL_APICALL void GL_APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei
 
 // Stubs since here
 GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* params) {
-  *params = GL_FALSE;
-  printf("FIXME glGetShaderiv(%p, %p, ??)\n", shader, pname);
+  gls_cmd_flush();
+  GLS_SET_COMMAND_PTR(c, glGetShaderiv);
+  c->program = program;
+  c->bufsize = bufsize;
+  GLS_SEND_PACKET(glGetShaderiv);
+
+  wait_for_data("timeout:glGetShaderiv");
+  gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
+  *params = ret->params;
+  printf("Done execing glGetShaderiv with return %i",ret->params);
 }
 
 
