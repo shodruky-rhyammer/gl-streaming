@@ -460,7 +460,14 @@ void glse_glGetProgramInfoLog()
   uint32_t size = (uint32_t)((char*)ret->infolog - (char*)ret) + ret->length + 1;
   glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
 }
-
+void glse_glGetShaderiv()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
+  gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
+  glGetShaderiv(c->shader,c->pname,&ret->params);
+  ret->cmd = GLSE_glGetShaderiv;
+  glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
+}
 
 void glse_glGetUniformLocation()
 {
@@ -816,6 +823,9 @@ void * glserver_thread(void * arg)
           break;
         case GLSC_glShaderSource:
           glse_glShaderSource();
+          break;
+        case GLSC_glShaderiv:
+          glse_glShaderiv();
           break;
         default:
 #ifdef GL_DEBUG

@@ -117,6 +117,7 @@ enum GL_Server_Command
   GLSC_glUseProgram,
   GLSC_glVertexAttribPointer,
   GLSC_glViewport,
+  GLSC_glGetShaderiv
 };
 
 
@@ -502,6 +503,18 @@ typedef struct
   char infolog[GLS_STRING_SIZE_PLUS];
 } gls_ret_glGetProgramInfoLog_t;
 
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t shader;
+  uint32_t pname;
+} gls_glGetShaderiv_t;
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t params;
+} gls_ret_glGetShaderiv_t;
 
 typedef struct
 {
