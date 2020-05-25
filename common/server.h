@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX_MBPS 100
 
 
-#ifdef __ANDROID__ // GL_SERVER
+// GL_SERVER
 typedef struct
 {
   struct sockaddr_in sai;
@@ -53,7 +53,6 @@ typedef struct
   int max_mbps;
   void * user_context_ptr;
 } server_thread_args_t;
-#endif // GL_SERVER
 
 
 typedef struct
@@ -68,15 +67,15 @@ typedef struct
   unsigned int sleep_usec;
   unsigned int max_mbps;
   
-#ifdef __ANDROID__ // GL_SERVER
+  // GL_SERVER
   server_thread_args_t server_thread_arg, popper_thread_arg;
-#else // GL_CLIENT
+  
+  // GL_CLIENT
   uint16_t port;
   char addr[256];
   char bind_addr[256];
   uint16_t bind_port;
   struct sockaddr_in sai;
-#endif // GL_CLIENT
 } server_context_t;
 
 
@@ -91,15 +90,15 @@ extern "C" {
   void set_sleep_time(server_context_t *c, unsigned int usec);
   void set_max_mbps(server_context_t *c, unsigned int mbps);
   
-#ifdef __ANDROID__ // GL_SERVER
+  // GL_SERVER
   void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
   void set_client_address_port(server_context_t *c, char * addr, uint16_t port);
   void set_client_user_context(server_context_t *c, void *ptr);
   void server_run(server_context_t *c, void *(*popper_thread)(void *));
-#else // GL_CLIENT
+
+  // GL_CLIENT
   void socket_open(server_context_t *c);
   void socket_close(server_context_t *c);
-#endif // GL_CLIENT
 
 #ifdef __cplusplus
 }

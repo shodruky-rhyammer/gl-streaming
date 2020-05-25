@@ -51,26 +51,21 @@ import android.opengl.GLES20;
  *   bit depths). Failure to do so would result in an EGL_BAD_MATCH error.
  */
 public class GLStreamingSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
-    private static String TAG = "VirtualGLSurfaceView";
-    private static final boolean DEBUG = false;
-
+	private int mServerPort = 18145;
+	private String mClientAddr = "127.0.0.1";
+	private int mClientPort = 18146;
+	
     public GLStreamingSurfaceView(Context context) {
         this(context, null);
     }
 
     public GLStreamingSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(false, 0, 0);
-    }
-	
-    public GLStreamingSurfaceView(Context context, boolean translucent, int depth, int stencil) {
-        super(context);
-        init(translucent, depth, stencil);
     }
 
 	@Override
 	public void surfaceCreated(SurfaceHolder p1) {
-		
+		GLStreamingJNIWrapper.initServer(mServerPort, mClientAddr, mClientPort);
 	}
 
 	@Override
@@ -91,13 +86,10 @@ public class GLStreamingSurfaceView extends SurfaceView implements SurfaceHolder
 		
 	}
 	
-    private void init(boolean translucent, int depth, int stencil) {
-
-        /* By default, GLSurfaceView() creates a RGB_565 opaque surface.
-         * If we want a translucent one, we should change the surface's
-         * format here, using PixelFormat.TRANSLUCENT for GL Surfaces
-         * is interpreted as any 32-bit surface with alpha by SurfaceFlinger.
-         */
+    public void init(boolean translucent, int serverPort, String clientAddr, int clientPort) {
+		mServerPort = serverPort;
+		mClientAddr = clientAddr;
+		mClientPort = clientPort;
         if (translucent) {
             this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         }

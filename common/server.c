@@ -37,14 +37,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "server.h"
-
-#ifdef __ANDROID__
 #include "fastlog.h"
-#endif
-
 
 #define TRUE 1
 #define FALSE 0
+
 
 void server_init(server_context_t *c)
 {
@@ -58,26 +55,33 @@ void server_init(server_context_t *c)
 
 void * server_thread(void * arg)
 {
+#ifdef __ANDROID__ // GL_SERVER
+  server_thread_args_t * a = (server_thread_args_t *)arg;
+#else // GL_CLIENT
   server_context_t * a = (server_context_t *)arg;
+#endif // GL_CLIENT
   int quit = FALSE;
 
-  while (quit == FALSE)
-  {
+  while (quit == FALSE) {
+#ifdef __ANDROID__ // GL_SERVER
+    char* pushptr = fifo_push_ptr_get(a->fifo);
+#else // GL_CLIENT
     char* pushptr = fifo_push_ptr_get(&a->fifo);
-    if (pushptr == NULL)
-    {
-      printf("FIFO full!\n");
+#endif // GL_CLIENT
+    if (pushptr == NULL) {
+      LOGW("FIFO full!\n");
       usleep(a->sleep_usec);
-    }
-    else
-    {
+    } else {
       int recive_size = recvfrom(a->sock_fd, pushptr, a->max_packet_size, 0, NULL, NULL);
-      if (recive_size == -1)
-      {
-        printf("Socket recvfrom Error.\n");
+      if (recive_size == -1) {
+        LOGE("Socket recvfrom Error.\n");
         quit = TRUE;
       }
-      fifo_push_ptr_next(&a->fifo);
+#ifdef __ANDROID__ // GL_SERVER
+    fifo_push_ptr_next(a->fifo);
+#else // GL_CLIENT
+    fifo_push_ptr_next(&a->fifo);
+#endif // GL_CLIENT
     }
   }
 
@@ -156,6 +160,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Server Socket Open Error.");
     // exit(EXIT_FAILURE);
+	
+	return;
   }
 
   c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -163,6 +169,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Client Socket Open Error.");
     // exit(EXIT_FAILURE);
+	
+	return;
   }
 
   c->server_thread_arg.sai.sin_family = AF_INET;
@@ -177,6 +185,8 @@ void socket_open(server_context_t *c)
   {
     LOGE("Socket Bind Error.");
     // exit(EXIT_FAILURE);
+	
+	return;
   }
 #else // GL_CLIENT
   struct sockaddr_in sai;
