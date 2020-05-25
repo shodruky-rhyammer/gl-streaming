@@ -10,9 +10,13 @@ bool need_init_glstream = true;
 
 extern "C"
 {
-	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_initServer(JNIEnv* env, jobject thiz)
+	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_initServer(JNIEnv* env, jobject thiz, jint serverPort, jstring clientAddr, jint clientPort)
 	{
+		var_server_port = serverPort;
+		jstrclient_addr = clientAddr;
+		var_client_port = clientPort;
 		
+		var_client_addr = env->GetStringUTFChars(jstrclient_addr, 0);
 	}
 	
 	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_setGLSize(JNIEnv* env, jobject thiz, jint width, jint height, jobject surface)
@@ -26,7 +30,9 @@ extern "C"
 			need_init_glstream = false;
 			
 			glsurfaceview_window = ANativeWindow_fromSurface(env, surface);
+
 			init_android_main();
+			env->ReleaseStringUTFChars(jstrclient_addr, var_client_addr);
 		}
 	}
 }

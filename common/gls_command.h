@@ -65,6 +65,8 @@ enum GL_Server_Command
   GLSC_glBufferSubData,
   GLSC_glClear,
   GLSC_glClearColor,
+  GLSC_glClearDepthf,
+  GLSC_glClearStencil,
   GLSC_glCompileShader,
   GLSC_glCreateProgram,
   GLSC_glCreateShader,
