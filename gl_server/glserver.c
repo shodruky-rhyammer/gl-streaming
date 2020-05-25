@@ -724,7 +724,9 @@ void glse_cmd_flush()
 void * glserver_thread(void * arg)
 {
   FILE *fl;
+#ifdef GL_DEBUG
   fl = fopen("/sdcard/mthr_log.txt", "w");
+#endif
   int quit = FALSE;
   server_thread_args_t * a = (server_thread_args_t *)arg;
   static graphics_context_t gc;
@@ -753,7 +755,9 @@ void * glserver_thread(void * arg)
     {
       gls_command_t *c = (gls_command_t *)popptr;
       glsec_global.cmd_data = c;
+#ifdef GL_DEBUG
       fprintf(fl,"@MainLoop: Attempting to execute command %i \n",c->cmd);
+#endif
       switch (c->cmd)
       {
         case GLSC_FLIP:
@@ -763,11 +767,15 @@ void * glserver_thread(void * arg)
           glse_cmd_recv_data();
           break;
         case GLSC_FLUSH:
+#ifdef GL_DEBUG
           fprintf(fl,"@Exec: Flushing command buffer...\n");
+#endif
           glse_cmd_flush();
           break;
         case GLSC_get_context:
+#ifdef GL_DEBUG
           fprintf(fl,"@Exec: Feeding context to client...\n");
+#endif
           glse_cmd_get_context();
           break;
         case GLSC_glBufferData:
@@ -810,7 +818,11 @@ void * glserver_thread(void * arg)
           glse_glShaderSource();
           break;
         default:
+#ifdef GL_DEBUG
           fprintf(fl,"@Exec: %i : Undefined command\n",c->cmd);
+#endif
+
+		  LOGE("Error: Undefined command %i", c->cmd);
           break;
       }
       fifo_pop_ptr_next(a->fifo);

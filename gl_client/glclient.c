@@ -213,6 +213,10 @@ int wait_for_data(char *str)
 
 int gls_cmd_send_data(uint32_t offset, uint32_t size, void *data)
 {
+  if (data == NULL) {
+    return TRUE;
+  }
+	
   gls_cmd_send_data_t *c = (gls_cmd_send_data_t *)glsc_global.out_buf.buf;
   c->cmd = GLSC_SEND_DATA;
 
@@ -390,14 +394,12 @@ GL_APICALL void GL_APIENTRY glBlendFunc (GLenum sfactor, GLenum dfactor)
 GL_APICALL void GL_APIENTRY glBufferData (GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage)
 {
   gls_cmd_flush();
-  printf("senddata\n");
+  // printf("GL_DBG: glBufferData size=%i realsize=%i\n",size,sizeof(data));
   gls_cmd_send_data(0, (uint32_t)size, (void *)data);
-printf("nocrash\n");
   GLS_SET_COMMAND_PTR(c, glBufferData);
   c->target = target;
   c->size = size;
   c->usage = usage;
-  printf("notcrashedpart2\n");
   GLS_SEND_PACKET(glBufferData);
 }
 
