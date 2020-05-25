@@ -249,6 +249,14 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t sfactor;
+  uint32_t dfactor;
+} gls_glBlendFunc_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t target;
   int32_t size;
   uint32_t usage;
@@ -279,6 +287,20 @@ typedef struct
   float  blue;
   float alpha;
 } gls_glClearColor_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  float depth;
+} gls_glClearDepthf_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t s;
+} gls_glClearStencil_t;
 
 
 typedef struct
@@ -318,6 +340,13 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t mode;
+} gls_glCullFace_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   int32_t n;
 } gls_glDeleteBuffers_t;
 
@@ -350,6 +379,21 @@ typedef struct
   uint32_t cmd;
   uint32_t func;
 } gls_glDepthFunc_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t flag;
+} gls_glDepthMask_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t zNear;
+  uint32_t zFar;
+} gls_glDepthRangef_t;
 
 
 typedef struct
@@ -491,6 +535,21 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t target;
+  uint32_t mode;
+} gls_glHint_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  float width;
+} gls_glLineWidth_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t program;
 } gls_glLinkProgram_t;
 
@@ -501,6 +560,14 @@ typedef struct
   uint32_t pname;
   int32_t param;
 } gls_glPixelStorei_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  float factor;
+  float units;
+} gls_glPolygonOffset_t;
 
 
 typedef struct
@@ -517,6 +584,31 @@ typedef struct
   int32_t length[256];
   char data[4];
 } gls_data_glShaderSource_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t func;
+  int32_t r;
+  uint32_t m;
+} gls_glStencilFunc_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t fail;
+  uint32_t zfail;
+  uint32_t zpass;
+} gls_glStencilOp_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t mask;
+} gls_glStencilMask_t;
 
 
 typedef struct
