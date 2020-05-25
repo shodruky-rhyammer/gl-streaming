@@ -462,7 +462,7 @@ void glse_glGetShaderiv()
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
   glGetShaderiv(c->shader,c->pname,&ret->params);
-  ret->cmd = GLSE_glShaderiv;
+  ret->cmd = GLSE_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
 }
 
