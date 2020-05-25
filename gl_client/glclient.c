@@ -116,8 +116,8 @@ int gls_init(server_context_t *arg)
   glsc_global.sta = arg;
   glsc_global.pack_alignment = 4;
   glsc_global.unpack_alignment = 4;
-  glsc_global.screen_width = 0;
-  glsc_global.screen_height = 0;
+  glsc_global.screen_width = 1280;
+  glsc_global.screen_height = 720;
   glsc_global.out_buf.buf = (char *)malloc(GLS_OUT_BUFFER_SIZE);
   if (glsc_global.out_buf.buf == NULL)
   {
@@ -255,6 +255,7 @@ int gls_cmd_get_context()
   {
     glsc_global.screen_width = ret->screen_width;
     glsc_global.screen_height = ret->screen_height;
+	printf("gls info: width=%p, height=%p\n", ret->screen_width, ret->screen_height);
 	if (ret->server_version != GLS_VERSION) {
 		printf("\e[33m\e[1mgls warning\e[0m: Incompatile version, server version %p but client version %p.\n", ret->server_version, GLS_VERSION);
 	}

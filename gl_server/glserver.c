@@ -104,6 +104,9 @@ void glse_cmd_get_context()
 
   gls_ret_get_context_t *ret = (gls_ret_get_context_t *)glsec_global.tmp_buf.buf;
   ret->cmd = c->cmd;
+  
+  LOGD("width=%p,height=%p", glsurfaceview_width, glsurfaceview_height);
+  
   ret->screen_width = gc->screen_width = glsurfaceview_width;
   ret->screen_height = gc->screen_height = glsurfaceview_height;
   ret->server_version = GLS_VERSION;
@@ -544,6 +547,7 @@ void glse_glActiveTexture()
   glActiveTexture(c->texture);
   check_gl_err();
 }
+
 
 
 

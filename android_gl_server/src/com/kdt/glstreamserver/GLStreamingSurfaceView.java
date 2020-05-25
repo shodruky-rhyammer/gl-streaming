@@ -76,6 +76,7 @@ public class GLStreamingSurfaceView extends SurfaceView implements SurfaceHolder
 				@Override
 				public void run()
 				{
+					// System.out.println("w=" + width + ",h=" + height);
 					GLStreamingJNIWrapper.setGLSize(width, height, holder.getSurface());
 				}
 			}, "GLStreaming").start();
