@@ -529,6 +529,15 @@ void glse_glTexImage2D()
 }
 
 
+// Based from glTexImage2D
+void glse_glTexSubImage2D()
+{
+  GLSE_SET_COMMAND_PTR(c, glTexSubImage2D);
+  glTexSubImage2D(c->target, c->level, c->xoffset, c->yoffset, c->width, c->height, c->format, c->type, c->pixels);
+  check_gl_err();
+}
+
+
 void glse_glDeleteTextures()
 {
   GLSE_SET_COMMAND_PTR(c, glDeleteTextures);
