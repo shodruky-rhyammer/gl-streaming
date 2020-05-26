@@ -1222,16 +1222,67 @@ GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GL
 */
 }
 
+
+// Based from glTexImage2D code
 GL_APICALL void GL_APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
 {
-	// unimplemented
-	/*
+  uint32_t pixelbytes, linebytes, datasize;
+  switch (type)
+  {
+    case GL_UNSIGNED_BYTE:
+      switch (format)
+      {
+        case GL_ALPHA:
+          pixelbytes = 1;
+          break;
+        case GL_RGB:
+          pixelbytes = 3;
+          break;
+        case GL_RGBA:
+          pixelbytes = 4;
+          break;
+        case GL_LUMINANCE:
+          pixelbytes = 1;
+          break;
+        case GL_LUMINANCE_ALPHA:
+          pixelbytes = 2;
+          break;
+        default:
+          pixelbytes = 4;
+          break;
+      }
+      break;
+    case GL_UNSIGNED_SHORT_5_6_5:
+      pixelbytes = 2;
+      break;
+    case GL_UNSIGNED_SHORT_4_4_4_4:
+      pixelbytes = 2;
+      break;
+    case GL_UNSIGNED_SHORT_5_5_5_1:
+      pixelbytes = 2;
+      break;
+    default:
+      pixelbytes = 4;
+      break;
+  }
+  linebytes = (pixelbytes * width + glsc_global.unpack_alignment - 1) & (~ (glsc_global.unpack_alignment - 1));
+  datasize = linebytes * height;
   GLS_SET_COMMAND_PTR_BATCH(c, glTexSubImage2D);
-  c->zNear = zNear;
-  c->zFar = zFar;
-  GLS_PUSH_BATCH(glTexSubImage2D);
-  */
+  uint32_t cmd_size = (uint32_t)(((char *)c->pixels + datasize) - (char *)c);
+  if (check_batch_overflow(cmd_size, "glTexSubImage2D: buffer overflow") != TRUE)
+  {
+    return;
+  }
+  c->cmd_size = cmd_size;
+  c->target = target;
+  c->level = level;
+  c->xoffset = xoffset;
+  c->yoffset = yoffset;
+  c->width = width;
+  c->height = height;
+  c->format = format;
+  c->type = type;
+  memcpy(c->pixels, pixels, datasize);
+  push_batch_command(cmd_size);
+  gls_cmd_flush();
 }
-
-
-

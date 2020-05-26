@@ -651,6 +651,23 @@ typedef struct
 } gls_glTexParameteri_t;
 
 
+// Based from gls_glTexImage2D_t code
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t cmd_size;
+  uint32_t target;
+  int32_t level;
+  int32_t xoffset;
+  int32_t yoffset;
+  int32_t width;
+  int32_t height;
+  uint32_t format;
+  uint32_t type;
+  char pixels[4];
+} gls_glTexSubImage2D_t;
+
+
 typedef struct
 {
   uint32_t cmd;
