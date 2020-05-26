@@ -104,9 +104,6 @@ void glse_cmd_get_context()
 
   gls_ret_get_context_t *ret = (gls_ret_get_context_t *)glsec_global.tmp_buf.buf;
   ret->cmd = c->cmd;
-  
-  LOGD("width=%p,height=%p", glsurfaceview_width, glsurfaceview_height);
-  
   ret->screen_width = gc->screen_width = glsurfaceview_width;
   ret->screen_height = gc->screen_height = glsurfaceview_height;
   ret->server_version = GLS_VERSION;
@@ -465,7 +462,7 @@ void glse_glGetShaderiv()
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
   glGetShaderiv(c->shader,c->pname,&ret->params);
-  ret->cmd = GLSE_glGetShaderiv;
+  ret->cmd = GLSC_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
 }
 
@@ -818,14 +815,14 @@ void * glserver_thread(void * arg)
         case GLSC_glGetShaderInfoLog:
           glse_glGetShaderInfoLog();
           break;
+        case GLSC_glGetShaderiv:
+          glse_glGetShaderiv();
+          break;
         case GLSC_glGetUniformLocation:
           glse_glGetUniformLocation();
           break;
         case GLSC_glShaderSource:
           glse_glShaderSource();
-          break;
-        case GLSC_glShaderiv:
-          glse_glShaderiv();
           break;
         default:
 #ifdef GL_DEBUG

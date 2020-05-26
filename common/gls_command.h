@@ -96,6 +96,7 @@ enum GL_Server_Command
   GLSC_glGetIntegerv,
   GLSC_glGetProgramInfoLog,
   GLSC_glGetShaderInfoLog,
+  GLSC_glGetShaderiv,
   GLSC_glGetString,
   GLSC_glGetUniformLocation,
   GLSC_glHint,
@@ -116,8 +117,7 @@ enum GL_Server_Command
   GLSC_glUniformMatrix4fv,
   GLSC_glUseProgram,
   GLSC_glVertexAttribPointer,
-  GLSC_glViewport,
-  GLSC_glGetShaderiv
+  GLSC_glViewport
 };
 
 
