@@ -642,6 +642,15 @@ void glse_glHint()
 }
 
 
+void glse_glClearDepthf()
+{
+  GLSE_SET_COMMAND_PTR(c, glClearDepthf);
+  glClearDepthf(c->depth);
+  check_gl_err();
+}
+
+
+
 /*
 void glse_()
 {
@@ -840,7 +849,10 @@ void glse_cmd_flush()
         glse_glStencilOp();
         pop_batch_command(sizeof(gls_glStencilOp_t));
         break;
-		
+      case GLSC_glClearDepthf:
+        glse_glClearDepthf();
+        pop_batch_command(sizeof(gls_glClearDepthf_t));
+        break;
 		
 		
 /*
@@ -850,7 +862,7 @@ void glse_cmd_flush()
         break;
 */
       default:
-          LOGE("Error: Command Flush %p", c->cmd);
+          LOGE("Error: Command Flush %i", c->cmd);
         quit = TRUE;
         break;
     }
