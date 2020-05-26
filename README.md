@@ -33,6 +33,17 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 [Demo Video](https://youtu.be/uwM9uxLHH1M)
 
+## TODO implement
+- [ ] glGetActiveUniform
+- [ ] glGetError
+- [ ] glGetIntegerv
+- [ ] glGetFloatv
+- [ ] glReadPixels
+- [ ] glGetProgramiv
+- [x] glGetShaderiv
+- [ ] glGetString
+- [x] glTexSubImage2D
+
 ## Notes
 - Current minimum SDK level is set to 21 (Android 5) but it may work on older Android devices by some modify.
 - Default port of server: 18145, client: 18146.
