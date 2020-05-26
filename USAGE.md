@@ -1,6 +1,6 @@
 ## Setup streaming environment
 ### Server setup
-- Compile Server using Android Studio.
+- Build Server app using Android Studio with NDK installed.
 - Install server APK.
 
 ### Client setup
