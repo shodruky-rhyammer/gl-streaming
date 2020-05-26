@@ -562,6 +562,84 @@ void glse_glActiveTexture()
 }
 
 
+void glse_glBlendFunc()
+{
+  GLSE_SET_COMMAND_PTR(c, glBlendFunc);
+  glBlendFunc(c->sfactor, c->dfactor);
+  check_gl_err();
+}
+
+
+void glse_glCullFace()
+{
+  GLSE_SET_COMMAND_PTR(c, glCullFace);
+  glActiveTexture(c->mode);
+  check_gl_err();
+}
+
+
+void glse_glDepthMask()
+{
+  GLSE_SET_COMMAND_PTR(c, glDepthMask);
+  glDepthMask(c->flag);
+  check_gl_err();
+}
+
+
+void glse_glDepthRangef()
+{
+  GLSE_SET_COMMAND_PTR(c, glDepthRangef);
+  glDepthRangef(c->zNear, c->zFar);
+  check_gl_err();
+}
+
+
+void glse_glStencilFunc()
+{
+  GLSE_SET_COMMAND_PTR(c, glStencilFunc);
+  glStencilFunc(c->func, c->r, c->m);
+  check_gl_err();
+}
+
+
+void glse_glStencilOp()
+{
+  GLSE_SET_COMMAND_PTR(c, glStencilOp);
+  glStencilOp(c->fail, c->zfail, c->zpass);
+  check_gl_err();
+}
+
+
+void glse_glPolygonOffset()
+{
+  GLSE_SET_COMMAND_PTR(c, glPolygonOffset);
+  glPolygonOffset(c->factor, c->units);
+  check_gl_err();
+}
+
+
+void glse_glStencilMask()
+{
+  GLSE_SET_COMMAND_PTR(c, glStencilMask);
+  glStencilMask(c->mask);
+  check_gl_err();
+}
+
+
+void glse_glLineWidth()
+{
+  GLSE_SET_COMMAND_PTR(c, glLineWidth);
+  glLineWidth(c->width);
+  check_gl_err();
+}
+
+
+void glse_glHint()
+{
+  GLSE_SET_COMMAND_PTR(c, glHint);
+  glHint(c->target, c->mode);
+  check_gl_err();
+}
 
 
 /*
@@ -720,6 +798,51 @@ void glse_cmd_flush()
         glse_glViewport();
         pop_batch_command(sizeof(gls_glViewport_t));
         break;
+		
+		
+      case GLSC_glBlendFunc:
+        glse_glBlendFunc();
+        pop_batch_command(sizeof(gls_glBlendFunc_t));
+        break;
+      case GLSC_glCullFace:
+        glse_glCullFace();
+        pop_batch_command(sizeof(gls_glCullFace_t));
+        break;
+      case GLSC_glDepthMask:
+        glse_glDepthMask();
+        pop_batch_command(sizeof(gls_glDepthMask_t));
+        break;
+      case GLSC_glDepthRangef:
+        glse_glDepthRangef();
+        pop_batch_command(sizeof(gls_glDepthRangef_t));
+        break;
+      case GLSC_glHint:
+        glse_glHint();
+        pop_batch_command(sizeof(gls_glHint_t));
+        break;
+      case GLSC_glLineWidth:
+        glse_glLineWidth();
+        pop_batch_command(sizeof(gls_glLineWidth_t));
+        break;
+      case GLSC_glPolygonOffset:
+        glse_glPolygonOffset();
+        pop_batch_command(sizeof(gls_glPolygonOffset_t));
+        break;
+      case GLSC_glStencilFunc:
+        glse_glStencilFunc();
+        pop_batch_command(sizeof(gls_glStencilFunc_t));
+        break;
+      case GLSC_glStencilMask:
+        glse_glStencilMask();
+        pop_batch_command(sizeof(gls_glStencilMask_t));
+        break;
+      case GLSC_glStencilOp:
+        glse_glStencilOp();
+        pop_batch_command(sizeof(gls_glStencilOp_t));
+        break;
+		
+		
+		
 /*
       case GLSC_glXXX:
         glse_glXXX();
