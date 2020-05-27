@@ -266,6 +266,89 @@ void glse_glGetAttribLocation()
 }
 
 
+void glse_glGetError()
+{
+  GLuint error = glGetError();
+  // Should check gl error inside glGetError() ???
+  check_gl_err();
+  gls_ret_glGetError_t *ret = (gls_ret_glGetError_t *)glsec_global.tmp_buf.buf;
+  ret->cmd = GLSC_glGetError;
+  ret->error = error;
+  glse_cmd_send_data(0, sizeof(gls_ret_glGetError_t), (char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetFloatv()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetFloatv);
+  gls_ret_glGetFloatv_t *ret = (gls_ret_glGetFloatv_t *)glsec_global.tmp_buf.buf;
+  glGetFloatv(c->name, &ret->params);
+  ret->cmd = GLSC_glGetFloatv;
+  glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetIntegerv()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetIntegerv);
+  gls_ret_glGetIntegerv_t *ret = (gls_ret_glGetIntegerv_t *)glsec_global.tmp_buf.buf;
+  glGetIntegerv(c->name, &ret->params);
+  ret->cmd = GLSC_glGetIntegerv;
+  glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetProgramInfoLog()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetProgramInfoLog);
+  gls_ret_glGetProgramInfoLog_t *ret = (gls_ret_glGetProgramInfoLog_t *)glsec_global.tmp_buf.buf;
+  uint32_t maxsize = GLSE_TMP_BUFFER_SIZE - (uint32_t)((char*)ret->infolog - (char*)ret) - 256;
+  if (c->bufsize > maxsize)
+  {
+    c->bufsize = maxsize;
+  }
+  glGetProgramInfoLog(c->program, c->bufsize, (GLsizei*)&ret->length, (GLchar*)ret->infolog);
+  check_gl_err();
+  ret->cmd = GLSC_glGetProgramInfoLog;
+  uint32_t size = (uint32_t)((char*)ret->infolog - (char*)ret) + ret->length + 1;
+  glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetShaderiv()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
+  gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
+  glGetShaderiv(c->shader,c->pname,&ret->params);
+  ret->cmd = GLSC_glGetShaderiv;
+  glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetString()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetString);
+  gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsec_global.tmp_buf.buf;
+  const char *params = glGetString(c->name);
+  ret->cmd = GLSC_glGetString;
+  ret->params[GLS_STRING_SIZE_PLUS - 1] = '\0';
+  strncpy(ret->params, params, GLS_STRING_SIZE);
+  glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetUniformLocation()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetUniformLocation);
+  int location = glGetUniformLocation (c->program, (const GLchar*)c->name);
+  check_gl_err();
+  gls_ret_glGetUniformLocation_t *ret = (gls_ret_glGetUniformLocation_t *)glsec_global.tmp_buf.buf;
+  ret->cmd = GLSC_glGetUniformLocation;
+  ret->location = (int32_t)location;
+  glse_cmd_send_data(0, sizeof(gls_ret_glGetUniformLocation_t), (char *)glsec_global.tmp_buf.buf);
+}
+
+
 void glse_glEnableVertexAttribArray()
 {
   GLSE_SET_COMMAND_PTR(c,glEnableVertexAttribArray );
@@ -439,56 +522,6 @@ void glse_glBindAttribLocation()
   GLSE_SET_COMMAND_PTR(c, glBindAttribLocation);
   glBindAttribLocation (c->program, c->index, c->name);
   check_gl_err();
-}
-
-
-void glse_glGetError()
-{
-  GLuint error = glGetError();
-  // Should check gl error inside glGetError() ???
-  check_gl_err();
-  gls_ret_glGetError_t *ret = (gls_ret_glGetError_t *)glsec_global.tmp_buf.buf;
-  ret->cmd = GLSC_glGetError;
-  ret->error = error;
-  glse_cmd_send_data(0, sizeof(gls_ret_glGetError_t), (char *)glsec_global.tmp_buf.buf);
-}
-
-void glse_glGetProgramInfoLog()
-{
-  GLSE_SET_COMMAND_PTR(c, glGetProgramInfoLog);
-  gls_ret_glGetProgramInfoLog_t *ret = (gls_ret_glGetProgramInfoLog_t *)glsec_global.tmp_buf.buf;
-  uint32_t maxsize = GLSE_TMP_BUFFER_SIZE - (uint32_t)((char*)ret->infolog - (char*)ret) - 256;
-  if (c->bufsize > maxsize)
-  {
-    c->bufsize = maxsize;
-  }
-  glGetProgramInfoLog(c->program, c->bufsize, (GLsizei*)&ret->length, (GLchar*)ret->infolog);
-  check_gl_err();
-  ret->cmd = GLSC_glGetProgramInfoLog;
-  uint32_t size = (uint32_t)((char*)ret->infolog - (char*)ret) + ret->length + 1;
-  glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
-}
-
-
-void glse_glGetShaderiv()
-{
-  GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
-  gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
-  glGetShaderiv(c->shader,c->pname,&ret->params);
-  ret->cmd = GLSC_glGetShaderiv;
-  glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
-}
-
-
-void glse_glGetUniformLocation()
-{
-  GLSE_SET_COMMAND_PTR(c, glGetUniformLocation);
-  int location = glGetUniformLocation (c->program, (const GLchar*)c->name);
-  check_gl_err();
-  gls_ret_glGetUniformLocation_t *ret = (gls_ret_glGetUniformLocation_t *)glsec_global.tmp_buf.buf;
-  ret->cmd = GLSC_glGetUniformLocation;
-  ret->location = (int32_t)location;
-  glse_cmd_send_data(0, sizeof(gls_ret_glGetUniformLocation_t), (char *)glsec_global.tmp_buf.buf);
 }
 
 
@@ -971,6 +1004,12 @@ void * glserver_thread(void * arg)
 		case GLSC_glGetError:
 		  glse_glGetError();
 		  break;
+        case GLSC_glGetFloatv:
+          glse_glGetFloatv();
+          break;
+        case GLSC_glGetIntegerv:
+          glse_glGetIntegerv();
+          break;
         case GLSC_glGetProgramInfoLog:
           glse_glGetProgramInfoLog();
           break;
@@ -979,6 +1018,9 @@ void * glserver_thread(void * arg)
           break;
         case GLSC_glGetShaderiv:
           glse_glGetShaderiv();
+          break;
+        case GLSC_glGetString:
+          glse_glGetString();
           break;
         case GLSC_glGetUniformLocation:
           glse_glGetUniformLocation();

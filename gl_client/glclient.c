@@ -1177,29 +1177,44 @@ GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* p
 
 GL_APICALL const GLubyte GL_APIENTRY *glGetString(GLenum name)
 {
-    switch (name) {
-		case GL_EXTENSIONS: return "GL_IMG_texture_npot";
-		case GL_VENDOR: return "gl-streaming";
-		default:
-			printf("Implement: %p", name);
-			return "unknown";
+    if (name == GL_VENDOR) {
+		// Change vendor name to gl-streaming.
+		// If want to get hardware vendor, comment out below
+		return "gl-streaming wrapper";
 	}
+
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetString);
+	c->name = name;
+	GLS_SEND_PACKET(glGetString);
+    
+	wait_for_data("timeout:glGetString");
+	gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsc_global.tmp_buf.buf;
+	return ret->params;
 }
 
 GL_APICALL void GL_APIENTRY glGetIntegerv(GLenum name, GLint *params)
 {
-    *params = 4;
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetIntegerv);
+	c->name = name;
+	GLS_SEND_PACKET(glGetIntegerv);
+    
+	wait_for_data("timeout:glGetIntegerv");
+	gls_ret_glGetIntegerv_t *ret = (gls_ret_glGetIntegerv_t *)glsc_global.tmp_buf.buf;
+	*params = ret->params;
 }
 
 GL_APICALL void GL_APIENTRY glGetFloatv(GLenum name, GLfloat *params)
 {
-    if( name == GL_VIEWPORT )
-    {
-        params[0] = 0;
-        params[1] = 0;
-        params[2] = 100;
-        params[3] = 100;
-    }
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetFloatv);
+	c->name = name;
+	GLS_SEND_PACKET(glGetFloatv);
+    
+	wait_for_data("timeout:glGetFloatv");
+	gls_ret_glGetFloatv_t *ret = (gls_ret_glGetFloatv_t *)glsc_global.tmp_buf.buf;
+	*params = ret->params;
 }
 
 

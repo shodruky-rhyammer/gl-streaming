@@ -509,6 +509,49 @@ typedef struct
 } gls_ret_glGetError_t;
 
 
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+  int32_t params;
+} gls_glGetIntegerv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t params;
+} gls_ret_glGetIntegerv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+  float params;
+} gls_glGetFloatv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  float params;
+} gls_ret_glGetFloatv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+} gls_glGetString_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  char params[GLS_STRING_SIZE_PLUS];
+} gls_ret_glGetString_t;
+
 
 typedef struct
 {
