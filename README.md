@@ -36,12 +36,12 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 ## TODO implement
 - [ ] glGetActiveUniform
 - [x] glGetError
-- [ ] glGetIntegerv
-- [ ] glGetFloatv
+- [x] glGetIntegerv
+- [x] glGetFloatv
 - [ ] glReadPixels
 - [ ] glGetProgramiv
 - [x] glGetShaderiv
-- [ ] glGetString
+- [x] glGetString
 - [x] glTexSubImage2D
 
 ## Notes
