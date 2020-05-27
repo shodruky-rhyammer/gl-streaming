@@ -35,7 +35,7 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 ## TODO implement
 - [ ] glGetActiveUniform
-- [ ] glGetError
+- [x] glGetError
 - [ ] glGetIntegerv
 - [ ] glGetFloatv
 - [ ] glReadPixels

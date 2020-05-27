@@ -442,6 +442,17 @@ void glse_glBindAttribLocation()
 }
 
 
+void glse_glGetError()
+{
+  GLuint error = glGetError();
+  // Should check gl error inside glGetError() ???
+  check_gl_err();
+  gls_ret_glGetError_t *ret = (gls_ret_glGetError_t *)glsec_global.tmp_buf.buf;
+  ret->cmd = GLSC_glGetError;
+  ret->error = error;
+  glse_cmd_send_data(0, sizeof(gls_ret_glGetError_t), (char *)glsec_global.tmp_buf.buf);
+}
+
 void glse_glGetProgramInfoLog()
 {
   GLSE_SET_COMMAND_PTR(c, glGetProgramInfoLog);
@@ -457,6 +468,8 @@ void glse_glGetProgramInfoLog()
   uint32_t size = (uint32_t)((char*)ret->infolog - (char*)ret) + ret->length + 1;
   glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
 }
+
+
 void glse_glGetShaderiv()
 {
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
@@ -465,6 +478,7 @@ void glse_glGetShaderiv()
   ret->cmd = GLSC_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(ret),(char *)glsec_global.tmp_buf.buf);
 }
+
 
 void glse_glGetUniformLocation()
 {
@@ -767,6 +781,7 @@ void glse_cmd_flush()
         glse_glFlush();
         pop_batch_command(sizeof(gls_command_t));
         break;
+		
       case GLSC_glLinkProgram:
         glse_glLinkProgram();
         pop_batch_command(sizeof(gls_glLinkProgram_t));
@@ -953,6 +968,9 @@ void * glserver_thread(void * arg)
         case GLSC_glGetAttribLocation:
           glse_glGetAttribLocation();
           break;
+		case GLSC_glGetError:
+		  glse_glGetError();
+		  break;
         case GLSC_glGetProgramInfoLog:
           glse_glGetProgramInfoLog();
           break;

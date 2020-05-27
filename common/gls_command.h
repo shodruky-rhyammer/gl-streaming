@@ -40,9 +40,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // To prevent incompatible version, change every
-#define GLS_VERSION 4
+#define GLS_VERSION 5
 // #define GL_MAJOR_VERSION 1
 // #define GL_MINOR_VERSION 2
+
+/*
+ * Version history
+ * 
+ * 4: implement many commands.
+ * 5: implement glGetError
+ * 6:
+ */
 
 
 enum GL_Server_Command
@@ -486,6 +494,20 @@ typedef struct
   uint32_t cmd;
   int32_t index;
 } gls_ret_glGetAttribLocation_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_glGetError_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t error;
+} gls_ret_glGetError_t;
+
 
 
 typedef struct

@@ -1134,11 +1134,29 @@ GL_APICALL void GL_APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei
 }
 
 
+// Used for return void commands
 /*
+GL_APICALL void GL_APIENTRY glCommand (GLparam param)
 {
   GLS_SET_COMMAND_PTR_BATCH(c, );
   c-> = ;
   GLS_PUSH_BATCH();
+}
+ */
+ 
+// Used for return functions, icluding modify client array.
+ /*
+GL_APICALL GLreturn GL_APIENTRY glCommand (GLparam param) 
+{
+  GLS_SET_COMMAND_PTR(c, glCommand);
+  c->param = param;
+  GLS_SEND_PACKET(glCommand);
+  
+  wait_for_data("timeout:glCommand");
+  gls_ret_glCommand_t *ret = (gls_ret_glCommand_t *)glsc_global.tmp_buf.buf;
+  // *params = ret->params;
+  // or
+  // return ret->returnVal;
 }
  */
 
@@ -1153,7 +1171,7 @@ GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* p
   wait_for_data("timeout:glGetShaderiv");
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
   *params = ret->params;
-  printf("Done execing glGetShaderiv with return %i\n",ret->params);
+  printf("Done executing glGetShaderiv with return %i\n",ret->params);
 }
 
 
@@ -1196,7 +1214,13 @@ GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint*
 
 GL_APICALL GLenum GL_APIENTRY glGetError()
 {
-    return GL_NO_ERROR;
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetError);
+	GLS_SEND_PACKET(glGetError);
+    
+	wait_for_data("timeout:glGetError");
+	gls_ret_glGetError_t *ret = (gls_ret_glGetError_t *)glsc_global.tmp_buf.buf;
+	return ret->error;
 }
 
 GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
