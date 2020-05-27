@@ -34,23 +34,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #define GLS_DATA_SIZE 356
-#define GLS_STRING_SIZE_PLUS 2048
-#define GLS_STRING_SIZE 2032
+#define GLS_STRING_SIZE_PLUS 8192 // 256
+#define GLS_STRING_SIZE 8128 // 254
 #define GLS_ALIGNMENT_BITS 3
 
 
 // To prevent incompatible version, change every
-#define GLS_VERSION 5
+#define GLS_VERSION 6
 // #define GL_MAJOR_VERSION 1
 // #define GL_MINOR_VERSION 2
-
-/*
- * Version history
- * 
- * 4: implement many commands.
- * 5: implement glGetError
- * 6:
- */
 
 
 enum GL_Server_Command
@@ -177,7 +169,7 @@ typedef union
   float data_float[GLS_DATA_SIZE];
   uint32_t data_uint[GLS_DATA_SIZE];
   int32_t data_int[GLS_DATA_SIZE];
-  char data_char[GLS_DATA_SIZE * 4];
+  char data_char[GLS_DATA_SIZE * 36]; // * 4
 } gls_data_t;
 
 
