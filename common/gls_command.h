@@ -34,8 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #define GLS_DATA_SIZE 356
-#define GLS_STRING_SIZE_PLUS 256
-#define GLS_STRING_SIZE 254
+#define GLS_STRING_SIZE_PLUS 2048
+#define GLS_STRING_SIZE 2032
 #define GLS_ALIGNMENT_BITS 3
 
 
@@ -660,8 +660,8 @@ typedef struct
 
 typedef struct
 {
-  uint32_t string[256];
-  int32_t length[256];
+  uint32_t string[10240];
+  int32_t length[10240];
   char data[4];
 } gls_data_glShaderSource_t;
 

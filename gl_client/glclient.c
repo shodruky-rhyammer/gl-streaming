@@ -775,21 +775,55 @@ GL_APICALL int GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* na
 }
 
 
-GL_APICALL void GL_APIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog)
-{
+GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* params) {
   gls_cmd_flush();
-  GLS_SET_COMMAND_PTR(c, glGetShaderInfoLog);
+  GLS_SET_COMMAND_PTR(c, glGetShaderiv);
   c->shader = shader;
-  c->bufsize = bufsize;
-  GLS_SEND_PACKET(glGetShaderInfoLog);
+  c->pname = pname;
+  GLS_SEND_PACKET(glGetShaderiv);
 
-  wait_for_data("timeout:glGetShaderInfoLog");
-  gls_ret_glGetShaderInfoLog_t *ret = (gls_ret_glGetShaderInfoLog_t *)glsc_global.tmp_buf.buf;
-  if (length != NULL)
-  {
-    *length = ret->length;
-  }
-  strncpy(infolog, ret->infolog, (size_t)bufsize);
+  wait_for_data("timeout:glGetShaderiv");
+  gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
+  *params = ret->params;
+  // printf("Done executing glGetShaderiv with return %i\n",ret->params);
+}
+
+
+GL_APICALL GLenum GL_APIENTRY glGetError()
+{
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetError);
+	GLS_SEND_PACKET(glGetError);
+    
+	wait_for_data("timeout:glGetError");
+	gls_ret_glGetError_t *ret = (gls_ret_glGetError_t *)glsc_global.tmp_buf.buf;
+	return ret->error;
+}
+
+
+GL_APICALL void GL_APIENTRY glGetFloatv(GLenum name, GLfloat *params)
+{
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetFloatv);
+	c->name = name;
+	GLS_SEND_PACKET(glGetFloatv);
+    
+	wait_for_data("timeout:glGetFloatv");
+	gls_ret_glGetFloatv_t *ret = (gls_ret_glGetFloatv_t *)glsc_global.tmp_buf.buf;
+	*params = ret->params;
+}
+
+
+GL_APICALL void GL_APIENTRY glGetIntegerv(GLenum name, GLint *params)
+{
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetIntegerv);
+	c->name = name;
+	GLS_SEND_PACKET(glGetIntegerv);
+    
+	wait_for_data("timeout:glGetIntegerv");
+	gls_ret_glGetIntegerv_t *ret = (gls_ret_glGetIntegerv_t *)glsc_global.tmp_buf.buf;
+	*params = ret->params;
 }
 
 
@@ -812,6 +846,44 @@ GL_APICALL void GL_APIENTRY glGetProgramInfoLog (GLuint program, GLsizei bufsize
     ret->infolog[0] = '\0';
   }
   strncpy(infolog, ret->infolog, (size_t)bufsize);
+}
+
+
+GL_APICALL void GL_APIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog)
+{
+  gls_cmd_flush();
+  GLS_SET_COMMAND_PTR(c, glGetShaderInfoLog);
+  c->shader = shader;
+  c->bufsize = bufsize;
+  GLS_SEND_PACKET(glGetShaderInfoLog);
+
+  wait_for_data("timeout:glGetShaderInfoLog");
+  gls_ret_glGetShaderInfoLog_t *ret = (gls_ret_glGetShaderInfoLog_t *)glsc_global.tmp_buf.buf;
+  if (length != NULL)
+  {
+    *length = ret->length;
+  }
+  strncpy(infolog, ret->infolog, (size_t)bufsize);
+}
+
+
+GL_APICALL const GLubyte GL_APIENTRY *glGetString(GLenum name)
+{
+    if (name == GL_VENDOR) {
+		// Change vendor name to gl-streaming.
+		// If want to get hardware vendor, comment out below
+		// return "gl-streaming wrapper";
+	}
+
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetString);
+	c->name = name;
+	GLS_SEND_PACKET(glGetString);
+    
+	wait_for_data("timeout:glGetString");
+	gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsc_global.tmp_buf.buf;
+	// printf("glGetString(%i) return %s\n", name, &ret->params[0]);
+	return &ret->params[0];
 }
 
 
@@ -1037,6 +1109,70 @@ GL_APICALL void GL_APIENTRY glTexImage2D (GLenum target, GLint level, GLint inte
 }
 
 
+// Based from glTexImage2D code
+GL_APICALL void GL_APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
+{
+  uint32_t pixelbytes, linebytes, datasize;
+  switch (type)
+  {
+    case GL_UNSIGNED_BYTE:
+      switch (format)
+      {
+        case GL_ALPHA:
+          pixelbytes = 1;
+          break;
+        case GL_RGB:
+          pixelbytes = 3;
+          break;
+        case GL_RGBA:
+          pixelbytes = 4;
+          break;
+        case GL_LUMINANCE:
+          pixelbytes = 1;
+          break;
+        case GL_LUMINANCE_ALPHA:
+          pixelbytes = 2;
+          break;
+        default:
+          pixelbytes = 4;
+          break;
+      }
+      break;
+    case GL_UNSIGNED_SHORT_5_6_5:
+      pixelbytes = 2;
+      break;
+    case GL_UNSIGNED_SHORT_4_4_4_4:
+      pixelbytes = 2;
+      break;
+    case GL_UNSIGNED_SHORT_5_5_5_1:
+      pixelbytes = 2;
+      break;
+    default:
+      pixelbytes = 4;
+      break;
+  }
+  linebytes = (pixelbytes * width + glsc_global.unpack_alignment - 1) & (~ (glsc_global.unpack_alignment - 1));
+  datasize = linebytes * height;
+  GLS_SET_COMMAND_PTR_BATCH(c, glTexSubImage2D);
+  uint32_t cmd_size = (uint32_t)(((char *)c->pixels + datasize) - (char *)c);
+  if (check_batch_overflow(cmd_size, "glTexSubImage2D: buffer overflow") != TRUE)
+  {
+    return;
+  }
+  c->cmd_size = cmd_size;
+  c->target = target;
+  c->level = level;
+  c->xoffset = xoffset;
+  c->yoffset = yoffset;
+  c->width = width;
+  c->height = height;
+  c->format = format;
+  c->type = type;
+  memcpy(c->pixels, pixels, datasize);
+  push_batch_command(cmd_size);
+  gls_cmd_flush();
+}
+
 GL_APICALL void GL_APIENTRY glUniform1f (GLint location, GLfloat x)
 {
   GLS_SET_COMMAND_PTR_BATCH(c, glUniform1f);
@@ -1133,7 +1269,6 @@ GL_APICALL void GL_APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei
   GLS_PUSH_BATCH(glViewport);
 }
 
-
 // Used for return void commands
 /*
 GL_APICALL void GL_APIENTRY glCommand (GLparam param)
@@ -1161,62 +1296,6 @@ GL_APICALL GLreturn GL_APIENTRY glCommand (GLparam param)
  */
 
 // Stubs since here
-GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* params) {
-  gls_cmd_flush();
-  GLS_SET_COMMAND_PTR(c, glGetShaderiv);
-  c->shader = shader;
-  c->pname = pname;
-  GLS_SEND_PACKET(glGetShaderiv);
-
-  wait_for_data("timeout:glGetShaderiv");
-  gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
-  *params = ret->params;
-  printf("Done executing glGetShaderiv with return %i\n",ret->params);
-}
-
-
-GL_APICALL const GLubyte GL_APIENTRY *glGetString(GLenum name)
-{
-    if (name == GL_VENDOR) {
-		// Change vendor name to gl-streaming.
-		// If want to get hardware vendor, comment out below
-		return "gl-streaming wrapper";
-	}
-
-	gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, glGetString);
-	c->name = name;
-	GLS_SEND_PACKET(glGetString);
-    
-	wait_for_data("timeout:glGetString");
-	gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsc_global.tmp_buf.buf;
-	return ret->params;
-}
-
-GL_APICALL void GL_APIENTRY glGetIntegerv(GLenum name, GLint *params)
-{
-    gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, glGetIntegerv);
-	c->name = name;
-	GLS_SEND_PACKET(glGetIntegerv);
-    
-	wait_for_data("timeout:glGetIntegerv");
-	gls_ret_glGetIntegerv_t *ret = (gls_ret_glGetIntegerv_t *)glsc_global.tmp_buf.buf;
-	*params = ret->params;
-}
-
-GL_APICALL void GL_APIENTRY glGetFloatv(GLenum name, GLfloat *params)
-{
-    gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, glGetFloatv);
-	c->name = name;
-	GLS_SEND_PACKET(glGetFloatv);
-    
-	wait_for_data("timeout:glGetFloatv");
-	gls_ret_glGetFloatv_t *ret = (gls_ret_glGetFloatv_t *)glsc_global.tmp_buf.buf;
-	*params = ret->params;
-}
-
 
 GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
 {
@@ -1226,17 +1305,6 @@ GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint*
     *params = 0;
 }
 
-
-GL_APICALL GLenum GL_APIENTRY glGetError()
-{
-	gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, glGetError);
-	GLS_SEND_PACKET(glGetError);
-    
-	wait_for_data("timeout:glGetError");
-	gls_ret_glGetError_t *ret = (gls_ret_glGetError_t *)glsc_global.tmp_buf.buf;
-	return ret->error;
-}
 
 GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 {
@@ -1261,67 +1329,3 @@ GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GL
 */
 }
 
-
-// Based from glTexImage2D code
-GL_APICALL void GL_APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* pixels)
-{
-  uint32_t pixelbytes, linebytes, datasize;
-  switch (type)
-  {
-    case GL_UNSIGNED_BYTE:
-      switch (format)
-      {
-        case GL_ALPHA:
-          pixelbytes = 1;
-          break;
-        case GL_RGB:
-          pixelbytes = 3;
-          break;
-        case GL_RGBA:
-          pixelbytes = 4;
-          break;
-        case GL_LUMINANCE:
-          pixelbytes = 1;
-          break;
-        case GL_LUMINANCE_ALPHA:
-          pixelbytes = 2;
-          break;
-        default:
-          pixelbytes = 4;
-          break;
-      }
-      break;
-    case GL_UNSIGNED_SHORT_5_6_5:
-      pixelbytes = 2;
-      break;
-    case GL_UNSIGNED_SHORT_4_4_4_4:
-      pixelbytes = 2;
-      break;
-    case GL_UNSIGNED_SHORT_5_5_5_1:
-      pixelbytes = 2;
-      break;
-    default:
-      pixelbytes = 4;
-      break;
-  }
-  linebytes = (pixelbytes * width + glsc_global.unpack_alignment - 1) & (~ (glsc_global.unpack_alignment - 1));
-  datasize = linebytes * height;
-  GLS_SET_COMMAND_PTR_BATCH(c, glTexSubImage2D);
-  uint32_t cmd_size = (uint32_t)(((char *)c->pixels + datasize) - (char *)c);
-  if (check_batch_overflow(cmd_size, "glTexSubImage2D: buffer overflow") != TRUE)
-  {
-    return;
-  }
-  c->cmd_size = cmd_size;
-  c->target = target;
-  c->level = level;
-  c->xoffset = xoffset;
-  c->yoffset = yoffset;
-  c->width = width;
-  c->height = height;
-  c->format = format;
-  c->type = type;
-  memcpy(c->pixels, pixels, datasize);
-  push_batch_command(cmd_size);
-  gls_cmd_flush();
-}
