@@ -1298,6 +1298,16 @@ GL_APICALL GLreturn GL_APIENTRY glCommand (GLparam param)
 // Stubs since here
 GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
 {
+/*
+	if( pname == GL_LINK_STATUS ) {
+		printf("glGetProgramiv: Client asked for GL_LINK_STATUS (got stub)\n");
+        *params = 1;
+    } else {
+		printf("glGetProgramiv: Client asked for %p\n", pname);
+    	*params = 0;
+	}
+*/
+	
     gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glGetProgramiv);
 	c->program = program;
@@ -1306,12 +1316,14 @@ GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint*
     
 	wait_for_data("timeout:glGetProgramiv");
 	gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsc_global.tmp_buf.buf;
-	*params = ret->params;
+	params = ret->params;
 }
 
 
 GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 {
+	// !!!UNIMPLEMENTED!!! due to SegFault
+
     gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glReadPixels);
 	c->x = x;
@@ -1324,13 +1336,14 @@ GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsiz
     
 	wait_for_data("timeout:glReadPixels");
 	gls_ret_glReadPixels_t *ret = (gls_ret_glReadPixels_t *)glsc_global.tmp_buf.buf;
-	memcpy(pixels, ret->pixels, width * height /* size correct??? */);
+	pixels = ret->pixels;
+	// memcpy(pixels, ret->pixels, width * height); // width * height = size correct???
 }
 
 
 GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 {
-	printf("FIXME calling stub method: glGetActiveUniform()");
+	printf("FIXME calling stub method: glGetActiveUniform()\n");
 /*
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glGetActiveUniform);
