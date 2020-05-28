@@ -315,6 +315,16 @@ void glse_glGetProgramInfoLog()
 }
 
 
+void glse_glGetProgramiv()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetProgramiv);
+  gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsec_global.tmp_buf.buf;
+  glGetProgramiv(c->program,c->pname,&ret->params);
+  ret->cmd = GLSC_glGetProgramiv;
+  glse_cmd_send_data(0,sizeof(gls_ret_glGetProgramiv_t),(char *)glsec_global.tmp_buf.buf);
+}
+
+
 void glse_glGetShaderiv()
 {
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
@@ -697,6 +707,18 @@ void glse_glClearDepthf()
 }
 
 
+void glse_glReadPixels()
+{
+  GLSE_SET_COMMAND_PTR(c, glReadPixels);
+  gls_ret_glReadPixels_t *ret = (gls_ret_glReadPixels_t *)glsec_global.tmp_buf.buf;
+  glReadPixels(c->x, c->y, c->width, c->height, c->format, c->type, &ret->pixels);
+  check_gl_err();
+  ret->cmd = glReadPixels;
+  glse_cmd_send_data(0, sizeof(gls_ret_glReadPixels_t), (char *)glsec_global.tmp_buf.buf);
+  
+  // gls_cmd_send_data(0, (uint32_t) (c->width * c->height) /* correct??? */ , (void *)ret->pixels);
+}
+
 
 /*
 void glse_()
@@ -814,7 +836,6 @@ void glse_cmd_flush()
         glse_glFlush();
         pop_batch_command(sizeof(gls_command_t));
         break;
-		
       case GLSC_glLinkProgram:
         glse_glLinkProgram();
         pop_batch_command(sizeof(gls_glLinkProgram_t));
@@ -855,7 +876,6 @@ void glse_cmd_flush()
         glse_glViewport();
         pop_batch_command(sizeof(gls_glViewport_t));
         break;
-		
 		
       case GLSC_glBlendFunc:
         glse_glBlendFunc();
@@ -998,6 +1018,11 @@ void * glserver_thread(void * arg)
         case GLSC_glGenTextures:
           glse_glGenTextures();
           break;
+/*
+        case GLSC_glGetActiveUniform:
+          glse_glGetActiveUniform();
+          break;
+*/
         case GLSC_glGetAttribLocation:
           glse_glGetAttribLocation();
           break;
@@ -1013,6 +1038,9 @@ void * glserver_thread(void * arg)
         case GLSC_glGetProgramInfoLog:
           glse_glGetProgramInfoLog();
           break;
+        case GLSC_glGetProgramiv:
+          glse_glGetProgramiv();
+          break;
         case GLSC_glGetShaderInfoLog:
           glse_glGetShaderInfoLog();
           break;
@@ -1024,6 +1052,9 @@ void * glserver_thread(void * arg)
           break;
         case GLSC_glGetUniformLocation:
           glse_glGetUniformLocation();
+          break;
+        case GLSC_glReadPixels:
+          glse_glReadPixels();
           break;
         case GLSC_glShaderSource:
           glse_glShaderSource();

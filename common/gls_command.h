@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // To prevent incompatible version, change every
-#define GLS_VERSION 6
+#define GLS_VERSION 7
 // #define GL_MAJOR_VERSION 1
 // #define GL_MINOR_VERSION 2
 
@@ -560,12 +560,29 @@ typedef struct
   char infolog[GLS_STRING_SIZE_PLUS];
 } gls_ret_glGetProgramInfoLog_t;
 
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t program;
+  uint32_t pname;
+} gls_glGetProgramiv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t params;
+} gls_ret_glGetProgramiv_t;
+
+
 typedef struct
 {
   uint32_t cmd;
   uint32_t shader;
   uint32_t pname;
 } gls_glGetShaderiv_t;
+
 
 typedef struct
 {
@@ -640,6 +657,25 @@ typedef struct
   float factor;
   float units;
 } gls_glPolygonOffset_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t x;
+  int32_t y;
+  uint32_t width;
+  uint32_t height;
+  uint32_t format;
+  uint32_t type;
+} gls_glReadPixels_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  char pixels[4];
+} gls_ret_glReadPixels_t;
 
 
 typedef struct

@@ -1296,36 +1296,55 @@ GL_APICALL GLreturn GL_APIENTRY glCommand (GLparam param)
  */
 
 // Stubs since here
-
 GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
 {
-    if( pname == GL_LINK_STATUS )
-        *params = 1;
-    else
-    *params = 0;
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetProgramiv);
+	c->program = program;
+	c->pname = pname;
+	GLS_SEND_PACKET(glGetProgramiv);
+    
+	wait_for_data("timeout:glGetProgramiv");
+	gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsc_global.tmp_buf.buf;
+	*params = ret->params;
 }
 
 
 GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 {
-		// unimplemented
-	/*
-  GLS_SET_COMMAND_PTR_BATCH(c, glReadPixels);
-  c->zNear = zNear;
-  c->zFar = zFar;
-  GLS_PUSH_BATCH(glReadPixels);
-  */
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glReadPixels);
+	c->x = x;
+	c->y = y;
+	c->width = width;
+	c->height = height;
+	c->format = format;
+	c->type = type;
+	GLS_SEND_PACKET(glReadPixels);
+    
+	wait_for_data("timeout:glReadPixels");
+	gls_ret_glReadPixels_t *ret = (gls_ret_glReadPixels_t *)glsc_global.tmp_buf.buf;
+	memcpy(pixels, ret->pixels, width * height /* size correct??? */);
 }
 
 
 GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 {
-		// unimplemented
+	printf("FIXME calling stub method: glGetActiveUniform()");
 /*
-  GLS_SET_COMMAND_PTR_BATCH(c, glDepthRangef);
-  c->zNear = zNear;
-  c->zFar = zFar;
-  GLS_PUSH_BATCH(glDepthRangef);
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, glGetActiveUniform);
+	c->program = x;
+	c->index = y;
+	c->bufsize = bufsize;
+	c->length = length;
+	c->size = size;
+	c->type = type;
+	c->name = name;
+	GLS_SEND_PACKET(glGetActiveUniform);
+    
+	wait_for_data("timeout:glGetActiveUniform");
+	gls_ret_glGetActiveUniform_t *ret = (gls_ret_glGetActiveUniform_t *)glsc_global.tmp_buf.buf;
 */
 }
 

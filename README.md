@@ -38,8 +38,8 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 - [x] glGetError
 - [x] glGetIntegerv
 - [x] glGetFloatv
-- [ ] glReadPixels
-- [ ] glGetProgramiv
+- [x] glReadPixels (experimental)
+- [x] glGetProgramiv
 - [x] glGetShaderiv
 - [x] glGetString
 - [x] glTexSubImage2D
