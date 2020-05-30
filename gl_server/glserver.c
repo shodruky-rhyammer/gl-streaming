@@ -283,6 +283,7 @@ void glse_glGetFloatv()
   GLSE_SET_COMMAND_PTR(c, glGetFloatv);
   gls_ret_glGetFloatv_t *ret = (gls_ret_glGetFloatv_t *)glsec_global.tmp_buf.buf;
   glGetFloatv(c->name, &ret->params);
+  check_gl_err();
   ret->cmd = GLSC_glGetFloatv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetFloatv_t),(char *)glsec_global.tmp_buf.buf);
 }
@@ -293,6 +294,7 @@ void glse_glGetIntegerv()
   GLSE_SET_COMMAND_PTR(c, glGetIntegerv);
   gls_ret_glGetIntegerv_t *ret = (gls_ret_glGetIntegerv_t *)glsec_global.tmp_buf.buf;
   glGetIntegerv(c->name, &ret->params);
+  check_gl_err();
   ret->cmd = GLSC_glGetIntegerv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetIntegerv_t),(char *)glsec_global.tmp_buf.buf);
 }
@@ -320,6 +322,7 @@ void glse_glGetProgramiv()
   GLSE_SET_COMMAND_PTR(c, glGetProgramiv);
   gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsec_global.tmp_buf.buf;
   glGetProgramiv(c->program,c->pname,&ret->params);
+  check_gl_err();
   ret->cmd = GLSC_glGetProgramiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetProgramiv_t),(char *)glsec_global.tmp_buf.buf);
 }
@@ -330,6 +333,7 @@ void glse_glGetShaderiv()
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
   glGetShaderiv(c->shader,c->pname,&ret->params);
+  check_gl_err();
   // LOGD("GLGetShaderiv from %p return %p or with address it become %p", c->pname, ret->params, &ret->params);
   ret->cmd = GLSC_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetShaderiv_t),(char *)glsec_global.tmp_buf.buf);
@@ -341,6 +345,7 @@ void glse_glGetString()
   GLSE_SET_COMMAND_PTR(c, glGetString);
   gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsec_global.tmp_buf.buf;
   const char *params = glGetString(c->name);
+  check_gl_err();
   ret->cmd = GLSC_glGetString;
   // LOGD("Client asking for %i, return %s", c->name, params);
   ret->params[GLS_STRING_SIZE_PLUS - 1] = '\0';

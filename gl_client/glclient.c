@@ -784,6 +784,14 @@ GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* p
 
   wait_for_data("timeout:glGetShaderiv");
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
+  
+  // Little hacks for debug
+  if (ret->params == 0) {
+	  ret->params = 1;
+  } /* else if (ret->params == 1) {
+	  ret->params = 0;
+  } */
+  
   *params = ret->params;
   printf("Done executing glGetShaderiv(%p, %p) with return %i\n", shader, pname, ret->params);
 }
@@ -930,8 +938,8 @@ GL_APICALL void GL_APIENTRY glLinkProgram (GLuint program)
 GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
 {
   gls_cmd_flush();
-  if (count > 256)
-  {
+  if (count > 10240) { // 256
+    printf("gls warning: shader too large, over 10kb, ignoring.");
     return;
   }
   gls_data_glShaderSource_t *dat = (gls_data_glShaderSource_t *)glsc_global.tmp_buf.buf;
