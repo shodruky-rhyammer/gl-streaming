@@ -330,6 +330,7 @@ void glse_glGetShaderiv()
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
   glGetShaderiv(c->shader,c->pname,&ret->params);
+  // LOGD("GLGetShaderiv from %p return %p or with address it become %p", c->pname, ret->params, &ret->params);
   ret->cmd = GLSC_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetShaderiv_t),(char *)glsec_global.tmp_buf.buf);
 }
@@ -341,6 +342,7 @@ void glse_glGetString()
   gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsec_global.tmp_buf.buf;
   const char *params = glGetString(c->name);
   ret->cmd = GLSC_glGetString;
+  // LOGD("Client asking for %i, return %s", c->name, params);
   ret->params[GLS_STRING_SIZE_PLUS - 1] = '\0';
   strncpy(ret->params, params, GLS_STRING_SIZE);
   glse_cmd_send_data(0,sizeof(gls_ret_glGetString_t),(char *)glsec_global.tmp_buf.buf);

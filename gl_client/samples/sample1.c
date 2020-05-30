@@ -523,8 +523,8 @@ int main(int argc, char * argv[])
   int opt;
   char my_ip[GLS_STRING_SIZE_PLUS];
   char his_ip[GLS_STRING_SIZE_PLUS];
-  uint16_t my_port = 12346;
-  uint16_t his_port = 12345;
+  uint16_t my_port = 18146;
+  uint16_t his_port = 18145;
   strncpy(my_ip, "127.0.0.1", GLS_STRING_SIZE);
   strncpy(his_ip, "127.0.0.1", GLS_STRING_SIZE);
   strncpy(glcc.joy_dev, "/dev/input/js0", GLS_STRING_SIZE);

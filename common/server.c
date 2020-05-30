@@ -113,7 +113,7 @@ void set_max_mbps(server_context_t *c, unsigned int mbps)
 }
 
 
-#ifdef __ANDROID__ // GL_SERVER
+// #ifdef __ANDROID__ // GL_SERVER
 void set_server_address_port(server_context_t *c, char * addr, uint16_t port)
 {
   strncpy(c->server_thread_arg.addr, addr, sizeof(c->server_thread_arg.addr));
@@ -134,7 +134,7 @@ void set_client_user_context(server_context_t *c, void *ptr)
 }
 
 
-#else // GL_CLIENT
+// #else // GL_CLIENT
 void set_address_port(server_context_t *c, char * addr, uint16_t port)
 {
   strncpy(c->addr, addr, sizeof(c->addr));
@@ -148,7 +148,7 @@ void set_bind_address_port(server_context_t *c, char * addr, uint16_t port)
   c->bind_port = port;
 }
 
-#endif // GL_CLIENT
+// #endif // GL_CLIENT
 
 
 void socket_open(server_context_t *c)
@@ -225,7 +225,7 @@ void socket_close(server_context_t *c)
 }
 
 
-#ifdef __ANDROID__ // GL_SERVER
+// #ifdef __ANDROID__ // GL_SERVER
 void server_run(server_context_t *c, void *(*popper_thread)(void *))
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
@@ -243,22 +243,22 @@ void server_run(server_context_t *c, void *(*popper_thread)(void *))
   pthread_join(c->popper_th, NULL);
   
   // From https://github.com/tinmaniac/gl-streaming/blob/master/gl_server/server.c#L188
-// #ifdef __ANDROID__
+#ifdef __ANDROID__
   // this is wrong, but android has no pthread_cancel
   // see stack overflow for a better solution that uses a SIGUSR1 handler
   // that I don't have time to implement right now
   // http://stackoverflow.com/questions/4610086/pthread-cancel-alternatives-in-android-ndk
-//   pthread_kill(c->server_th, SIGUSR1);
-// #else
-//   pthread_cancel(c->server_th);
-// #endif
+  pthread_kill(c->server_th, SIGUSR1);
+#else
+  pthread_cancel(c->server_th);
+#endif
   
   socket_close(c);
   fifo_delete(&c->fifo);
 }
 
 
-#else // GL_CLIENT
+#ifdef // GL_CLIENT
 void *server_start(server_context_t *c)
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);

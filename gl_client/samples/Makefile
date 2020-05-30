@@ -2,7 +2,7 @@ CFLAGS=-O3 -Wall
 
 INCLUDES=-I.. -I../include -I../../common
 LIBS=-lpthread -lm
-OBJS=fifo.o server.o glclient.o
+OBJS=fifo.o server.o glclient.o glsutil.o
 EXES=sample1 sample2
 
 all: $(EXES)

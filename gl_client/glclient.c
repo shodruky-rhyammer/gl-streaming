@@ -259,7 +259,7 @@ int gls_cmd_get_context()
   {
     glsc_global.screen_width = ret->screen_width;
     glsc_global.screen_height = ret->screen_height;
-	printf("gls info: width=%i, height=%i\n", ret->screen_width, ret->screen_height);
+	printf("\ngls info: width=%i, height=%i\n", ret->screen_width, ret->screen_height);
 	if (ret->server_version != GLS_VERSION) {
 		printf("\e[33m\e[1mgls warning\e[0m: Incompatile version, server version %p but client version %p.\n", ret->server_version, GLS_VERSION);
 	}
@@ -785,7 +785,7 @@ GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* p
   wait_for_data("timeout:glGetShaderiv");
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
   *params = ret->params;
-  // printf("Done executing glGetShaderiv with return %i\n",ret->params);
+  printf("Done executing glGetShaderiv(%p, %p) with return %i\n", shader, pname, ret->params);
 }
 
 
