@@ -17,6 +17,10 @@ extern "C"
 		var_client_port = clientPort;
 		
 		var_client_addr = env->GetStringUTFChars(jstrclient_addr, 0);
+		
+		var_path_shadercache = "/sdcard/games/.minecraft/shader_cache";
+		var_file_fragment_shader = "/sdcard/games/.minecraft/shader_cache/fragment_shader.glsl";
+		var_file_vertex_shader = "/sdcard/games/.minecraft/shader_cache/vertex_shader.glsl";
 	}
 	
 	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_setGLSize(JNIEnv* env, jobject thiz, jint width, jint height, jobject surface)
