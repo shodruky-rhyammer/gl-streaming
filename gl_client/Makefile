@@ -3,7 +3,7 @@ CFLAGS=-O3 -Wall -I../common -I. -I./include -fPIC
 # CFLAGS+=-DGL_CLIENT=1
 
 LIBS=-lpthread -lm
-OBJS=fifo.o server.o glclient.o
+OBJS=fifo.o server.o clientegl.o clientgles.o glclient.o
 
 LIB_GLES=libGLESv2.so.2
 
