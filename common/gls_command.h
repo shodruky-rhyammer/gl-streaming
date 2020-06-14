@@ -192,6 +192,7 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t dpy;
   uint32_t name;
 } gls_eglQueryString_t;
 

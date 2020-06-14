@@ -1,7 +1,7 @@
 // This file declare EGL methods for stubs or streaming
 
-#include "EGL/egl.h"
 #include "glclient.h"
+#include "EGL/egl.h"
 
 
 EGLBoolean eglBindAPI(EGLenum api)
@@ -50,6 +50,7 @@ const char *eglQueryString( EGLDisplay dpy, EGLint name )
 */
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglQueryString);
+	c->dpy = dpy;
 	c->name = name;
 	GLS_SEND_PACKET(eglQueryString);
     

@@ -6,6 +6,8 @@ LOCAL_SRC_FILES := ../common/fifo.c   \
 				   ../common/server.c \
 				   glcontrol.c        \
 				   glserver.c         \
+				   serveregl.c        \
+				   servergles.c       \
 				   main.c
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 					$(LOCAL_PATH)/../common

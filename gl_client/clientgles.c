@@ -1,4 +1,5 @@
 // This file declare OpenGL ES methods for streaming
+
 #include "glclient.h"
 #include "GLES2/gl2.h"
 
