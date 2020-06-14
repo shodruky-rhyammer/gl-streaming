@@ -273,7 +273,9 @@ void *server_start(server_context_t *c)
 
 void server_stop(server_context_t *c)
 {
+#ifndef __TERMUX__ // If building on Termux
     pthread_cancel(c->server_th);
+#endif // __ANDROID__ // If building on Termux
 
     socket_close(c);
     fifo_delete(&c->fifo);
