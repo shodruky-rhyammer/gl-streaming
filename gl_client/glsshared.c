@@ -20,8 +20,17 @@ void gls_initshared()
     char his_ip[GLS_STRING_SIZE_PLUS];
     uint16_t my_port = 18146;
     uint16_t his_port = 18145;
+	
+	const char* env_serverIp = getenv("GLS_SERVER_IP");
+	
+	if (env_serverIp == NULL) {
+		env_serverIp = "127.0.0.1";
+	} else {
+		printf("GLS_SERVER_IP is set to %s\n", env_serverIp);
+	}
+	
     strncpy(my_ip, "127.0.0.1", GLS_STRING_SIZE);
-    strncpy(his_ip, "127.0.0.1", GLS_STRING_SIZE);
+    strncpy(his_ip, env_serverIp, GLS_STRING_SIZE);
     server_init(&sc);
     set_bind_address_port(&sc, my_ip, my_port);
     set_address_port(&sc, his_ip, his_port);
@@ -31,7 +40,7 @@ void gls_initshared()
     gls_cmd_get_context();
     init = 1;
 
-    return 0;
+    // return 0;
 }
 
 EGLBoolean eglBindAPI(EGLenum api)
@@ -125,9 +134,9 @@ EGLBoolean eglDestroySurface( EGLDisplay dpy, EGLSurface surface )
 EGLBoolean eglQuerySurface( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint *value )
 {
     if( attribute == EGL_WIDTH )
-        *value = 100;
+        *value = glsc_global.screen_width;
     else if( attribute == EGL_HEIGHT )
-        *value = 100;
+        *value = glsc_global.screen_height;
     else return EGL_FALSE;
     return EGL_TRUE;
 }
