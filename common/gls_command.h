@@ -52,6 +52,11 @@ enum GL_Server_Command
   GLSC_SEND_DATA,
   GLSC_FLUSH,
   GLSC_get_context,
+  
+  // Some EGL commands
+  GLSC_eglGetError,
+  GLSC_eglQueryString,
+  
   GLSC_glActiveTexture,
   GLSC_glAttachShader,
   GLSC_glBindAttribLocation,
@@ -183,6 +188,35 @@ typedef struct
 } gls_cmd_send_data_t;
 
 
+// EGL commands
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+} gls_eglQueryString_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  char params[GLS_STRING_SIZE_PLUS];
+} gls_ret_eglQueryString_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_eglGetError_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t error;
+} gls_ret_eglGetError_t;
+
+
+// OpenGL ES commands
 typedef struct
 {
   uint32_t cmd;

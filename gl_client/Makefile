@@ -17,6 +17,12 @@ fifo.o: ../common/fifo.c ../common/fifo.h
 server.o: ../common/server.c ../common/server.h fifo.o
 	gcc -c -o server.o $(CFLAGS) ../common/server.c
 
+clientegl.o: clientegl.c include/EGL/egl.h
+	gcc -c -o clientegl.o $(CFLAGS) clientegl.c
+
+clientgles.o: clientgles.c include/GLES2/gl2.h
+	gcc -c -o clientgles.o $(CFLAGS) clientgles.c
+
 glclient.o: glclient.c glclient.h ../common/gls_command.h server.o
 	gcc -c -o glclient.o $(CFLAGS) glclient.c
 
