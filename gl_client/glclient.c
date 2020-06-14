@@ -34,57 +34,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 
 #include "glclient.h"
-#include "GLES2/gl2.h"
-
-#define GLS_TMP_BUFFER_SIZE 2097152
-#define GLS_OUT_BUFFER_SIZE 2048
-#define TRUE 1
-#define FALSE 0
-#define BATCH_AUTO_FLUSH_SIZE 8128
-#define GLS_TIMEOUT_SEC 3.0f
-
-// gls_glFunctionName_t *c = (gls_glFunctionName_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
-// c->cmd = GLSC_glFunctionName;
-#define GLS_SET_COMMAND_PTR_BATCH(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr); PTR->cmd = GLSC_##FUNCNAME
-
-// push_batch_command(sizeof(gls_glFunctionName_t));
-#define GLS_PUSH_BATCH(FUNCNAME) push_batch_command(sizeof(gls_##FUNCNAME##_t))
-
-// gls_glFunctionName_t *c = (gls_glFunctionName_t *)glsc_global.out_buf.buf;
-// c->cmd = GLSC_glFunctionName;
-#define GLS_SET_COMMAND_PTR(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)glsc_global.out_buf.buf; PTR->cmd = GLSC_##FUNCNAME
-
-// send_packet(sizeof(gls_glFunctionName_t));
-#define GLS_SEND_PACKET(FUNCNAME) send_packet(sizeof(gls_##FUNCNAME##_t))
-
-gls_context_t glsc_global;
-static struct vbo_state
-{
-    GLuint vbo, ibo, ibo_emu;
-} vbo;
-
-struct attrib_ptr_s {
-    GLboolean   isenabled;
-    GLint       size;
-    GLenum      type;
-    GLsizei     stride;
-    GLboolean   normalized;
-    const GLvoid *ptr;
-    GLuint vbo_id;
-    GLuint webgl_vbo_id;
-} vt_attrib_pointer[16];
-
-int gls_cmd_flush();
 
 
-static inline float get_diff_time(struct timeval start, struct timeval end)
+float get_diff_time(struct timeval start, struct timeval end)
 {
   float dt = (float)(end.tv_sec - start.tv_sec) + (float)(end.tv_usec - start.tv_usec) * 0.000001f;
   return dt;
 }
 
 
-static inline int check_batch_overflow(size_t size, const char *msg)
+int check_batch_overflow(size_t size, const char *msg)
 {
   if (size >= GLS_TMP_BUFFER_SIZE - BATCH_AUTO_FLUSH_SIZE)
   {
@@ -100,7 +59,7 @@ static inline int check_batch_overflow(size_t size, const char *msg)
 }
 
 
-static inline void push_batch_command(size_t size)
+void push_batch_command(size_t size)
 {
   glsc_global.tmp_buf.ptr = next_ptr(glsc_global.tmp_buf.ptr, size, GLS_ALIGNMENT_BITS);
   if (glsc_global.tmp_buf.ptr > BATCH_AUTO_FLUSH_SIZE)

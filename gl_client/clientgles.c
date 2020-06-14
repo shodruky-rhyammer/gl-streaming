@@ -641,7 +641,7 @@ GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const 
   gls_cmd_flush();
   printf("Shader length = %i\n", count);
   printf(" ----- BEGIN SHADER CONTENT -----\n");
-  printf(string);
+  printf("%s\n", &string);
   printf(" ----- ENDED SHADER CONTENR -----\n");
   if (count > 10240) { // 256
     printf("gls warning: shader too large, over 10kb, ignoring.\n");
