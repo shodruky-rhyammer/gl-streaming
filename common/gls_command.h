@@ -55,6 +55,7 @@ enum GL_Server_Command
   GLSC_get_context,
   
   // EGL commands
+  GLSC_eglBindAPI,
   GLSC_eglChooseConfig,
   GLSC_eglCopyBuffers,
   GLSC_eglCreateContext,
@@ -65,6 +66,7 @@ enum GL_Server_Command
   GLSC_eglDestroySurface,
   GLSC_eglGetConfigAttrib,
   GLSC_eglGetConfigs,
+  GLSC_eglGetCurrentContext,
   GLSC_eglGetCurrentDisplay,
   GLSC_eglGetCurrentSurface,
   GLSC_eglGetDisplay,
@@ -267,6 +269,46 @@ typedef struct
   uint32_t num_config;
 } gls_ret_eglGetConfigs_t;
 */
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_eglGetCurrentContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t context;
+} gls_ret_eglGetCurrentContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_eglGetCurrentDisplay_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t display;
+} gls_ret_eglGetCurrentDisplay_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t readdraw;
+} gls_eglGetCurrentSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t surface;
+} gls_ret_eglGetCurrentSurface_t;
 
 
 typedef struct

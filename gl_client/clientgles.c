@@ -569,7 +569,7 @@ GL_APICALL void GL_APIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufsize, 
 }
 
 
-GL_APICALL const GLubyte GL_APIENTRY *glGetString(GLenum name)
+GL_APICALL const GLubyte* GL_APIENTRY glGetString(GLenum name)
 {
     if (name == GL_VENDOR) {
 		// Change vendor name to gl-streaming.

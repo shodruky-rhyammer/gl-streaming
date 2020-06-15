@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "glserver.h"
 
+#define GL_DEBUG
 
 glse_context_t glsec_global;
 
