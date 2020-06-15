@@ -486,15 +486,8 @@ GL_APICALL void GL_APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* p
   wait_for_data("timeout:glGetShaderiv");
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsc_global.tmp_buf.buf;
   
-  // Little hacks for debug
-  if (ret->params == 0) {
-	  ret->params = 1;
-  } /* else if (ret->params == 1) {
-	  ret->params = 0;
-  } */
-  
   *params = ret->params;
-  printf("Done executing glGetShaderiv(%p, %p) with return %i\n", shader, pname, ret->params);
+  // printf("Done executing glGetShaderiv(%p, %p) with return %i\n", shader, pname, ret->params);
 }
 
 
@@ -639,18 +632,17 @@ GL_APICALL void GL_APIENTRY glLinkProgram (GLuint program)
 GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
 {
   gls_cmd_flush();
-  printf("Shader length = %i\n", count);
-  printf(" ----- BEGIN SHADER CONTENT -----\n");
-  printf("%s\n", &string);
-  printf(" ----- ENDED SHADER CONTENR -----\n");
   if (count > 10240) { // 256
     printf("gls warning: shader too large, over 10kb, ignoring.\n");
     return;
   }
   gls_data_glShaderSource_t *dat = (gls_data_glShaderSource_t *)glsc_global.tmp_buf.buf;
   size_t size_all = (size_t)(dat->data - (char *)dat);
+  
+  // printf("\n ----- BEGIN SHADER CONTENT -----\n");
   uint32_t stroffset = 0;
   unsigned int i;
+  
   for (i = 0; i < count; i++)
   {
     char *strptr = (char *)string[i];
@@ -669,11 +661,13 @@ GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const 
     }
     if (strsize > 0x100000)
     {
+	  printf("gls error: shader strsize more than 0x100000!\n");
       return;
     }
     size_all += strsize + 1;
     if (size_all > GLS_TMP_BUFFER_SIZE)
     {
+	  printf("gls error: shader buffer size overflow!\n");
       return;
     }
     dat->string[i] = stroffset;
@@ -681,8 +675,12 @@ GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const 
     memcpy(&dat->data[stroffset], strptr, strsize + 1);
     dat->data[stroffset + strsize] = '\0';
     stroffset = stroffset + strsize + 1;
+	
+	// printf("%s\n", strptr);
   }
 
+  // printf(" ----- ENDED SHADER CONTENT -----\n\n");
+  
   gls_cmd_send_data(0, size_all, glsc_global.tmp_buf.buf);
   GLS_SET_COMMAND_PTR(c, glShaderSource);
   c->shader = shader;

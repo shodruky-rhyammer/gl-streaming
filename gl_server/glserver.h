@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
+#include "fastlog.h"
 #include "gls_command.h"
 #include "glcontrol.h"
 #include "server.h"

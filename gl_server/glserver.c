@@ -38,7 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <assert.h>
 
-#include "fastlog.h"
 #include "glserver.h"
 
 
@@ -146,10 +145,9 @@ void glse_cmd_flush()
         quit = TRUE;
         break;
 	  default: {
-	    int result = FALSE;
-	  	if (c->cmd >= GLSC_eglGetError && c->cmd <= GLSC_eglQueryString) {
-			result = egl_flushCommand(c);
-		} else if (c->cmd >= GLSC_glActiveTexture) {
+	    int result = egl_flushCommand(c);
+		// Attempt to flush EGL first, if fail then attepmt to GLES.
+		if (result == FALSE) {
 			result = gles_flushCommand(c);
 		}
 		
@@ -223,10 +221,9 @@ void * glserver_thread(void * arg)
           break;
 		  
 		default: {
-		  int result = FALSE;
-		  if (c->cmd >= GLSC_eglGetError && c->cmd <= GLSC_eglQueryString) {
-			  result = egl_executeCommand(c);
-		  } else if (c->cmd >= GLSC_glActiveTexture) {
+		  int result = egl_executeCommand(c);
+		  // Attempt to execute EGL first, if fail then attepmt to GLES.
+		  if (result == FALSE) {
 			  result = gles_executeCommand(c);
 		  }
 		  

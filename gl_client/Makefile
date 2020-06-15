@@ -26,7 +26,7 @@ clientgles.o: clientgles.c include/GLES2/gl2.h
 glclient.o: glclient.c glclient.h ../common/gls_command.h server.o
 	gcc -c -o glclient.o $(CFLAGS) glclient.c
 
-$(LIB_GLES): $(OBJS) glsshared.c
+$(LIB_GLES): $(OBJS)
 	gcc -shared -o $(LIB_GLES) $(CFLAGS) glsshared.c $(OBJS) -Wl,--no-undefined -pthread -ldl
 
 clean:

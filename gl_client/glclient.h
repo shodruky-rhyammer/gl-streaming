@@ -50,7 +50,6 @@ typedef struct
 extern "C" {
 #endif
 
-#define GLS_TMP_BUFFER_SIZE 2097152
 #define GLS_OUT_BUFFER_SIZE 2048
 #define BATCH_AUTO_FLUSH_SIZE 8128
 #define GLS_TIMEOUT_SEC 3.0f
@@ -93,6 +92,8 @@ float get_diff_time(struct timeval start, struct timeval end);
 int check_batch_overflow(size_t size, const char *msg);
 void push_batch_command(size_t size);
 int gls_cmd_flush();
+
+void gls_initshared();
 
 extern gls_context_t glsc_global;
 int gls_init(server_context_t *arg);

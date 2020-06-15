@@ -459,9 +459,9 @@ void glse_glGetShaderiv()
 {
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
-  glGetShaderiv(c->shader,c->pname,&ret->params);
+  glGetShaderiv(c->shader, c->pname, &ret->params);
   check_gl_err();
-  // LOGD("GLGetShaderiv from %p return %p or with address it become %p", c->pname, ret->params, &ret->params);
+  // LOGD("GLGetShaderiv from %p return %p or with pointer it become %p", c->pname, ret->params, &ret->params);
   ret->cmd = GLSC_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetShaderiv_t),(char *)glsec_global.tmp_buf.buf);
 }
@@ -556,8 +556,52 @@ void glse_glShaderSource()
   {
     dat->string[i] = (uint32_t)(dat->data + dat->string[i]);
   }
+  
   glShaderSource(c->shader, c->count, (const GLchar**)dat->string, dat->length);
   check_gl_err();
+  
+  // Debug: print shader to log
+/*
+  LOGD("\n ----- BEGIN SHADER CONTENT -----");
+  
+  size_t size_all = (size_t)(dat->data - (char *)dat);
+  uint32_t stroffset = 0;
+  
+  // unsigned int i;
+  for (i = 0; i < c->count; i++)
+  {
+    char *strptr = (char *)dat->string[i];
+    size_t strsize;
+    if (dat->length == NULL)
+    {
+      strsize = 0;
+    }
+    else
+    {
+      strsize = dat->length[i];
+    }
+    if (strsize == 0)
+    {
+      strsize = strnlen(strptr, 0xA00000);
+    }
+    if (strsize > 0x100000)
+    {
+      return;
+    }
+    size_all += strsize + 1;
+    if (size_all > GLS_TMP_BUFFER_SIZE)
+    {
+      return;
+    }
+    dat->string[i] = stroffset;
+    dat->length[i] = strsize;
+    memcpy(&dat->data[stroffset], strptr, strsize + 1);
+    dat->data[stroffset + strsize] = '\0';
+    stroffset = stroffset + strsize + 1;
+	LOGD(strptr);
+  }
+  LOGD(" ----- ENDED SHADER CONTENT -----\n");
+*/
 }
 
 

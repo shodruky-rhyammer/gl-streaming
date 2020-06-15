@@ -6,7 +6,14 @@
 
 EGLBoolean eglBindAPI(EGLenum api)
 {
-    return 1;
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglBindAPI);
+	c->api = api;
+	GLS_SEND_PACKET(eglBindAPI);
+    
+	wait_for_data("timeout:eglBindAPI");
+	gls_ret_eglBindAPI_t *ret = (gls_ret_eglBindAPI_t *)glsc_global.tmp_buf.buf;
+	return ret->success;
 }
 
 EGLint eglGetError( void )
@@ -20,20 +27,45 @@ EGLint eglGetError( void )
 	return ret->error;
 }
 
-EGLDisplay eglGetDisplay( NativeDisplayType display )
+EGLDisplay eglGetDisplay(NativeDisplayType display)
 {
-    return 1;
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglGetDisplay);
+	c->display = display;
+	GLS_SEND_PACKET(eglGetDisplay);
+    
+	wait_for_data("timeout:eglGetDisplay");
+	gls_ret_eglGetDisplay_t *ret = (gls_ret_eglGetDisplay_t *)glsc_global.tmp_buf.buf;
+	return ret->display;
 }
 
 EGLBoolean eglInitialize( EGLDisplay dpy, EGLint *major, EGLint *minor )
 {
     gls_initshared();
-    return EGL_TRUE;
+
+	// Sending command
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglInitialize);
+	c->dpy = dpy;
+	c->major = major;
+	c->minor = minor;
+	GLS_SEND_PACKET(eglInitialize);
+    
+	wait_for_data("timeout:eglInitialize");
+	gls_ret_eglInitialize_t *ret = (gls_ret_eglInitialize_t *)glsc_global.tmp_buf.buf;
+	return ret->success;
 }
 
 EGLBoolean eglTerminate( EGLDisplay dpy )
 {
-    return EGL_TRUE;
+    gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglTerminate);
+	c->dpy = dpy;
+	GLS_SEND_PACKET(eglTerminate);
+    
+	wait_for_data("timeout:eglTerminate");
+	gls_ret_eglTerminate_t *ret = (gls_ret_eglTerminate_t *)glsc_global.tmp_buf.buf;
+	return ret->success;
 }
 
 
@@ -62,61 +94,139 @@ const char *eglQueryString( EGLDisplay dpy, EGLint name )
 
 EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY eglGetProcAddress( const char *procname )
 {
+	// Do not implement streaming
     return dlsym(dlopen(NULL, procname));
 }
 
 EGLBoolean eglGetConfigs( EGLDisplay dpy, EGLConfig *configs, EGLint config_size, EGLint *num_config )
 {
-    *num_config = 1;
-	// *configs = EGL_CAST(EGLConfig, 1);
-    return EGL_TRUE;
+/*
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglGetConfigs);
+	c->dpy = dpy;
+	c->name = name;
+	GLS_SEND_PACKET(eglGetConfigs);
+    
+	wait_for_data("timeout:eglGetConfigs");
+	gls_ret_eglGetConfigs_t *ret = (gls_ret_eglGetConfigs_t *)glsc_global.tmp_buf.buf;
+	*num_config = ret->num_config;
+	*configs = ret->configs;
+	return ret->success;
+*/
+
+	*num_configs = 1;
+	*configs = 1;
+	return EGL_TRUE;
 }
 
 EGLBoolean eglChooseConfig( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config )
 {
-    *num_config = 1;
-	// *configs = EGL_CAST(EGLConfig, 1);
-    return EGL_TRUE;
+/*
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglChooseConfig);
+	c->dpy = dpy;
+	c->name = name;
+	GLS_SEND_PACKET(eglChooseConfig);
+    
+	wait_for_data("timeout:eglChooseConfig");
+	gls_ret_eglChooseConfig_t *ret = (gls_ret_eglChooseConfig_t *)glsc_global.tmp_buf.buf;
+	*num_config = ret->num_config;
+	*configs = ret->configs;
+	return ret->success;
+*/
+
+	// This should intended for debug only
+	return eglGetConfigs(dpy, attrib_list, configs, config_size, num_config);
 }
 
 EGLBoolean eglGetConfigAttrib( EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value )
 {
-	value = 0;
-	return EGL_TRUE;
-	
-	/*
-	printf("FIXME %p", attribute);
-    return EGL_FALSE;
-	*/
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglGetConfigAttrib);
+	c->dpy = dpy;
+	c->config = config;
+	c->attribute = attribute;
+	GLS_SEND_PACKET(eglGetConfigAttrib);
+    
+	wait_for_data("timeout:eglGetConfigAttrib");
+	gls_ret_eglGetConfigAttrib_t *ret = (gls_ret_eglGetConfigAttrib_t *)glsc_global.tmp_buf.buf;
+	*value = value;
+	return ret->success;
 }
 
 EGLSurface eglCreateWindowSurface( EGLDisplay dpy, EGLConfig config, NativeWindowType window, const EGLint *attrib_list )
 {
-    return 1;
+/*
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglCreateWindowSurface);
+	c->dpy = dpy;
+	c->config = config;
+	c->window = window;
+	c->attrib_list = attrib_list;
+	GLS_SEND_PACKET(eglCreateWindowSurface);
+    
+	wait_for_data("timeout:eglCreateWindowSurface");
+	gls_ret_eglCreateWindowSurface_t *ret = (gls_ret_eglCreateWindowSurface_t *)glsc_global.tmp_buf.buf;
+	return ret->surface;
+*/
+
+	return 1;
 }
 
 EGLSurface eglCreatePixmapSurface( EGLDisplay dpy, EGLConfig config, NativePixmapType pixmap, const EGLint *attrib_list )
 {
-    return 1;
+/*
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglCreatePixmapSurface);
+	c->dpy = dpy;
+	c->config = config;
+	c->pixmap = pixmap;
+	c->attrib_list = attrib_list;
+	GLS_SEND_PACKET(eglCreatePixmapSurface);
+    
+	wait_for_data("timeout:eglCreatePixmapSurface");
+	gls_ret_eglCreatePixmapSurface_t *ret = (gls_ret_eglCreatePixmapSurface_t *)glsc_global.tmp_buf.buf;
+	return ret->surface;
+*/
+
+	return 1;
 }
 
 EGLSurface eglCreatePbufferSurface( EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list )
 {
-    return 1;
+/*
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglCreatePbufferSurface);
+	c->dpy = dpy;
+	c->config = config;
+	c->attrib_list = attrib_list;
+	GLS_SEND_PACKET(eglCreatePbufferSurface);
+    
+	wait_for_data("timeout:eglCreatePbufferSurface");
+	gls_ret_eglCreatePbufferSurface_t *ret = (gls_ret_eglCreatePbufferSurface_t *)glsc_global.tmp_buf.buf;
+	return ret->surface;
+*/
+	return 1;
 }
 
 EGLBoolean eglDestroySurface( EGLDisplay dpy, EGLSurface surface )
 {
     return EGL_TRUE;
 }
+
 EGLBoolean eglQuerySurface( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint *value )
 {
-    if( attribute == EGL_WIDTH )
-        *value = glsc_global.screen_width;
-    else if( attribute == EGL_HEIGHT )
-        *value = glsc_global.screen_height;
-    else return EGL_FALSE;
-    return EGL_TRUE;
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglQuerySurface);
+	c->dpy = dpy;
+	c->surface = surface;
+	c->attribute = attribute;
+	GLS_SEND_PACKET(eglQuerySurface);
+    
+	wait_for_data("timeout:eglQuerySurface");
+	gls_ret_eglQuerySurface_t *ret = (gls_ret_eglQuerySurface_t *)glsc_global.tmp_buf.buf;
+	*value = ret->value;
+	return ret->success;
 }
 
 /* EGL 1.1 render-to-texture APIs */
@@ -125,10 +235,11 @@ EGLBoolean eglSurfaceAttrib( EGLDisplay dpy, EGLSurface surface, EGLint attribut
 
 }
 
-EGLBoolean eglBindTexImage( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
+EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 {
 
 }
+
 EGLBoolean eglReleaseTexImage( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
 {
 
@@ -176,7 +287,8 @@ EGLBoolean eglQueryContext( EGLDisplay dpy, EGLContext ctx, EGLint attribute, EG
 EGLBoolean eglWaitGL( void )
 {
 
-    return EGL_FALSE;
+    return // EGL_TRUE;
+	EGL_FALSE;
 }
 
 EGLBoolean eglWaitNative( EGLint engine )
