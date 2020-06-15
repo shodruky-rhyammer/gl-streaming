@@ -267,7 +267,10 @@ EGLBoolean eglSwapInterval( EGLDisplay dpy, EGLint interval )
 
 EGLContext eglCreateContext( EGLDisplay dpy, EGLConfig config, EGLContext share_list, const EGLint *attrib_list )
 {
-    return 1;
+    // return 1;
+	
+	// Current stub
+	return eglGetCurrentContext();
 }
 
 EGLBoolean eglDestroyContext( EGLDisplay dpy, EGLContext ctx )
