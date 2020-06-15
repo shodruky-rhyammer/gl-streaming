@@ -96,7 +96,7 @@ int gls_init(server_context_t *arg)
 }
 
 
-void gls_initshared()
+void gls_init_library()
 {
     static server_context_t sc;
     static int init = 0;

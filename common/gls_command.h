@@ -240,6 +240,56 @@ typedef struct
   uint32_t cmd;
   uint32_t dpy;
   uint32_t config;
+  // uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
+} gls_eglCreatePbufferSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t surface;
+} gls_ret_eglCreatePbufferSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t config;
+  uint32_t pixmap;
+  // uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
+} gls_eglCreatePixmapSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t surface;
+} gls_ret_eglCreatePixmapSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t config;
+  uint32_t window;
+  // uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
+} gls_eglCreateWindowSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t surface;
+} gls_ret_eglCreateWindowSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t config;
   uint32_t attribute;
 } gls_eglGetConfigAttrib_t;
 

@@ -93,7 +93,7 @@ int check_batch_overflow(size_t size, const char *msg);
 void push_batch_command(size_t size);
 int gls_cmd_flush();
 
-void gls_initshared();
+void gls_init_library();
 
 extern gls_context_t glsc_global;
 int gls_init(server_context_t *arg);

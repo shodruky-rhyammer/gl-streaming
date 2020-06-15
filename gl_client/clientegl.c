@@ -6,9 +6,7 @@
 
 EGLBoolean eglBindAPI(EGLenum api)
 {
-/*
     gls_cmd_flush();
-	// FIXME sefaulting line below!
 	GLS_SET_COMMAND_PTR(c, eglBindAPI);
 	c->api = api;
 	GLS_SEND_PACKET(eglBindAPI);
@@ -16,9 +14,6 @@ EGLBoolean eglBindAPI(EGLenum api)
 	wait_for_data("timeout:eglBindAPI");
 	gls_ret_eglBindAPI_t *ret = (gls_ret_eglBindAPI_t *)glsc_global.tmp_buf.buf;
 	return ret->success;
-*/
-
-	return EGL_TRUE;
 }
 
 EGLBoolean eglGetConfigAttrib( EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value )
@@ -42,7 +37,7 @@ EGLBoolean eglGetConfigs( EGLDisplay dpy, EGLConfig *configs, EGLint config_size
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglGetConfigs);
 	c->dpy = dpy;
-	c->name = name;
+	c->config_size = config_size;
 	GLS_SEND_PACKET(eglGetConfigs);
     
 	wait_for_data("timeout:eglGetConfigs");
@@ -53,7 +48,6 @@ EGLBoolean eglGetConfigs( EGLDisplay dpy, EGLConfig *configs, EGLint config_size
 */
 
 	*num_config = 1;
-	// *configs = 1;
 	return EGL_TRUE;
 }
 
@@ -81,14 +75,12 @@ EGLDisplay eglGetDisplay(NativeDisplayType display)
 	return ret->display;
 */
 
-	// Just don't need to get other display
+	// Can't getting Android EGL display from Linux Native display?
 	return eglGetCurrentDisplay();
 }
 
 EGLBoolean eglInitialize( EGLDisplay dpy, EGLint *major, EGLint *minor )
 {
-    gls_initshared();
-
 	// Sending command
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglInitialize);
@@ -159,68 +151,55 @@ EGLBoolean eglChooseConfig( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig
 	*configs = ret->configs;
 	return ret->success;
 */
-
 	// This should intended for debug only
 	// return eglGetConfigs(dpy, configs, config_size, num_config);
 	
 	*num_config = 1;
-	// *configs = 1;
 	return EGL_TRUE;
 }
 
 EGLSurface eglCreateWindowSurface( EGLDisplay dpy, EGLConfig config, NativeWindowType window, const EGLint *attrib_list )
 {
-/*
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglCreateWindowSurface);
 	c->dpy = dpy;
 	c->config = config;
 	c->window = window;
-	c->attrib_list = attrib_list;
+	// c->attrib_list = attrib_list;
 	GLS_SEND_PACKET(eglCreateWindowSurface);
     
 	wait_for_data("timeout:eglCreateWindowSurface");
 	gls_ret_eglCreateWindowSurface_t *ret = (gls_ret_eglCreateWindowSurface_t *)glsc_global.tmp_buf.buf;
 	return ret->surface;
-*/
-
-	return 1;
 }
 
 EGLSurface eglCreatePixmapSurface( EGLDisplay dpy, EGLConfig config, NativePixmapType pixmap, const EGLint *attrib_list )
 {
-/*
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglCreatePixmapSurface);
 	c->dpy = dpy;
 	c->config = config;
 	c->pixmap = pixmap;
-	c->attrib_list = attrib_list;
+	// c->attrib_list = attrib_list;
 	GLS_SEND_PACKET(eglCreatePixmapSurface);
     
 	wait_for_data("timeout:eglCreatePixmapSurface");
 	gls_ret_eglCreatePixmapSurface_t *ret = (gls_ret_eglCreatePixmapSurface_t *)glsc_global.tmp_buf.buf;
 	return ret->surface;
-*/
-
-	return 1;
 }
 
 EGLSurface eglCreatePbufferSurface( EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list )
 {
-/*
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglCreatePbufferSurface);
 	c->dpy = dpy;
 	c->config = config;
-	c->attrib_list = attrib_list;
+	// c->attrib_list = attrib_list;
 	GLS_SEND_PACKET(eglCreatePbufferSurface);
     
 	wait_for_data("timeout:eglCreatePbufferSurface");
 	gls_ret_eglCreatePbufferSurface_t *ret = (gls_ret_eglCreatePbufferSurface_t *)glsc_global.tmp_buf.buf;
 	return ret->surface;
-*/
-	return 1;
 }
 
 EGLBoolean eglDestroySurface( EGLDisplay dpy, EGLSurface surface )
@@ -269,7 +248,7 @@ EGLContext eglCreateContext( EGLDisplay dpy, EGLConfig config, EGLContext share_
 {
     // return 1;
 	
-	// Current stub
+	// Stub: current
 	return eglGetCurrentContext();
 }
 

@@ -27,7 +27,7 @@ glclient.o: glclient.c glclient.h ../common/gls_command.h server.o
 	gcc -c -o glclient.o $(CFLAGS) glclient.c
 
 $(LIB_GLES): $(OBJS)
-	gcc -shared -o $(LIB_GLES) $(CFLAGS) glsshared.c $(OBJS) -Wl,--no-undefined -pthread -ldl
+	gcc -shared -o $(LIB_GLES) $(CFLAGS) $(OBJS) -Wl,-init,gls_init_library,--no-undefined -pthread -ldl
 
 clean:
 	rm $(EXES) $(OBJS)
