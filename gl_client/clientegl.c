@@ -156,7 +156,11 @@ EGLBoolean eglChooseConfig( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig
 	wait_for_data("timeout:eglChooseConfig");
 	gls_ret_eglChooseConfig_t *ret = (gls_ret_eglChooseConfig_t *)glsc_global.tmp_buf.buf;
 	*num_config = ret->num_config;
-	*configs = ret->configs;
+	
+	if (configs != NULL) {
+		*configs = ret->configs;
+	}
+	
 	return ret->success;
 
 	// This should intended for debug only
