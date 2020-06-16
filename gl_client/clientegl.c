@@ -1,5 +1,8 @@
 // This file declare EGL methods for stubs or streaming
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
+
 #include "glclient.h"
 #include "EGL/egl.h"
 
@@ -18,10 +21,15 @@ EGLBoolean eglBindAPI(EGLenum api)
 
 EGLBoolean eglGetConfigAttrib( EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value )
 {
+	if (attribute == EGL_NATIVE_VISUAL_ID) {
+		*value = XVisualIDFromVisual(TrueColor);
+		return true;
+	}
+	
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglGetConfigAttrib);
-	c->dpy = dpy;
-	c->config = config;
+	// c->dpy = dpy;
+	// c->config = config;
 	c->attribute = attribute;
 	GLS_SEND_PACKET(eglGetConfigAttrib);
     
@@ -160,46 +168,17 @@ EGLBoolean eglChooseConfig( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig
 
 EGLSurface eglCreateWindowSurface( EGLDisplay dpy, EGLConfig config, NativeWindowType window, const EGLint *attrib_list )
 {
-	gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, eglCreateWindowSurface);
-	c->dpy = dpy;
-	c->config = config;
-	c->window = window;
-	// c->attrib_list = attrib_list;
-	GLS_SEND_PACKET(eglCreateWindowSurface);
-    
-	wait_for_data("timeout:eglCreateWindowSurface");
-	gls_ret_eglCreateWindowSurface_t *ret = (gls_ret_eglCreateWindowSurface_t *)glsc_global.tmp_buf.buf;
-	return ret->surface;
+	return 1;
 }
 
 EGLSurface eglCreatePixmapSurface( EGLDisplay dpy, EGLConfig config, NativePixmapType pixmap, const EGLint *attrib_list )
 {
-	gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, eglCreatePixmapSurface);
-	c->dpy = dpy;
-	c->config = config;
-	c->pixmap = pixmap;
-	// c->attrib_list = attrib_list;
-	GLS_SEND_PACKET(eglCreatePixmapSurface);
-    
-	wait_for_data("timeout:eglCreatePixmapSurface");
-	gls_ret_eglCreatePixmapSurface_t *ret = (gls_ret_eglCreatePixmapSurface_t *)glsc_global.tmp_buf.buf;
-	return ret->surface;
+	return 1;
 }
 
 EGLSurface eglCreatePbufferSurface( EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list )
 {
-	gls_cmd_flush();
-	GLS_SET_COMMAND_PTR(c, eglCreatePbufferSurface);
-	c->dpy = dpy;
-	c->config = config;
-	// c->attrib_list = attrib_list;
-	GLS_SEND_PACKET(eglCreatePbufferSurface);
-    
-	wait_for_data("timeout:eglCreatePbufferSurface");
-	gls_ret_eglCreatePbufferSurface_t *ret = (gls_ret_eglCreatePbufferSurface_t *)glsc_global.tmp_buf.buf;
-	return ret->surface;
+	return 1;
 }
 
 EGLBoolean eglDestroySurface( EGLDisplay dpy, EGLSurface surface )

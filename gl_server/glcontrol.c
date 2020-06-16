@@ -62,8 +62,6 @@ void init_egl(graphics_context_t *gc)
     EGL_CONTEXT_CLIENT_VERSION, 2,
     EGL_NONE };
 
-  EGLConfig config;
-
 #ifdef RASPBERRY_PI
   bcm_host_init();
 #endif

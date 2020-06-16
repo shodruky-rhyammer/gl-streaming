@@ -57,6 +57,8 @@ typedef struct
 extern "C" {
 #endif
 
+EGLConfig config;
+
 void init_egl(graphics_context_t *gc);
 void release_egl(graphics_context_t *gc);
 

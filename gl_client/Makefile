@@ -1,8 +1,9 @@
-CFLAGS=-O3 -Wall -I../common -I. -I./include -fPIC
+CFLAGS=-O3 -Wall -I../common -I. -I./include -DUSE_X11 -fPIC
 # Move to define in C code.
 # CFLAGS+=-DGL_CLIENT=1
 
-LIBS=-lpthread -lm
+LIBS=-pthread -ldl -lX11
+CFLAGS+= $(LIBS)
 OBJS=fifo.o server.o clientegl.o clientgles.o glclient.o
 
 LIB_GLES=libGLESv2.so.2
@@ -27,7 +28,7 @@ glclient.o: glclient.c glclient.h ../common/gls_command.h server.o
 	gcc -c -o glclient.o $(CFLAGS) glclient.c
 
 $(LIB_GLES): $(OBJS)
-	gcc -shared -o $(LIB_GLES) $(CFLAGS) $(OBJS) -Wl,-init,gls_init_library,--no-undefined -pthread -ldl
+	gcc -shared -o $(LIB_GLES) $(CFLAGS) $(OBJS) -Wl,-init,gls_init_library,--no-undefined $(LIBS)
 
 clean:
 	rm $(EXES) $(OBJS)

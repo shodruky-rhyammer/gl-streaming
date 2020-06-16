@@ -9,15 +9,6 @@ int egl_executeCommand(gls_command_t *c) {
         case GLSC_eglBindAPI:
 			glse_eglBindAPI();
 			break;
-		case GLSC_eglCreateWindowSurface:
-			glse_eglCreateWindowSurface();
-			break;
-		case GLSC_eglCreatePixmapSurface:
-			glse_eglCreatePixmapSurface();
-			break;
-		case GLSC_eglCreatePbufferSurface:
-			glse_eglCreatePbufferSurface();
-			break;
 		case GLSC_eglGetConfigAttrib:
 			glse_eglGetConfigAttrib();
 			break;
@@ -77,48 +68,13 @@ void glse_eglBindAPI()
   glse_cmd_send_data(0,sizeof(gls_ret_eglBindAPI_t),(char *)glsec_global.tmp_buf.buf);
 }
 
-void glse_eglCreateWindowSurface()
-{
-  GLSE_SET_COMMAND_PTR(c, eglCreateWindowSurface);
-  EGLSurface surface = eglGetCurrentSurface(EGL_DRAW); // Stub: current
-  // eglCreateWindowSurface(c->dpy, c->config, c->window, c->attrib_list);
-  check_gl_err();
-  gls_ret_eglCreateWindowSurface_t *ret = (gls_ret_eglCreateWindowSurface_t *)glsec_global.tmp_buf.buf;
-  ret->cmd = GLSC_eglCreateWindowSurface;
-  ret->surface = surface;
-  glse_cmd_send_data(0, sizeof(gls_ret_eglCreateWindowSurface_t), (char *)glsec_global.tmp_buf.buf);
-}
-
-void glse_eglCreatePixmapSurface()
-{
-  GLSE_SET_COMMAND_PTR(c, eglCreatePixmapSurface);
-  EGLSurface surface = eglGetCurrentSurface(EGL_DRAW); // Stub: current
-  // eglCreatePixmapSurface(c->dpy, c->config, c->pixmap, c->attrib_list);
-  check_gl_err();
-  gls_ret_eglCreatePixmapSurface_t *ret = (gls_ret_eglCreatePixmapSurface_t *)glsec_global.tmp_buf.buf;
-  ret->cmd = GLSC_eglCreatePixmapSurface;
-  ret->surface = surface;
-  glse_cmd_send_data(0, sizeof(gls_ret_eglCreatePixmapSurface_t), (char *)glsec_global.tmp_buf.buf);
-}
-
-void glse_eglCreatePbufferSurface()
-{
-  GLSE_SET_COMMAND_PTR(c, eglCreatePbufferSurface);
-  EGLSurface surface = eglGetCurrentSurface(EGL_DRAW); // Stub: current
-  // eglCreatePbufferSurface(c->dpy, c->config, c->attrib_list);
-  check_gl_err();
-  gls_ret_eglCreatePbufferSurface_t *ret = (gls_ret_eglCreatePbufferSurface_t *)glsec_global.tmp_buf.buf;
-  ret->cmd = GLSC_eglCreatePbufferSurface;
-  ret->surface = surface;
-  glse_cmd_send_data(0, sizeof(gls_ret_eglCreatePbufferSurface_t), (char *)glsec_global.tmp_buf.buf);
-}
-
 void glse_eglGetConfigAttrib()
 {
   GLSE_SET_COMMAND_PTR(c, eglGetConfigAttrib);
   gls_ret_eglGetConfigAttrib_t *ret = (gls_ret_eglGetConfigAttrib_t *)glsec_global.tmp_buf.buf;
   
-  EGLBoolean success = eglGetConfigAttrib(c->dpy, c->config, c->attribute, &ret->value);
+  EGLDisplay dpy = eglGetCurrentDisplay();
+  EGLBoolean success = eglGetConfigAttrib(dpy, config, c->attribute, &ret->value);
   check_gl_err();
   
   ret->cmd = GLSC_eglGetConfigAttrib;
