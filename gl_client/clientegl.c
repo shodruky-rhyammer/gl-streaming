@@ -22,8 +22,10 @@ EGLBoolean eglBindAPI(EGLenum api)
 EGLBoolean eglGetConfigAttrib( EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value )
 {
 	if (attribute == EGL_NATIVE_VISUAL_ID) {
-		*value = XVisualIDFromVisual(TrueColor);
-		return true;
+		Display *xDisplay = XOpenDisplay(NULL);
+		int xScreenId = DefaultScreen(xDisplay);
+		*value = XVisualIDFromVisual(XDefaultVisual(xDisplay, xScreenId));
+		return EGL_TRUE;
 	}
 	
 	gls_cmd_flush();
