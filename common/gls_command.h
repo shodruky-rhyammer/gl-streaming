@@ -223,7 +223,7 @@ typedef struct
 // EGL command data
 typedef struct
 {
-  uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
+  uint32_t attrib_list[GLS_DATA_SIZE];
 } gls_data_egl_attriblist_t;
  
 // EGL commands
@@ -245,33 +245,18 @@ typedef struct
 {
   uint32_t cmd;
   uint32_t dpy;
-  uint32_t config;
-  uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
-} gls_eglCreatePbufferSurface_t;
+  uint32_t config_size;
+} gls_eglChooseConfig_t;
 
 
 typedef struct
 {
   uint32_t cmd;
-  uint32_t surface;
-} gls_ret_eglCreatePbufferSurface_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  uint32_t dpy;
-  uint32_t config;
-  uint32_t pixmap;
-  uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
-} gls_eglCreatePixmapSurface_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  uint32_t surface;
-} gls_ret_eglCreatePixmapSurface_t;
+// FIXME sending return data???
+  uint32_t configs[GLS_DATA_SIZE];
+  uint32_t num_config;
+  uint32_t success;
+} gls_ret_eglChooseConfig_t;
 
 
 typedef struct
@@ -279,23 +264,6 @@ typedef struct
   uint32_t cmd;
   uint32_t dpy;
   uint32_t config;
-  uint32_t window;
-  uint32_t attrib_list[GLS_STRING_SIZE_PLUS];
-} gls_eglCreateWindowSurface_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  uint32_t surface;
-} gls_ret_eglCreateWindowSurface_t;
-
-
-typedef struct
-{
-  uint32_t cmd;
-  // uint32_t dpy;
-  // uint32_t config;
   uint32_t attribute;
 } gls_eglGetConfigAttrib_t;
 
@@ -308,7 +276,6 @@ typedef struct
 } gls_ret_eglGetConfigAttrib_t;
 
 
-/*
 typedef struct
 {
   uint32_t cmd;
@@ -321,10 +288,10 @@ typedef struct
 {
   uint32_t cmd;
 // FIXME sending return data???
-  uint32_t[GLS_STRING_SIZE_PLUS] configs;
+  uint32_t configs[GLS_DATA_SIZE];
   uint32_t num_config;
+  uint32_t success;
 } gls_ret_eglGetConfigs_t;
-*/
 
 
 typedef struct
@@ -409,6 +376,22 @@ typedef struct
   uint32_t success;
 } gls_ret_eglInitialize_t;
 
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t ctx;
+  uint32_t attribute;
+} gls_eglQueryContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t value;
+  uint32_t success;
+} gls_ret_eglQueryContext_t;
+
 
 typedef struct
 {
@@ -423,6 +406,7 @@ typedef struct
   uint32_t cmd;
   char params[GLS_STRING_SIZE_PLUS];
 } gls_ret_eglQueryString_t;
+
 
 typedef struct
 {
