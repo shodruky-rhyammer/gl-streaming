@@ -185,18 +185,20 @@ EGLBoolean eglDestroySurface( EGLDisplay dpy, EGLSurface surface )
 
 EGLBoolean eglQuerySurface( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint *value )
 {
+	// This fix size assert in `es2gears` and `es2tri`.
 	if (attribute == EGL_WIDTH || attribute == EGL_HEIGHT) {
 		XWindowAttributes xWindowAttrs;
-		XGetWindowAttributes(xDisplay, XDefaultRootWindow(xDisplay), &xWindowAttrs);
-		printf("Got window=???, width=%i, height=%i", xWindowAttrs.width, xWindowAttrs.height);
-		switch (attribute) {
-			case EGL_WIDTH:
-				*value = xWindowAttrs.width;
-				return EGL_TRUE;
-			case EGL_HEIGHT:
-				*value = xWindowAttrs.height;
-				return EGL_TRUE;
-			default: break;
+		if (!XGetWindowAttributes(xDisplay, XDefaultRootWindow(xDisplay), &xWindowAttrs)) {
+			printf("Warning: XGetWindowAttributes failed!");
+		} else {
+			switch (attribute) {
+				case EGL_WIDTH:
+					*value = xWindowAttrs.width;
+					return EGL_TRUE;
+				case EGL_HEIGHT:
+					*value = xWindowAttrs.height;
+					return EGL_TRUE;
+			}
 		}
 	}
 	
