@@ -56,6 +56,7 @@ enum GL_Server_Command
   
   // EGL commands
   GLSC_eglBindAPI,
+  GLSC_eglBindTexImage,
   GLSC_eglChooseConfig,
   GLSC_eglCopyBuffers,
   GLSC_eglCreateContext,
@@ -78,6 +79,8 @@ enum GL_Server_Command
   GLSC_eglQueryContext,
   GLSC_eglQueryString,
   GLSC_eglQuerySurface,
+  GLSC_eglReleaseTexImage,
+  GLSC_eglSurfaceAttrib,
   GLSC_eglSwapBuffers,
   GLSC_eglTerminate,
   GLSC_eglWaitGL,
@@ -239,6 +242,22 @@ typedef struct
   uint32_t cmd;
   uint32_t success;
 } gls_ret_eglBindAPI_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t buffer;
+} gls_eglBindTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglBindTexImage_t;
 
 
 typedef struct
@@ -423,6 +442,39 @@ typedef struct
   uint32_t value;
   uint32_t success;
 } gls_ret_eglQuerySurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t buffer;
+} gls_eglReleaseTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglReleaseTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t attribute;
+  uint32_t value;
+} gls_eglSurfaceAttrib_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglSurfaceAttrib_t;
 
 
 typedef struct

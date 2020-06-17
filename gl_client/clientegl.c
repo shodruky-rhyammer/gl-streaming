@@ -136,6 +136,7 @@ EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY eglGetProcAddress( c
 
 EGLBoolean eglChooseConfig( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config )
 {
+/*
 	gls_cmd_flush();
 	gls_data_egl_attriblist_t *dat = (gls_data_egl_attriblist_t *)glsc_global.tmp_buf.buf;
 	memcpy(dat->attrib_list, attrib_list, GLS_DATA_SIZE);
@@ -150,17 +151,17 @@ EGLBoolean eglChooseConfig( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig
 	gls_ret_eglChooseConfig_t *ret = (gls_ret_eglChooseConfig_t *)glsc_global.tmp_buf.buf;
 	*num_config = ret->num_config;
 	
+	// printf("eglChooseConfig()=%p. config_size=%i,num_config=%i\n", ret->success, config_size, ret->num_config);
+	
 	if (configs != NULL) {
 		*configs = ret->configs;
 	}
 	
 	return ret->success;
+*/
 
-	// This should intended for debug only
-	// return eglGetConfigs(dpy, configs, config_size, num_config);
-	
-	// *num_config = 1;
-	// return EGL_TRUE;
+	*num_config = 1;
+	return EGL_TRUE;
 }
 
 EGLSurface eglCreateWindowSurface( EGLDisplay dpy, EGLConfig config, NativeWindowType window, const EGLint *attrib_list )
@@ -216,19 +217,47 @@ EGLBoolean eglQuerySurface( EGLDisplay dpy, EGLSurface surface, EGLint attribute
 }
 
 /* EGL 1.1 render-to-texture APIs */
-EGLBoolean eglSurfaceAttrib( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint value )
+EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint value)
 {
-
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglSurfaceAttrib);
+	c->dpy = dpy;
+	c->surface = surface;
+	c->attribute = attribute;
+	c->value = value;
+	GLS_SEND_PACKET(eglSurfaceAttrib);
+    
+	wait_for_data("timeout:eglSurfaceAttrib");
+	gls_ret_eglSurfaceAttrib_t *ret = (gls_ret_eglSurfaceAttrib_t *)glsc_global.tmp_buf.buf;
+	return ret->success;
 }
 
 EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 {
-
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglBindTexImage);
+	c->dpy = dpy;
+	c->surface = surface;
+	c->buffer = buffer;
+	GLS_SEND_PACKET(eglBindTexImage);
+    
+	wait_for_data("timeout:eglBindTexImage");
+	gls_ret_eglBindTexImage_t *ret = (gls_ret_eglBindTexImage_t *)glsc_global.tmp_buf.buf;
+	return ret->success;
 }
 
 EGLBoolean eglReleaseTexImage( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
 {
-
+	gls_cmd_flush();
+	GLS_SET_COMMAND_PTR(c, eglReleaseTexImage);
+	c->dpy = dpy;
+	c->surface = surface;
+	c->buffer = buffer;
+	GLS_SEND_PACKET(eglReleaseTexImage);
+    
+	wait_for_data("timeout:eglReleaseTexImage");
+	gls_ret_eglReleaseTexImage_t *ret = (gls_ret_eglReleaseTexImage_t *)glsc_global.tmp_buf.buf;
+	return ret->success;
 }
 
 /* EGL 1.1 swap control API */

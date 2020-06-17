@@ -9,9 +9,11 @@ int egl_executeCommand(gls_command_t *c) {
         case GLSC_eglBindAPI:
 			glse_eglBindAPI();
 			break;
+/*
 		case GLSC_eglChooseConfig:
 			glse_eglChooseConfig();
 			break;
+*/
 		case GLSC_eglGetConfigAttrib:
 			glse_eglGetConfigAttrib();
 			break;
@@ -79,7 +81,7 @@ void glse_eglBindAPI()
   ret->success = success;
   glse_cmd_send_data(0,sizeof(gls_ret_eglBindAPI_t),(char *)glsec_global.tmp_buf.buf);
 }
-
+/*
 void glse_eglChooseConfig()
 {
   GLSE_SET_COMMAND_PTR(c, eglChooseConfig);
@@ -95,7 +97,7 @@ void glse_eglChooseConfig()
   ret->success = success;
   glse_cmd_send_data(0,sizeof(gls_ret_eglChooseConfig_t),(char *)glsec_global.tmp_buf.buf);
 }
-
+*/
 void glse_eglGetConfigAttrib()
 {
   GLSE_SET_COMMAND_PTR(c, eglGetConfigAttrib);

@@ -58,14 +58,14 @@ extern "C" {
 
 // gls_glFunctionName_t *c = (gls_glFunctionName_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);
 // c->cmd = GLSC_glFunctionName;
-#define GLS_SET_COMMAND_PTR_BATCH(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr); PTR->cmd = GLSC_##FUNCNAME
+#define GLS_SET_COMMAND_PTR_BATCH(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr); PTR->cmd = GLSC_##FUNCNAME; // printf("gls info: set pointer to command %i\n", PTR->cmd);
 
 // push_batch_command(sizeof(gls_glFunctionName_t));
 #define GLS_PUSH_BATCH(FUNCNAME) push_batch_command(sizeof(gls_##FUNCNAME##_t))
 
 // gls_glFunctionName_t *c = (gls_glFunctionName_t *)glsc_global.out_buf.buf;
 // c->cmd = GLSC_glFunctionName;
-#define GLS_SET_COMMAND_PTR(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)glsc_global.out_buf.buf; PTR->cmd = GLSC_##FUNCNAME
+#define GLS_SET_COMMAND_PTR(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)glsc_global.out_buf.buf; PTR->cmd = GLSC_##FUNCNAME; // printf("gls info: set pointer to command %i\n", PTR->cmd);
 
 // send_packet(sizeof(gls_glFunctionName_t));
 #define GLS_SEND_PACKET(FUNCNAME) send_packet(sizeof(gls_##FUNCNAME##_t))
