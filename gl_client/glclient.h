@@ -28,6 +28,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
 
 #include "GLES2/gl2.h"
 #include "gls_command.h"
@@ -70,6 +72,9 @@ extern "C" {
 
 #define TRUE 1
 #define FALSE 0
+
+Display *xDisplay;
+int xScreenId;
 
 gls_context_t glsc_global;
 static struct vbo_state

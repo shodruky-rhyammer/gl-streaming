@@ -92,6 +92,9 @@ int gls_init(server_context_t *arg)
   glsc_global.tmp_buf.size = GLS_TMP_BUFFER_SIZE;
   glsc_global.out_buf.ptr = 0;
   glsc_global.tmp_buf.ptr = 0;
+  
+  xDisplay = XOpenDisplay(NULL);
+  xScreenId = DefaultScreen(xDisplay);
   return TRUE;
 }
 
@@ -99,8 +102,8 @@ int gls_init(server_context_t *arg)
 void gls_init_library()
 {
     static server_context_t sc;
-    static int init = 0;
-    if( init )
+    static int init = FALSE;
+    if(init)
         return;
     int opt;
     char my_ip[GLS_STRING_SIZE_PLUS];
@@ -125,9 +128,11 @@ void gls_init_library()
     server_start(&sc);
     gls_init(&sc);
     gls_cmd_get_context();
-    init = 1;
 
-    // return 0;
+	xDisplay = XOpenDisplay(NULL);
+	xScreenId = DefaultScreen(xDisplay);
+	
+    init = TRUE;
 }
 
 

@@ -1,11 +1,7 @@
 // This file declare EGL methods for stubs or streaming
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-
 #include "glclient.h"
 #include "EGL/egl.h"
-
 
 EGLBoolean eglBindAPI(EGLenum api)
 {
@@ -22,8 +18,6 @@ EGLBoolean eglBindAPI(EGLenum api)
 EGLBoolean eglGetConfigAttrib( EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value )
 {
 	if (attribute == EGL_NATIVE_VISUAL_ID) {
-		Display *xDisplay = XOpenDisplay(NULL);
-		int xScreenId = DefaultScreen(xDisplay);
 		*value = XVisualIDFromVisual(XDefaultVisual(xDisplay, xScreenId));
 		return EGL_TRUE;
 	}
@@ -86,7 +80,6 @@ EGLDisplay eglGetDisplay(NativeDisplayType display)
 
 EGLBoolean eglInitialize( EGLDisplay dpy, EGLint *major, EGLint *minor )
 {
-	// Sending command
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglInitialize);
 	c->dpy = dpy;
@@ -192,6 +185,21 @@ EGLBoolean eglDestroySurface( EGLDisplay dpy, EGLSurface surface )
 
 EGLBoolean eglQuerySurface( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint *value )
 {
+	if (attribute == EGL_WIDTH || attribute == EGL_HEIGHT) {
+		XWindowAttributes xWindowAttrs;
+		XGetWindowAttributes(xDisplay, XDefaultRootWindow(xDisplay), &xWindowAttrs);
+		printf("Got window=???, width=%i, height=%i", xWindowAttrs.width, xWindowAttrs.height);
+		switch (attribute) {
+			case EGL_WIDTH:
+				*value = xWindowAttrs.width;
+				return EGL_TRUE;
+			case EGL_HEIGHT:
+				*value = xWindowAttrs.height;
+				return EGL_TRUE;
+			default: break;
+		}
+	}
+	
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, eglQuerySurface);
 	c->dpy = dpy;
