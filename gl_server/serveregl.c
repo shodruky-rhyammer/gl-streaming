@@ -9,11 +9,9 @@ int egl_executeCommand(gls_command_t *c) {
         case GLSC_eglBindAPI:
 			glse_eglBindAPI();
 			break;
-/*
 		case GLSC_eglChooseConfig:
 			glse_eglChooseConfig();
 			break;
-*/
 		case GLSC_eglGetConfigAttrib:
 			glse_eglGetConfigAttrib();
 			break;
@@ -81,23 +79,27 @@ void glse_eglBindAPI()
   ret->success = success;
   glse_cmd_send_data(0,sizeof(gls_ret_eglBindAPI_t),(char *)glsec_global.tmp_buf.buf);
 }
-/*
+
 void glse_eglChooseConfig()
 {
   GLSE_SET_COMMAND_PTR(c, eglChooseConfig);
-  
+
   gls_data_egl_attriblist_t *dat = (gls_data_egl_attriblist_t *)glsec_global.tmp_buf.buf;
   gls_ret_eglChooseConfig_t *ret = (gls_ret_eglChooseConfig_t *)glsec_global.tmp_buf.buf;
-  
+
   // EGLDisplay dpy = eglGetCurrentDisplay();
   EGLBoolean success = eglChooseConfig(c->dpy, dat->attrib_list, ret->configs, c->config_size, &ret->num_config);
   check_gl_err();
   
-  ret->cmd = GLSC_eglChooseConfig;
   ret->success = success;
+
+  // ret->configs = 
+
+  // ret->success = EGL_TRUE;
+  ret->cmd = GLSC_eglChooseConfig;
   glse_cmd_send_data(0,sizeof(gls_ret_eglChooseConfig_t),(char *)glsec_global.tmp_buf.buf);
 }
-*/
+
 void glse_eglGetConfigAttrib()
 {
   GLSE_SET_COMMAND_PTR(c, eglGetConfigAttrib);

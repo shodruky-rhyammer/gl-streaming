@@ -71,6 +71,7 @@ int glse_cmd_send_data(uint32_t offset, uint32_t size, void *data)
   int success = TRUE;
   uint32_t glssize = GLS_DATA_SIZE * 4;
   char *data1 = (char *)data;
+  
   uint32_t offset1;
   for (offset1 = 0; offset1 < size; offset1 += glssize)
   {
