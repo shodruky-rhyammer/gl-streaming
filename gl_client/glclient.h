@@ -52,9 +52,8 @@ typedef struct
 extern "C" {
 #endif
 
-#define GLS_OUT_BUFFER_SIZE 4096
-// 2048
-#define BATCH_AUTO_FLUSH_SIZE 8128
+#define GLS_OUT_BUFFER_SIZE 4096 // 2048
+#define BATCH_AUTO_FLUSH_SIZE 16256 // 8128
 #define GLS_TIMEOUT_SEC 3.0f
 
 // gls_glFunctionName_t *c = (gls_glFunctionName_t *)(glsc_global.tmp_buf.buf + glsc_global.tmp_buf.ptr);

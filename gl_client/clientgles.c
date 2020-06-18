@@ -207,7 +207,7 @@ static void wes_vertex_attrib_pointer(int i, int count)
 {
     long ptrdiff;
     int stride;
-
+	
     if( !vt_attrib_pointer[i].isenabled || vt_attrib_pointer[i].vbo_id )
         return;
 
@@ -406,7 +406,7 @@ GL_APICALL void GL_APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei coun
 
 GL_APICALL void GL_APIENTRY glEnableVertexAttribArray (GLuint index)
 {
-    vt_attrib_pointer[index].isenabled = GL_TRUE;
+  vt_attrib_pointer[index].isenabled = GL_TRUE;
   GLS_SET_COMMAND_PTR_BATCH(c, glEnableVertexAttribArray);
   c->index = index;
   GLS_PUSH_BATCH(glEnableVertexAttribArray);
@@ -676,7 +676,7 @@ GL_APICALL void GL_APIENTRY glShaderSource (GLuint shader, GLsizei count, const 
     dat->data[stroffset + strsize] = '\0';
     stroffset = stroffset + strsize + 1;
 	
-	printf("gls debug: shader length = %i", strsize);
+	// printf("gls debug: shader length = %i", strsize);
 	
 	// printf("%s\n", strptr);
   }
@@ -1011,16 +1011,6 @@ GL_APICALL GLreturn GL_APIENTRY glCommand (GLparam param)
 // Stubs since here
 GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
 {
-/*
-	if( pname == GL_LINK_STATUS ) {
-		printf("glGetProgramiv: Client asked for GL_LINK_STATUS (got stub)\n");
-        *params = 1;
-    } else {
-		printf("glGetProgramiv: Client asked for %p\n", pname);
-    	*params = 0;
-	}
-*/
-	
     gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glGetProgramiv);
 	c->program = program;
@@ -1035,8 +1025,6 @@ GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint*
 
 GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 {
-	// !!!UNIMPLEMENTED!!! due to SegFault
-
     gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glReadPixels);
 	c->x = x;

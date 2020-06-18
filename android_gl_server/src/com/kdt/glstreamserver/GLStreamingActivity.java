@@ -11,6 +11,7 @@ import android.widget.*;
 import android.view.ContextMenu.*;
 import java.io.*;
 import android.util.*;
+import android.graphics.*;
 
 public class GLStreamingActivity extends Activity
 {
@@ -28,32 +29,47 @@ public class GLStreamingActivity extends Activity
 		logLayout = (LinearLayout) findViewById(R.id.main_glstream_logview);
 		logScroll = (ScrollView) findViewById(R.id.main_glstream_log_scroll);
 		logText = (TextView) logScroll.getChildAt(0);
+		logText.setTextIsSelectable(true);
+		logText.setTypeface(Typeface.MONOSPACE);
 		
 		new Thread(new Runnable(){
+			private String duplicateString = "empty";
+			private int duplicateCount;
 			@Override
 			public void run() {
 				try {
-					String[] command = new String[] { "logcat"};
-
+					String[] command = new String[]{"logcat"};
 					Process process = Runtime.getRuntime().exec(command);
-
-					BufferedReader bufferedReader = new BufferedReader(
-						new InputStreamReader(process.getInputStream()));
+					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
 					final String line;
 					while ((line = bufferedReader.readLine()) != null) {
+						if (line.startsWith("V/PhoneWindow")) {
+							// This is annoying, user select text and log print with that tag.
+							continue;
+						} else if (line.equals(duplicateString)) {
+							duplicateCount++;
+							continue;
+						} else {
+							duplicateString = line;
+							if (duplicateCount > 0) {
+								line = "...(more " + duplicateCount + " duplicate line)\n  " + line;
+								duplicateCount = 0;
+							}
+						}
+						
 						logText.post(new Runnable(){
 
 								@Override
 								public void run()
 								{
-									logText.append(line + "\n");
+									logText.append("  " + line + "\n");
 									logScroll.fullScroll(ScrollView.FOCUS_DOWN);
 								}
 							});
 					}
 				} catch (IOException ex) {
-					Log.e("GLStream", "getLog failed", ex);
+					Log.e("GLStreaming", "getLog failed", ex);
 				}
 			}
 		}, "LogcatThread").start();

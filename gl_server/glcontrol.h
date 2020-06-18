@@ -46,11 +46,15 @@ typedef struct
 
 
 //#define DEBUG
+void check_gl_err(uint32_t cmd) {
+	int glError = glGetError();
+	if (glError != 0) {
+		LOGD("glGetError(command:%i) return error %p", cmd, glError);
+	}
 #ifdef DEBUG
-#define check_gl_err() assert(glGetError() == 0)
-#else
-#define check_gl_err() {}
-#endif
+	assert(glError == 0)
+#endif // DEBUG
+}
 
 
 #ifdef __cplusplus
