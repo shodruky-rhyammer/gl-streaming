@@ -106,7 +106,8 @@ void glse_eglGetConfigAttrib()
   gls_ret_eglGetConfigAttrib_t *ret = (gls_ret_eglGetConfigAttrib_t *)glsec_global.tmp_buf.buf;
   
   // EGLDisplay dpy = eglGetCurrentDisplay();
-  EGLBoolean success = eglGetConfigAttrib(c->dpy, c->config, c->attribute, &ret->value);
+  // c->config cause EGL_BAD_CONFIG error
+  EGLBoolean success = eglGetConfigAttrib(c->dpy, config, c->attribute, &ret->value);
   check_gl_err();
   
   ret->cmd = GLSC_eglGetConfigAttrib;

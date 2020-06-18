@@ -11,11 +11,11 @@ jstring jstrclient_addr;
 int   var_server_port;
 int   var_client_port;
 const char* var_client_addr;
-
+/*
 const char* var_path_shadercache;
 const char* var_file_fragment_shader;
 const char* var_file_vertex_shader;
-
+*/
 // JNIEnv* glmain_jnienv;
 
 ANativeWindow* glsurfaceview_window;

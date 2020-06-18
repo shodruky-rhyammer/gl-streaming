@@ -8,21 +8,58 @@ import android.app.*;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
-
+import android.view.ContextMenu.*;
+import java.io.*;
+import android.util.*;
 
 public class GLStreamingActivity extends Activity
 {
-	private GLStreamingSurfaceView mGLSurface;
+	private GLStreamingView mGLSurface;
 	private AlertDialog createdDialog;
+	private LinearLayout logLayout;
+	private ScrollView logScroll;
+	private TextView logText;
 	@Override
     public void onCreate(Bundle savedInstanceState)
     {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		System.out.println("Print! Get the pid.");
+		logLayout = (LinearLayout) findViewById(R.id.main_glstream_logview);
+		logScroll = (ScrollView) findViewById(R.id.main_glstream_log_scroll);
+		logText = (TextView) logScroll.getChildAt(0);
 		
-		mGLSurface = (GLStreamingSurfaceView) findViewById(R.id.main_virtualgl_surfaceview);
+		new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try {
+					String[] command = new String[] { "logcat"};
+
+					Process process = Runtime.getRuntime().exec(command);
+
+					BufferedReader bufferedReader = new BufferedReader(
+						new InputStreamReader(process.getInputStream()));
+
+					final String line;
+					while ((line = bufferedReader.readLine()) != null) {
+						logText.post(new Runnable(){
+
+								@Override
+								public void run()
+								{
+									logText.append(line + "\n");
+								}
+							});
+					}
+				} catch (IOException ex) {
+					Log.e("GLStream", "getLog failed", ex);
+				}
+			}
+		}, "LogcatThread").start();
+		
+		System.out.println("The PID of GL Streaming server: " + android.os.Process.myPid());
+		
+		mGLSurface = (GLStreamingView) findViewById(R.id.main_glstream_surfaceview);
 		
 		AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 		dialog.setTitle(R.string.app_name);
@@ -80,10 +117,7 @@ public class GLStreamingActivity extends Activity
 
 							createdDialog.dismiss();
 							
-							mGLSurface.init(true, serverPort, outClientAddr, outClientPort);
-							
-							mGLSurface.setVisibility(View.INVISIBLE);
-							mGLSurface.setVisibility(View.VISIBLE);
+							mGLSurface.init(/* true, */ serverPort, outClientAddr, outClientPort);
 						}
 					});
 				}
@@ -91,7 +125,30 @@ public class GLStreamingActivity extends Activity
 		createdDialog.show();
 	}
 	
+	public void closeLog(View v) {
+		logLayout.setVisibility(View.GONE);
+	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		// Handle item selection
+		switch (item.getItemId()) {
+			case R.id.menu_serverlog:
+				logLayout.setVisibility(View.VISIBLE);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+	
     @Override
 	protected void onPause() {
         super.onPause();

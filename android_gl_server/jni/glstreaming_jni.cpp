@@ -17,26 +17,33 @@ extern "C"
 		var_client_port = clientPort;
 		
 		var_client_addr = env->GetStringUTFChars(jstrclient_addr, 0);
-		
+/*
 		var_path_shadercache = "/sdcard/games/.minecraft/shader_cache";
 		var_file_fragment_shader = "/sdcard/games/.minecraft/shader_cache/fragment_shader.glsl";
 		var_file_vertex_shader = "/sdcard/games/.minecraft/shader_cache/vertex_shader.glsl";
+*/
 	}
 	
-	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_setGLSize(JNIEnv* env, jobject thiz, jint width, jint height, jobject surface)
+	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_setSurface(JNIEnv* env, jobject thiz, jobject surface) {
+		glsurfaceview_window = ANativeWindow_fromSurface(env, surface);
+		assert (glsurfaceview_window != NULL);
+	}
+	
+	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_setGLSize(JNIEnv* env, jobject thiz, jint width, jint height)
 	{
 		// glmain_jnienv = env;
 		
 		glsurfaceview_width = width;
 		glsurfaceview_height = height;
-		
-		if (need_init_glstream) {
-			need_init_glstream = false;
-			
-			glsurfaceview_window = ANativeWindow_fromSurface(env, surface);
-
-			init_android_main();
-			env->ReleaseStringUTFChars(jstrclient_addr, var_client_addr);
-		}
+	}
+	
+	JNIEXPORT void JNICALL Java_com_kdt_glstreamserver_GLStreamingJNIWrapper_startServer(JNIEnv* env, jobject thiz)
+	{
+/*
+		glsurfaceview_width = 1280;
+		glsurfaceview_height = 720;
+*/
+		init_android_main();
+		env->ReleaseStringUTFChars(jstrclient_addr, var_client_addr);
 	}
 }
