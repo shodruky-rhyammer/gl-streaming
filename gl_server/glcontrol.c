@@ -39,6 +39,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "glcontrol.h"
 
+//#define DEBUG
+void check_gl_err(uint32_t cmd) {
+	int glError = glGetError();
+	if (glError != 0) {
+		LOGD("glGetError(command:%i) return error %p", cmd, glError);
+	}
+#ifdef DEBUG
+	assert(glError == 0)
+#endif // DEBUG
+}
+
 void init_egl(graphics_context_t *gc)
 {
   EGLBoolean r;
@@ -68,23 +79,23 @@ void init_egl(graphics_context_t *gc)
 
   gc->display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   assert(gc->display != EGL_NO_DISPLAY);
-  check_gl_err();
+  check_gl_err(eglGetDisplay);
 
   r = eglInitialize(gc->display, NULL, NULL);
   assert(EGL_FALSE != r);
-  check_gl_err();
+  check_gl_err(eglInitialize);
 
   r = eglChooseConfig(gc->display, fb_attrib, &config, 1, &num_config);
   assert(EGL_FALSE != r);
-  check_gl_err();
+  check_gl_err(eglChooseConfig);
 
   r = eglBindAPI(EGL_OPENGL_ES_API);
   assert(EGL_FALSE != r);
-  check_gl_err();
+  check_gl_err(eglBindAPI);
 
   gc->context = eglCreateContext(gc->display, config, EGL_NO_CONTEXT, context_attrib);
   assert(gc->context != EGL_NO_CONTEXT);
-  check_gl_err();
+  check_gl_err(eglCreateContext);
 
 #ifdef RASPBERRY_PI
   int32_t ri = graphics_get_display_size(0, &gc->screen_width, &gc->screen_height);
@@ -124,11 +135,11 @@ void init_egl(graphics_context_t *gc)
 	  gc->surface = eglGetCurrentSurface(EGL_DRAW);
   }
   assert(gc->surface != EGL_NO_SURFACE);
-  check_gl_err();
+  check_gl_err(eglGetCurrentSurface);
 
   r = eglMakeCurrent(gc->display, gc->surface, gc->surface, gc->context);
   assert(EGL_FALSE != r);
-  check_gl_err();
+  check_gl_err(eglMakeCurrent);
 }
 
 

@@ -112,7 +112,7 @@ void glse_cmd_flip()
   gls_cmd_flip_t *c = (gls_cmd_flip_t *)glsec_global.cmd_data;
   graphics_context_t *gc = glsec_global.gc;
   eglSwapBuffers(gc->display, gc->surface);
-  check_gl_err();
+  check_gl_err(eglSwapBuffers);
   gls_ret_flip_t *ret = (gls_ret_flip_t *)glsec_global.tmp_buf.buf;
   ret->cmd = c->cmd;
   ret->frame = c->frame;
