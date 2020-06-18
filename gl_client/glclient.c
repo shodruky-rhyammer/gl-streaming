@@ -94,6 +94,11 @@ int gls_init(server_context_t *arg)
   glsc_global.tmp_buf.ptr = 0;
   
   xDisplay = XOpenDisplay(NULL);
+  if (xDisplay == NULL) {
+	  printf("gls error: could not open X11 display.\n");
+	  exit(1);
+	  return FALSE;
+  }
   xScreenId = DefaultScreen(xDisplay);
   return TRUE;
 }

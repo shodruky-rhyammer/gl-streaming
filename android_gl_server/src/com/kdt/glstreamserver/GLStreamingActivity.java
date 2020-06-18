@@ -48,6 +48,7 @@ public class GLStreamingActivity extends Activity
 								public void run()
 								{
 									logText.append(line + "\n");
+									logScroll.fullScroll(ScrollView.FOCUS_DOWN);
 								}
 							});
 					}
