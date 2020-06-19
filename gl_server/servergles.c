@@ -183,7 +183,8 @@ int gles_flushCommand(gls_command_t *c) {
         break;
 	  case GLSC_glTexSubImage2D:
 		glse_glTexSubImage2D();
-        pop_batch_command(sizeof(gls_glTexSubImage2D_t));
+        pop_batch_command(((gls_glTexSubImage2D_t *)c)->cmd_size);
+		break;
 		
 /*
       case GLSC_glXXX:
@@ -225,11 +226,9 @@ int gles_executeCommand(gls_command_t *c) {
         case GLSC_glGenTextures:
           glse_glGenTextures();
           break;
-/*
         case GLSC_glGetActiveUniform:
           glse_glGetActiveUniform();
           break;
-*/
         case GLSC_glGetAttribLocation:
           glse_glGetAttribLocation();
           break;
@@ -379,6 +378,19 @@ void glse_glGenTextures()
   glGenTextures(c->n, (GLuint*)glsec_global.tmp_buf.buf);
   uint32_t size = c->n * sizeof(uint32_t);
   glse_cmd_send_data(0, size, (char *)glsec_global.tmp_buf.buf);
+}
+
+
+void glse_glGetActiveUniform()
+{
+  GLSE_SET_COMMAND_PTR(c, glGetActiveUniform);
+  gls_ret_glGetActiveUniform_t *ret = (gls_ret_glGetActiveUniform_t *)glsec_global.tmp_buf.buf;
+  char* name;
+  glGetActiveUniform (c->program, c->index, c->bufsize, &ret->length, &ret->size, &ret->type, name);
+  ret->cmd = GLSC_glGetActiveUniform;
+  ret->name[GLS_STRING_SIZE_PLUS - 1] = '\0';
+  strncpy(ret->name, name, ret->length);
+  glse_cmd_send_data(0, sizeof(gls_ret_glGetActiveUniform_t), (char *)glsec_global.tmp_buf.buf);
 }
 
 

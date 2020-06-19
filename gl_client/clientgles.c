@@ -995,9 +995,9 @@ GL_APICALL void GL_APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei
 /*
 GL_APICALL void GL_APIENTRY glCommand (GLparam param)
 {
-  GLS_SET_COMMAND_PTR_BATCH(c, );
-  c-> = ;
-  GLS_PUSH_BATCH();
+  GLS_SET_COMMAND_PTR_BATCH(c, glCommand);
+  c->param = param;
+  GLS_PUSH_BATCH(glCommand);
 }
  */
  
@@ -1012,12 +1012,12 @@ GL_APICALL GLreturn GL_APIENTRY glCommand (GLparam param)
   wait_for_data("timeout:glCommand");
   gls_ret_glCommand_t *ret = (gls_ret_glCommand_t *)glsc_global.tmp_buf.buf;
   // *params = ret->params;
-  // or
+  // or below if return
   // return ret->returnVal;
 }
  */
 
-// Stubs since here
+
 GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* params)
 {
     gls_cmd_flush();
@@ -1053,21 +1053,19 @@ GL_APICALL void GL_APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsiz
 
 GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
 {
-	printf("FIXME calling stub method: glGetActiveUniform()\n");
-/*
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glGetActiveUniform);
 	c->program = x;
 	c->index = y;
 	c->bufsize = bufsize;
-	c->length = length;
-	c->size = size;
-	c->type = type;
-	c->name = name;
 	GLS_SEND_PACKET(glGetActiveUniform);
     
 	wait_for_data("timeout:glGetActiveUniform");
 	gls_ret_glGetActiveUniform_t *ret = (gls_ret_glGetActiveUniform_t *)glsc_global.tmp_buf.buf;
-*/
+	
+	*length = ret->length;
+	*size = ret->size;
+	*type = ret->type;
+	*name = &ret->name[0];
 }
 
