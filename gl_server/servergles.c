@@ -329,7 +329,7 @@ void glse_glClearColor()
 void glse_glColorMask()
 {
   GLSE_SET_COMMAND_PTR(c, glColorMask);
-  glClear(c->red, c->green, c->blue, c->alpha);
+  glColorMask(c->red, c->green, c->blue, c->alpha);
 }
 
 
