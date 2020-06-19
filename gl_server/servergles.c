@@ -44,6 +44,10 @@ int gles_flushCommand(gls_command_t *c) {
         glse_glClearColor();
         pop_batch_command(sizeof(gls_glClearColor_t));
         break;
+      case GLSC_glColorMask:
+        glse_glColorMask();
+        pop_batch_command(sizeof(gls_glColorMask_t));
+        break;
       case GLSC_glCompileShader:
         glse_glCompileShader();
         pop_batch_command(sizeof(gls_glCompileShader_t));
@@ -319,6 +323,13 @@ void glse_glClearColor()
 {
   GLSE_SET_COMMAND_PTR(c, glClearColor);
   glClearColor(c->red, c->green, c->blue, c->alpha);
+}
+
+
+void glse_glColorMask()
+{
+  GLSE_SET_COMMAND_PTR(c, glColorMask);
+  glClear(c->red, c->green, c->blue, c->alpha);
 }
 
 

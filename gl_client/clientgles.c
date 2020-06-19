@@ -151,6 +151,15 @@ GL_APICALL void GL_APIENTRY glClearStencil (GLint s)
   GLS_PUSH_BATCH(glClearStencil);
 }
 
+GL_APICALL void GL_APIENTRY glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+{
+	GLS_SET_COMMAND_PTR_BATCH(c, glColorMask);
+	c->red = red;
+	c->green = green;
+	c->blue = blue;
+	c->alpha = alpha;
+	GLS_PUSH_BATCH(glColorMask);
+}
 
 GL_APICALL void GL_APIENTRY glCompileShader (GLuint shader)
 {
@@ -301,7 +310,7 @@ GL_APICALL void GL_APIENTRY glDepthFunc (GLenum func)
 }
 
 
-GL_APICALL void         GL_APIENTRY glDepthMask (GLboolean flag)
+GL_APICALL void GL_APIENTRY glDepthMask (GLboolean flag)
 {
   GLS_SET_COMMAND_PTR_BATCH(c, glDepthMask);
   c->flag = flag;

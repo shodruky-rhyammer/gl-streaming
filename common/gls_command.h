@@ -617,6 +617,16 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t red;
+  uint32_t green;
+  uint32_t blue;
+  uint32_t alpha;
+} gls_glColorMask_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t shader;
 } gls_glCompileShader_t;
 
