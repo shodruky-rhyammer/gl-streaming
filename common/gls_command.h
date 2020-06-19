@@ -102,6 +102,7 @@ enum GL_Server_Command
   GLSC_glClearColor,
   GLSC_glClearDepthf,
   GLSC_glClearStencil,
+  GLSC_glColorMask,
   GLSC_glCompileShader,
   GLSC_glCreateProgram,
   GLSC_glCreateShader,
