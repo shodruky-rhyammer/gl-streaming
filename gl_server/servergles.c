@@ -141,6 +141,10 @@ int gles_flushCommand(gls_command_t *c) {
         glse_glBlendFunc();
         pop_batch_command(sizeof(gls_glBlendFunc_t));
         break;
+      case GLSC_glClearDepthf:
+        glse_glClearDepthf();
+        pop_batch_command(sizeof(gls_glClearDepthf_t));
+        break;
       case GLSC_glCullFace:
         glse_glCullFace();
         pop_batch_command(sizeof(gls_glCullFace_t));
@@ -177,10 +181,9 @@ int gles_flushCommand(gls_command_t *c) {
         glse_glStencilOp();
         pop_batch_command(sizeof(gls_glStencilOp_t));
         break;
-      case GLSC_glClearDepthf:
-        glse_glClearDepthf();
-        pop_batch_command(sizeof(gls_glClearDepthf_t));
-        break;
+	  case GLSC_glTexSubImage2D:
+		glse_glTexSubImage2D();
+        pop_batch_command(sizeof(gls_glTexSubImage2D_t));
 		
 /*
       case GLSC_glXXX:
