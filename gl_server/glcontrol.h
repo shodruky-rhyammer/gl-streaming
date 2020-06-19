@@ -28,6 +28,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "fastlog.h"
 #include "GLES2/gl2.h"
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
@@ -45,17 +46,13 @@ typedef struct
 } graphics_context_t;
 
 
-//#define DEBUG
-#ifdef DEBUG
-#define check_gl_err() assert(glGetError() == 0)
-#else
-#define check_gl_err() {}
-#endif
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void check_gl_err(uint32_t cmd);
+
+EGLConfig config;
 
 void init_egl(graphics_context_t *gc);
 void release_egl(graphics_context_t *gc);

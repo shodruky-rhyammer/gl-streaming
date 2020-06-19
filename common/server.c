@@ -258,7 +258,7 @@ void server_run(server_context_t *c, void *(*popper_thread)(void *))
 }
 
 
-#ifdef // GL_CLIENT
+#ifndef __ANDROID__ // GL_CLIENT
 void *server_start(server_context_t *c)
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
@@ -273,7 +273,9 @@ void *server_start(server_context_t *c)
 
 void server_stop(server_context_t *c)
 {
+#ifndef __ANDROID__
     pthread_cancel(c->server_th);
+#endif // __ANDROID__
 
     socket_close(c);
     fifo_delete(&c->fifo);
