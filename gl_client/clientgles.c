@@ -1055,8 +1055,8 @@ GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GL
 {
 	gls_cmd_flush();
 	GLS_SET_COMMAND_PTR(c, glGetActiveUniform);
-	c->program = x;
-	c->index = y;
+	c->program = program;
+	c->index = index;
 	c->bufsize = bufsize;
 	GLS_SEND_PACKET(glGetActiveUniform);
     
