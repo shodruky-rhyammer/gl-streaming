@@ -53,17 +53,18 @@ public class GLStreamingActivity extends Activity
 						} else {
 							duplicateString = line;
 							if (duplicateCount > 0) {
-								line = "...(more " + duplicateCount + " duplicate line)\n  " + line;
+								line = "...(more " + duplicateCount + " duplicate lines)\n  " + line;
 								duplicateCount = 0;
 							}
 						}
 						
+						final String fline = line;
 						logText.post(new Runnable(){
 
 								@Override
 								public void run()
 								{
-									logText.append("  " + line + "\n");
+									logText.append("  " + fline + "\n");
 									logScroll.fullScroll(ScrollView.FOCUS_DOWN);
 								}
 							});
