@@ -597,7 +597,7 @@ GL_APICALL const GLubyte* GL_APIENTRY glGetString(GLenum name)
 	wait_for_data("timeout:glGetString");
 	gls_ret_glGetString_t *ret = (gls_ret_glGetString_t *)glsc_global.tmp_buf.buf;
 	// printf("glGetString(%i) return %s\n", name, &ret->params[0]);
-	return &ret->params[0];
+	return ret->params;
 }
 
 
@@ -1069,6 +1069,6 @@ GL_APICALL void GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GL
 	*length = ret->length;
 	*size = ret->size;
 	*type = ret->type;
-	*name = &ret->name[0];
+	*name = ret->name;
 }
 
