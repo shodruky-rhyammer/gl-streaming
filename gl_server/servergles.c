@@ -456,7 +456,7 @@ void glse_glGetProgramiv()
 {
   GLSE_SET_COMMAND_PTR(c, glGetProgramiv);
   gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsec_global.tmp_buf.buf;
-  glGetProgramiv(c->program,c->pname,&ret->params);
+  glGetProgramiv(c->program, c->pname, &ret->params);
   ret->cmd = GLSC_glGetProgramiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetProgramiv_t),(char *)glsec_global.tmp_buf.buf);
 }
