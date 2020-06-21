@@ -405,7 +405,7 @@ GL_APICALL void GL_APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei coun
     for( i = 0;i < 16; i++ )
     {
         if( vt_attrib_pointer[i].isenabled )
-            wes_vertex_attrib_pointer(i, first +count);
+            wes_vertex_attrib_pointer(i, first + count);
     }
     glBindBuffer( GL_ARRAY_BUFFER, vbo_bkp );
   GLS_SET_COMMAND_PTR_BATCH(c, glDrawArrays);

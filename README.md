@@ -15,7 +15,7 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
   
   (X Server is now required by client).
 
-  Some codes are from @mittorn fork and do my attempt to run on GL4ES.
+  Some codes are from @mittorn fork for base methods, @tinmaniac for base Android port and do my attempt on implement all stub methods to run on GL4ES.
 
 * gl_server : server framework
  
@@ -43,6 +43,10 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 - [x] glGetShaderiv
 - [x] glGetString
 - [x] glTexSubImage2D
+
+## Current status
+- `es2_info`, `es2gears` will work; `es2tri` probably.
+- Some apps/games run on GL4ES will work on a blank screen, other will get crashed.
 
 ## Notes
 - Current minimum SDK level is set to 21 (Android 5) but it may work on older Android devices by some modify.
