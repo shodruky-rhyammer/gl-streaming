@@ -2,277 +2,6 @@
 
 #include "glserver.h"
 
-int gles_flushCommand(gls_command_t *c) {
-	// LOGD("Flushing command %i\n", c->cmd);
-	switch (c->cmd) {
-      case GLSC_glAttachShader:
-        glse_glAttachShader();
-        pop_batch_command(sizeof(gls_glAttachShader_t));
-        break;
-      case GLSC_glActiveTexture:
-        glse_glActiveTexture();
-        pop_batch_command(sizeof(gls_glActiveTexture_t));
-        break;
-      case GLSC_glBindBuffer:
-        glse_glBindBuffer();
-        pop_batch_command(sizeof(gls_glBindBuffer_t));
-        break;
-      case GLSC_glBindTexture:
-        glse_glBindTexture();
-        pop_batch_command(sizeof(gls_glBindTexture_t));
-        break;
-      case GLSC_glBindAttribLocation:
-        glse_glBindAttribLocation();
-        pop_batch_command(sizeof(gls_glBindAttribLocation_t));
-        break;
-      case GLSC_glBindFramebuffer:
-        glse_glBindFramebuffer();
-        pop_batch_command(sizeof(gls_glBindFramebuffer_t));
-        break;
-      case GLSC_glBlendFuncSeparate:
-        glse_glBlendFuncSeparate();
-        pop_batch_command(sizeof(gls_glBlendFuncSeparate_t));
-        break;
-      case GLSC_glBlendEquationSeparate:
-        glse_glBlendEquationSeparate();
-        pop_batch_command(sizeof(gls_glBlendEquationSeparate_t));
-        break;
-      case GLSC_glClear:
-        glse_glClear();
-        pop_batch_command(sizeof(gls_glClear_t));
-        break;
-      case GLSC_glClearColor:
-        glse_glClearColor();
-        pop_batch_command(sizeof(gls_glClearColor_t));
-        break;
-      case GLSC_glColorMask:
-        glse_glColorMask();
-        pop_batch_command(sizeof(gls_glColorMask_t));
-        break;
-      case GLSC_glCompileShader:
-        glse_glCompileShader();
-        pop_batch_command(sizeof(gls_glCompileShader_t));
-        break;
-      case GLSC_glDeleteProgram:
-        glse_glDeleteProgram();
-        pop_batch_command(sizeof(gls_glDeleteProgram_t));
-        break;
-      case GLSC_glDeleteShader:
-        glse_glDeleteShader();
-        pop_batch_command(sizeof(gls_glDeleteShader_t));
-        break;
-      case GLSC_glDeleteTextures:
-        glse_glDeleteTextures();
-        pop_batch_command(((gls_glDeleteTextures_t *)c)->cmd_size);
-        break;
-      case GLSC_glDepthFunc:
-        glse_glDepthFunc();
-        pop_batch_command(sizeof(gls_glDepthFunc_t));
-        break;
-      case GLSC_glDisable:
-        glse_glDisable();
-        pop_batch_command(sizeof(gls_glDisable_t));
-        break;
-      case GLSC_glDisableVertexAttribArray:
-        glse_glDisableVertexAttribArray();
-        pop_batch_command(sizeof(gls_glDisableVertexAttribArray_t));
-        break;
-      case GLSC_glDrawArrays:
-        glse_glDrawArrays();
-        pop_batch_command(sizeof(gls_glDrawArrays_t));
-        break;
-      case GLSC_glDrawElements:
-        glse_glDrawElements();
-        pop_batch_command(sizeof(gls_glDrawElements_t));
-        break;
-      case GLSC_glEnable:
-        glse_glEnable();
-        pop_batch_command(sizeof(gls_glEnable_t));
-        break;
-      case GLSC_glEnableVertexAttribArray:
-        glse_glEnableVertexAttribArray();
-        pop_batch_command(sizeof(gls_glEnableVertexAttribArray_t));
-        break;
-      case GLSC_glFlush:
-        glse_glFlush();
-        pop_batch_command(sizeof(gls_command_t));
-        break;
-      case GLSC_glLinkProgram:
-        glse_glLinkProgram();
-        pop_batch_command(sizeof(gls_glLinkProgram_t));
-        break;
-      case GLSC_glPixelStorei:
-        glse_glPixelStorei();
-        pop_batch_command(sizeof(gls_glPixelStorei_t));
-        break;
-      case GLSC_glTexImage2D:
-        glse_glTexImage2D();
-        pop_batch_command(((gls_glTexImage2D_t *)c)->cmd_size);
-        break;
-      case GLSC_glTexParameteri:
-        glse_glTexParameteri();
-        pop_batch_command(sizeof(gls_glTexParameteri_t));
-        break;
-      case GLSC_glUniform1f:
-        glse_glUniform1f();
-        pop_batch_command(sizeof(gls_glUniform1f_t));
-        break;
-      case GLSC_glUniform4fv:
-        glse_glUniform4fv();
-        pop_batch_command(((gls_glUniform4fv_t *)c)->cmd_size);
-        break;
-      case GLSC_glUniformMatrix4fv:
-        glse_glUniformMatrix4fv();
-        pop_batch_command(((gls_glUniformMatrix4fv_t *)c)->cmd_size);
-        break;
-      case GLSC_glUseProgram:
-        glse_glUseProgram();
-        pop_batch_command(sizeof(gls_glUseProgram_t));
-        break;
-      case GLSC_glVertexAttribPointer:
-        glse_glVertexAttribPointer();
-        pop_batch_command(sizeof(gls_glVertexAttribPointer_t));
-        break;
-      case GLSC_glViewport:
-        glse_glViewport();
-        pop_batch_command(sizeof(gls_glViewport_t));
-        break;
-		
-      case GLSC_glBlendFunc:
-        glse_glBlendFunc();
-        pop_batch_command(sizeof(gls_glBlendFunc_t));
-        break;
-      case GLSC_glClearDepthf:
-        glse_glClearDepthf();
-        pop_batch_command(sizeof(gls_glClearDepthf_t));
-        break;
-      case GLSC_glCullFace:
-        glse_glCullFace();
-        pop_batch_command(sizeof(gls_glCullFace_t));
-        break;
-      case GLSC_glDepthMask:
-        glse_glDepthMask();
-        pop_batch_command(sizeof(gls_glDepthMask_t));
-        break;
-      case GLSC_glDepthRangef:
-        glse_glDepthRangef();
-        pop_batch_command(sizeof(gls_glDepthRangef_t));
-        break;
-      case GLSC_glHint:
-        glse_glHint();
-        pop_batch_command(sizeof(gls_glHint_t));
-        break;
-      case GLSC_glLineWidth:
-        glse_glLineWidth();
-        pop_batch_command(sizeof(gls_glLineWidth_t));
-        break;
-      case GLSC_glPolygonOffset:
-        glse_glPolygonOffset();
-        pop_batch_command(sizeof(gls_glPolygonOffset_t));
-        break;
-      case GLSC_glStencilFunc:
-        glse_glStencilFunc();
-        pop_batch_command(sizeof(gls_glStencilFunc_t));
-        break;
-      case GLSC_glStencilMask:
-        glse_glStencilMask();
-        pop_batch_command(sizeof(gls_glStencilMask_t));
-        break;
-      case GLSC_glStencilOp:
-        glse_glStencilOp();
-        pop_batch_command(sizeof(gls_glStencilOp_t));
-        break;
-	  case GLSC_glTexSubImage2D:
-		glse_glTexSubImage2D();
-        pop_batch_command(((gls_glTexSubImage2D_t *)c)->cmd_size);
-		break;
-		
-/*
-      case GLSC_glXXX:
-        glse_glXXX();
-        pop_batch_command(sizeof(gls_glXXX_t));
-        break;
-*/
-	  default:
-	  	return FALSE;
-	}
-	check_gl_err(c->cmd);
-	return TRUE;
-}
-
-int gles_executeCommand(gls_command_t *c) {
-	// LOGD("Executing command %i\n", c->cmd);
-	switch (c->cmd) {
-		case GLSC_glBufferData:
-          glse_glBufferData();
-          break;
-        case GLSC_glBufferSubData:
-          glse_glBufferSubData();
-          break;
-        case GLSC_glCreateProgram:
-          glse_glCreateProgram();
-          break;
-        case GLSC_glCreateShader:
-          glse_glCreateShader();
-          break;
-        case GLSC_glDeleteBuffers:
-          glse_glDeleteBuffers();
-          break;
-        case GLSC_glFinish:
-          glse_glFinish();
-          break;
-        case GLSC_glGenBuffers:
-          glse_glGenBuffers();
-          break;
-        case GLSC_glGenTextures:
-          glse_glGenTextures();
-          break;
-        case GLSC_glGetActiveUniform:
-          glse_glGetActiveUniform();
-          break;
-        case GLSC_glGetAttribLocation:
-          glse_glGetAttribLocation();
-          break;
-		case GLSC_glGetError:
-		  glse_glGetError();
-		  break;
-        case GLSC_glGetFloatv:
-          glse_glGetFloatv();
-          break;
-        case GLSC_glGetIntegerv:
-          glse_glGetIntegerv();
-          break;
-        case GLSC_glGetProgramInfoLog:
-          glse_glGetProgramInfoLog();
-          break;
-        case GLSC_glGetProgramiv:
-          glse_glGetProgramiv();
-          break;
-        case GLSC_glGetShaderInfoLog:
-          glse_glGetShaderInfoLog();
-          break;
-        case GLSC_glGetShaderiv:
-          glse_glGetShaderiv();
-          break;
-        case GLSC_glGetString:
-          glse_glGetString();
-          break;
-        case GLSC_glGetUniformLocation:
-          glse_glGetUniformLocation();
-          break;
-        case GLSC_glReadPixels:
-          glse_glReadPixels();
-          break;
-        case GLSC_glShaderSource:
-          glse_glShaderSource();
-          break;
-		default:
-		  return FALSE;
-	}
-	check_gl_err(c->cmd);
-	return TRUE;
-}
-
 void glse_glBindBuffer()
 {
   GLSE_SET_COMMAND_PTR(c, glBindBuffer);
@@ -871,5 +600,276 @@ void glse_()
   ret-> = ;
   glse_cmd_send_data(0, sizeof(gls_ret__t), (char *)glsec_global.tmp_buf.buf);
 */
+
+int gles_flushCommand(gls_command_t *c) {
+	// LOGD("Flushing command %i\n", c->cmd);
+	switch (c->cmd) {
+      case GLSC_glAttachShader:
+        glse_glAttachShader();
+        pop_batch_command(sizeof(gls_glAttachShader_t));
+        break;
+      case GLSC_glActiveTexture:
+        glse_glActiveTexture();
+        pop_batch_command(sizeof(gls_glActiveTexture_t));
+        break;
+      case GLSC_glBindBuffer:
+        glse_glBindBuffer();
+        pop_batch_command(sizeof(gls_glBindBuffer_t));
+        break;
+      case GLSC_glBindTexture:
+        glse_glBindTexture();
+        pop_batch_command(sizeof(gls_glBindTexture_t));
+        break;
+      case GLSC_glBindAttribLocation:
+        glse_glBindAttribLocation();
+        pop_batch_command(sizeof(gls_glBindAttribLocation_t));
+        break;
+      case GLSC_glBindFramebuffer:
+        glse_glBindFramebuffer();
+        pop_batch_command(sizeof(gls_glBindFramebuffer_t));
+        break;
+      case GLSC_glBlendFuncSeparate:
+        glse_glBlendFuncSeparate();
+        pop_batch_command(sizeof(gls_glBlendFuncSeparate_t));
+        break;
+      case GLSC_glBlendEquationSeparate:
+        glse_glBlendEquationSeparate();
+        pop_batch_command(sizeof(gls_glBlendEquationSeparate_t));
+        break;
+      case GLSC_glClear:
+        glse_glClear();
+        pop_batch_command(sizeof(gls_glClear_t));
+        break;
+      case GLSC_glClearColor:
+        glse_glClearColor();
+        pop_batch_command(sizeof(gls_glClearColor_t));
+        break;
+      case GLSC_glColorMask:
+        glse_glColorMask();
+        pop_batch_command(sizeof(gls_glColorMask_t));
+        break;
+      case GLSC_glCompileShader:
+        glse_glCompileShader();
+        pop_batch_command(sizeof(gls_glCompileShader_t));
+        break;
+      case GLSC_glDeleteProgram:
+        glse_glDeleteProgram();
+        pop_batch_command(sizeof(gls_glDeleteProgram_t));
+        break;
+      case GLSC_glDeleteShader:
+        glse_glDeleteShader();
+        pop_batch_command(sizeof(gls_glDeleteShader_t));
+        break;
+      case GLSC_glDeleteTextures:
+        glse_glDeleteTextures();
+        pop_batch_command(((gls_glDeleteTextures_t *)c)->cmd_size);
+        break;
+      case GLSC_glDepthFunc:
+        glse_glDepthFunc();
+        pop_batch_command(sizeof(gls_glDepthFunc_t));
+        break;
+      case GLSC_glDisable:
+        glse_glDisable();
+        pop_batch_command(sizeof(gls_glDisable_t));
+        break;
+      case GLSC_glDisableVertexAttribArray:
+        glse_glDisableVertexAttribArray();
+        pop_batch_command(sizeof(gls_glDisableVertexAttribArray_t));
+        break;
+      case GLSC_glDrawArrays:
+        glse_glDrawArrays();
+        pop_batch_command(sizeof(gls_glDrawArrays_t));
+        break;
+      case GLSC_glDrawElements:
+        glse_glDrawElements();
+        pop_batch_command(sizeof(gls_glDrawElements_t));
+        break;
+      case GLSC_glEnable:
+        glse_glEnable();
+        pop_batch_command(sizeof(gls_glEnable_t));
+        break;
+      case GLSC_glEnableVertexAttribArray:
+        glse_glEnableVertexAttribArray();
+        pop_batch_command(sizeof(gls_glEnableVertexAttribArray_t));
+        break;
+      case GLSC_glFlush:
+        glse_glFlush();
+        pop_batch_command(sizeof(gls_command_t));
+        break;
+      case GLSC_glLinkProgram:
+        glse_glLinkProgram();
+        pop_batch_command(sizeof(gls_glLinkProgram_t));
+        break;
+      case GLSC_glPixelStorei:
+        glse_glPixelStorei();
+        pop_batch_command(sizeof(gls_glPixelStorei_t));
+        break;
+      case GLSC_glTexImage2D:
+        glse_glTexImage2D();
+        pop_batch_command(((gls_glTexImage2D_t *)c)->cmd_size);
+        break;
+      case GLSC_glTexParameteri:
+        glse_glTexParameteri();
+        pop_batch_command(sizeof(gls_glTexParameteri_t));
+        break;
+      case GLSC_glUniform1f:
+        glse_glUniform1f();
+        pop_batch_command(sizeof(gls_glUniform1f_t));
+        break;
+      case GLSC_glUniform4fv:
+        glse_glUniform4fv();
+        pop_batch_command(((gls_glUniform4fv_t *)c)->cmd_size);
+        break;
+      case GLSC_glUniformMatrix4fv:
+        glse_glUniformMatrix4fv();
+        pop_batch_command(((gls_glUniformMatrix4fv_t *)c)->cmd_size);
+        break;
+      case GLSC_glUseProgram:
+        glse_glUseProgram();
+        pop_batch_command(sizeof(gls_glUseProgram_t));
+        break;
+      case GLSC_glVertexAttribPointer:
+        glse_glVertexAttribPointer();
+        pop_batch_command(sizeof(gls_glVertexAttribPointer_t));
+        break;
+      case GLSC_glViewport:
+        glse_glViewport();
+        pop_batch_command(sizeof(gls_glViewport_t));
+        break;
+		
+      case GLSC_glBlendFunc:
+        glse_glBlendFunc();
+        pop_batch_command(sizeof(gls_glBlendFunc_t));
+        break;
+      case GLSC_glClearDepthf:
+        glse_glClearDepthf();
+        pop_batch_command(sizeof(gls_glClearDepthf_t));
+        break;
+      case GLSC_glCullFace:
+        glse_glCullFace();
+        pop_batch_command(sizeof(gls_glCullFace_t));
+        break;
+      case GLSC_glDepthMask:
+        glse_glDepthMask();
+        pop_batch_command(sizeof(gls_glDepthMask_t));
+        break;
+      case GLSC_glDepthRangef:
+        glse_glDepthRangef();
+        pop_batch_command(sizeof(gls_glDepthRangef_t));
+        break;
+      case GLSC_glHint:
+        glse_glHint();
+        pop_batch_command(sizeof(gls_glHint_t));
+        break;
+      case GLSC_glLineWidth:
+        glse_glLineWidth();
+        pop_batch_command(sizeof(gls_glLineWidth_t));
+        break;
+      case GLSC_glPolygonOffset:
+        glse_glPolygonOffset();
+        pop_batch_command(sizeof(gls_glPolygonOffset_t));
+        break;
+      case GLSC_glStencilFunc:
+        glse_glStencilFunc();
+        pop_batch_command(sizeof(gls_glStencilFunc_t));
+        break;
+      case GLSC_glStencilMask:
+        glse_glStencilMask();
+        pop_batch_command(sizeof(gls_glStencilMask_t));
+        break;
+      case GLSC_glStencilOp:
+        glse_glStencilOp();
+        pop_batch_command(sizeof(gls_glStencilOp_t));
+        break;
+	  case GLSC_glTexSubImage2D:
+		glse_glTexSubImage2D();
+        pop_batch_command(((gls_glTexSubImage2D_t *)c)->cmd_size);
+		break;
+		
+/*
+      case GLSC_glXXX:
+        glse_glXXX();
+        pop_batch_command(sizeof(gls_glXXX_t));
+        break;
+*/
+	  default:
+	  	return FALSE;
+	}
+	check_gl_err(c->cmd);
+	return TRUE;
+}
+
+int gles_executeCommand(gls_command_t *c) {
+	// LOGD("Executing command %i\n", c->cmd);
+	switch (c->cmd) {
+		case GLSC_glBufferData:
+          glse_glBufferData();
+          break;
+        case GLSC_glBufferSubData:
+          glse_glBufferSubData();
+          break;
+        case GLSC_glCreateProgram:
+          glse_glCreateProgram();
+          break;
+        case GLSC_glCreateShader:
+          glse_glCreateShader();
+          break;
+        case GLSC_glDeleteBuffers:
+          glse_glDeleteBuffers();
+          break;
+        case GLSC_glFinish:
+          glse_glFinish();
+          break;
+        case GLSC_glGenBuffers:
+          glse_glGenBuffers();
+          break;
+        case GLSC_glGenTextures:
+          glse_glGenTextures();
+          break;
+        case GLSC_glGetActiveUniform:
+          glse_glGetActiveUniform();
+          break;
+        case GLSC_glGetAttribLocation:
+          glse_glGetAttribLocation();
+          break;
+		case GLSC_glGetError:
+		  glse_glGetError();
+		  break;
+        case GLSC_glGetFloatv:
+          glse_glGetFloatv();
+          break;
+        case GLSC_glGetIntegerv:
+          glse_glGetIntegerv();
+          break;
+        case GLSC_glGetProgramInfoLog:
+          glse_glGetProgramInfoLog();
+          break;
+        case GLSC_glGetProgramiv:
+          glse_glGetProgramiv();
+          break;
+        case GLSC_glGetShaderInfoLog:
+          glse_glGetShaderInfoLog();
+          break;
+        case GLSC_glGetShaderiv:
+          glse_glGetShaderiv();
+          break;
+        case GLSC_glGetString:
+          glse_glGetString();
+          break;
+        case GLSC_glGetUniformLocation:
+          glse_glGetUniformLocation();
+          break;
+        case GLSC_glReadPixels:
+          glse_glReadPixels();
+          break;
+        case GLSC_glShaderSource:
+          glse_glShaderSource();
+          break;
+		default:
+		  return FALSE;
+	}
+	check_gl_err(c->cmd);
+	return TRUE;
+}
 
 
