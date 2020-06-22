@@ -174,8 +174,10 @@ void * glserver_thread(void * arg)
   static graphics_context_t gc;
   memset(&glsec_global, 0, sizeof(glsec_global));
   memset(&gc, 0, sizeof(gc));
+#ifdef __ANDROID__
   assert (glsurfaceview_window != NULL);
   gc.d_window = glsurfaceview_window;
+#endif __ANDROID__
   init_egl(&gc);
 
   glsec_global.sta = a;

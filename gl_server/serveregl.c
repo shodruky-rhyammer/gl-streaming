@@ -1,8 +1,6 @@
 // This file declare EGL methods on server side
 
 #include "glserver.h"
-#include <EGL/egl.h>
-
 
 int egl_executeCommand(gls_command_t *c) {
 	switch (c->cmd) {
