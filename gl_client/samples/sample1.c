@@ -233,13 +233,13 @@ static inline float randf(void)
   return (float)rand() / (float)RAND_MAX;
 }
 
-
-static inline float get_diff_time(struct timeval start, struct timeval end)
+/*
+float get_diff_time(struct timeval start, struct timeval end)
 {
   float dt = (float)(end.tv_sec - start.tv_sec) + (float)(end.tv_usec - start.tv_usec) * 0.000001f;
   return dt;
 }
-
+*/
 
 GLuint create_vbo(GLenum target, void *vtx, size_t size)
 {
@@ -523,8 +523,8 @@ int main(int argc, char * argv[])
   int opt;
   char my_ip[GLS_STRING_SIZE_PLUS];
   char his_ip[GLS_STRING_SIZE_PLUS];
-  uint16_t my_port = 12346;
-  uint16_t his_port = 12345;
+  uint16_t my_port = 18146;
+  uint16_t his_port = 18145;
   strncpy(my_ip, "127.0.0.1", GLS_STRING_SIZE);
   strncpy(his_ip, "127.0.0.1", GLS_STRING_SIZE);
   strncpy(glcc.joy_dev, "/dev/input/js0", GLS_STRING_SIZE);

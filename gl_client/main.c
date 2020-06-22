@@ -28,46 +28,56 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// This file is not used on Android port
 
-#include "gls_command.h"
-#include "glcontrol.h"
-#include "server.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/time.h>
+#include <arpa/inet.h>
+#include <string.h>
+
+#include "glserver.h"
 
 
-#define TRUE 1
-#define FALSE 0
-
-#define GLSE_TMP_BUFFER_SIZE 2097152
-#define GLSE_OUT_BUFFER_SIZE 4096 // 2048
-
-#define GLSE_SET_COMMAND_PTR(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)glsec_global.cmd_data;
-
-typedef struct
+int main(int argc, char * argv[])
 {
-  gls_buffer_t tmp_buf;
-  gls_buffer_t out_buf;
-  server_thread_args_t *sta;
-  graphics_context_t *gc;
-  void *cmd_data;
-} glse_context_t;
+  glsurfaceview_width = 600;
+  glsurfaceview_height = 360);
+	
+  static server_context_t sc;
+  int opt;
+  char my_ip[GLS_STRING_SIZE_PLUS];
+  char his_ip[GLS_STRING_SIZE_PLUS];
+  uint16_t my_port = 18145;
+  uint16_t his_port = 18146;
+  strncpy(my_ip, "127.0.0.1", GLS_STRING_SIZE);
+  strncpy(his_ip, "127.0.0.1", GLS_STRING_SIZE);
+  while ((opt = getopt(argc, argv, "s:c:h")) != -1)
+  {
+    switch (opt)
+    {
+      case 's':
+        strncpy(my_ip, strtok(optarg, ":"), GLS_STRING_SIZE);
+        my_port = atoi(strtok(NULL, ":"));
+        break;
+      case 'c':
+        strncpy(his_ip, strtok(optarg, ":"), GLS_STRING_SIZE);
+        his_port = atoi(strtok(NULL, ":"));
+        break;
+      case 'h':
+      default:
+        printf("Usage: %s [-s my_ip_address:port] [-c client_ip_address:port]\n", argv[0]);
+        return 0;
+    }
+  }
+  server_init(&sc);
+  set_server_address_port(&sc, my_ip, my_port);
+  set_client_address_port(&sc, his_ip, his_port);
 
+  server_run(&sc, glserver_thread);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern glse_context_t glsec_global;
-void pop_batch_command(size_t size);
-void * glserver_thread(void * arg);
-
-int egl_executeCommand(gls_command_t *c);
-int egl_flushCommand(gls_command_t *c);
-
-int gles_executeCommand(gls_command_t *c);
-int gles_flushCommand(gls_command_t *c);
-
-#ifdef __cplusplus
+  return 0;
 }
-#endif
-
 

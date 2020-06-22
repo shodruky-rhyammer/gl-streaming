@@ -6,10 +6,15 @@ LOCAL_SRC_FILES := ../common/fifo.c   \
 				   ../common/server.c \
 				   glcontrol.c        \
 				   glserver.c         \
+				   serveregl.c        \
+				   servergles.c       \
 				   main.c
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 					$(LOCAL_PATH)/../common
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
+
+LOCAL_CFLAGS += -DGLS_SERVER
+
 # Move to define in C code.
 # LOCAL_CFLAGS += -DGL_SERVER
 ifeq ($(TARGET_ARCH_ABI),x86)

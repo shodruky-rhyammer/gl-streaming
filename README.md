@@ -2,7 +2,7 @@
 
 Streaming opengl commands over network
 
-A fast, simple, lightweight and low latency framework suitable for embedded systems. (no X server needed)
+A fast, simple, lightweight and low latency framework suitable for embedded systems.
 
 > Original image
 > ![gl-streaming summary](https://raw.github.com/shodruky-rhyammer/gl-streaming/master/www/gl-streaming_small.png)
@@ -11,11 +11,11 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 
 * gl_client : client framework and sample program
  
-  The client system may not need to have any GPU and heavy X server. Even without GPU, opengl programs can be run on any system !
+  The client system may not need to have any GPU. Even without GPU, opengl programs can be run on any system !
   
-  (X Server may be required by some programs).
+  (X Server is now required by client).
 
-  Copied from @mittorn fork and do my attempt to run on GL4ES.
+  Some codes are from @mittorn fork for base methods, @tinmaniac for base Android port and do my attempt on implement all stub methods to run on GL4ES.
 
 * gl_server : server framework
  
@@ -32,6 +32,21 @@ A fast, simple, lightweight and low latency framework suitable for embedded syst
 ## Demo Video (Android port)
 
 [Demo Video](https://youtu.be/uwM9uxLHH1M)
+
+## TODO implement
+- [x] glGetActiveUniform
+- [x] glGetError
+- [x] glGetIntegerv
+- [x] glGetFloatv
+- [x] glReadPixels (experimental)
+- [x] glGetProgramiv
+- [x] glGetShaderiv
+- [x] glGetString
+- [x] glTexSubImage2D
+
+## Current status
+- `es2_info`, `es2gears` will work; `es2tri` probably.
+- Some apps/games run on GL4ES will work on a blank screen, other will get crashed.
 
 ## Notes
 - Current minimum SDK level is set to 21 (Android 5) but it may work on older Android devices by some modify.

@@ -28,6 +28,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "fastlog.h"
 #include "GLES2/gl2.h"
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
@@ -41,22 +42,22 @@ typedef struct
   EGLDisplay display;
   EGLSurface surface;
   EGLContext context;
+#ifdef __ANDROID__
   ANativeWindow* d_window;
+#endif // __ANDROID__
 } graphics_context_t;
-
-
-//#define DEBUG
-#ifdef DEBUG
-#define check_gl_err() assert(glGetError() == 0)
-#else
-#define check_gl_err() {}
-#endif
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+void check_gl_err(uint32_t cmd);
+
+EGLConfig config;
+#ifdef USE_X11
+void make_x_window(Display *x_dpy, EGLDisplay egl_dpy, const char *name, int x, int y, int width, int height, Window *winRet, EGLContext *ctxRet, EGLSurface *surfRet);
+#endif // USE_X11
 void init_egl(graphics_context_t *gc);
 void release_egl(graphics_context_t *gc);
 

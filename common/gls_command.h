@@ -33,14 +33,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 
 
+#define GLS_TMP_BUFFER_SIZE 2097152
 #define GLS_DATA_SIZE 356
-#define GLS_STRING_SIZE_PLUS 256
-#define GLS_STRING_SIZE 254
+#define GLS_STRING_SIZE_PLUS 10240 // 256
+#define GLS_STRING_SIZE 10160 // 254
 #define GLS_ALIGNMENT_BITS 3
 
 
 // To prevent incompatible version, change every
-#define GLS_VERSION 3
+#define GLS_VERSION 8
 // #define GL_MAJOR_VERSION 1
 // #define GL_MINOR_VERSION 2
 
@@ -52,6 +53,40 @@ enum GL_Server_Command
   GLSC_SEND_DATA,
   GLSC_FLUSH,
   GLSC_get_context,
+  
+  // EGL commands
+  GLSC_eglBindAPI,
+  GLSC_eglBindTexImage,
+  GLSC_eglChooseConfig,
+  GLSC_eglCopyBuffers,
+  GLSC_eglCreateContext,
+  GLSC_eglCreatePbufferSurface,
+  GLSC_eglCreatePixmapSurface,
+  GLSC_eglCreateWindowSurface,
+  GLSC_eglDestroyContext,
+  GLSC_eglDestroySurface,
+  GLSC_eglGetConfigAttrib,
+  GLSC_eglGetConfigs,
+  GLSC_eglGetCurrentContext,
+  GLSC_eglGetCurrentDisplay,
+  GLSC_eglGetCurrentSurface,
+  GLSC_eglGetDisplay,
+  GLSC_eglGetError,
+// This will never get streamed. Proc address is different.
+  // GLSC_eglGetProcAddress,
+  GLSC_eglInitialize,
+  GLSC_eglMakeCurrent,
+  GLSC_eglQueryContext,
+  GLSC_eglQueryString,
+  GLSC_eglQuerySurface,
+  GLSC_eglReleaseTexImage,
+  GLSC_eglSurfaceAttrib,
+  GLSC_eglSwapBuffers,
+  GLSC_eglTerminate,
+  GLSC_eglWaitGL,
+  GLSC_eglWaitNative,
+  
+  // GLES 2 commands
   GLSC_glActiveTexture,
   GLSC_glAttachShader,
   GLSC_glBindAttribLocation,
@@ -67,6 +102,7 @@ enum GL_Server_Command
   GLSC_glClearColor,
   GLSC_glClearDepthf,
   GLSC_glClearStencil,
+  GLSC_glColorMask,
   GLSC_glCompileShader,
   GLSC_glCreateProgram,
   GLSC_glCreateShader,
@@ -96,6 +132,7 @@ enum GL_Server_Command
   GLSC_glGetIntegerv,
   GLSC_glGetProgramInfoLog,
   GLSC_glGetShaderInfoLog,
+  GLSC_glGetShaderiv,
   GLSC_glGetString,
   GLSC_glGetUniformLocation,
   GLSC_glHint,
@@ -116,8 +153,7 @@ enum GL_Server_Command
   GLSC_glUniformMatrix4fv,
   GLSC_glUseProgram,
   GLSC_glVertexAttribPointer,
-  GLSC_glViewport,
-  GLSC_glGetShaderiv
+  GLSC_glViewport
 };
 
 
@@ -169,7 +205,7 @@ typedef union
   float data_float[GLS_DATA_SIZE];
   uint32_t data_uint[GLS_DATA_SIZE];
   int32_t data_int[GLS_DATA_SIZE];
-  char data_char[GLS_DATA_SIZE * 4];
+  char data_char[GLS_DATA_SIZE * 36]; // * 4
 } gls_data_t;
 
 
@@ -182,7 +218,280 @@ typedef struct
   gls_data_t data;
 } gls_cmd_send_data_t;
 
+/* Conversation
+ *
+ * - boolean, enum, unsigned int
+ * '-> uint32_t
+ */
 
+// EGL command data
+typedef struct
+{
+  uint32_t attrib_list[GLS_DATA_SIZE];
+} gls_data_egl_attriblist_t;
+ 
+// EGL commands
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t api;
+} gls_eglBindAPI_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglBindAPI_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t buffer;
+} gls_eglBindTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglBindTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t config_size;
+} gls_eglChooseConfig_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+// FIXME sending return data???
+  uint32_t configs[GLS_DATA_SIZE];
+  uint32_t num_config;
+  uint32_t success;
+} gls_ret_eglChooseConfig_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t config;
+  uint32_t attribute;
+} gls_eglGetConfigAttrib_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t value;
+  uint32_t success;
+} gls_ret_eglGetConfigAttrib_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t config_size;
+} gls_eglGetConfigs_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+// FIXME sending return data???
+  uint32_t configs[GLS_DATA_SIZE];
+  uint32_t num_config;
+  uint32_t success;
+} gls_ret_eglGetConfigs_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_eglGetCurrentContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t context;
+} gls_ret_eglGetCurrentContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_eglGetCurrentDisplay_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t display;
+} gls_ret_eglGetCurrentDisplay_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t readdraw;
+} gls_eglGetCurrentSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t surface;
+} gls_ret_eglGetCurrentSurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t display;
+} gls_eglGetDisplay_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t display;
+} gls_ret_eglGetDisplay_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_eglGetError_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t error;
+} gls_ret_eglGetError_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t major;
+  uint32_t minor;
+} gls_eglInitialize_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglInitialize_t;
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t ctx;
+  uint32_t attribute;
+} gls_eglQueryContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t value;
+  uint32_t success;
+} gls_ret_eglQueryContext_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t name;
+} gls_eglQueryString_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  char params[GLS_STRING_SIZE_PLUS];
+} gls_ret_eglQueryString_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t attribute;
+} gls_eglQuerySurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t value;
+  uint32_t success;
+} gls_ret_eglQuerySurface_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t buffer;
+} gls_eglReleaseTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglReleaseTexImage_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+  uint32_t surface;
+  uint32_t attribute;
+  uint32_t value;
+} gls_eglSurfaceAttrib_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglSurfaceAttrib_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t dpy;
+} gls_eglTerminate_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t success;
+} gls_ret_eglTerminate_t;
+
+// OpenGL ES commands
 typedef struct
 {
   uint32_t cmd;
@@ -304,6 +613,16 @@ typedef struct
   uint32_t cmd;
   uint32_t s;
 } gls_glClearStencil_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t red;
+  uint32_t green;
+  uint32_t blue;
+  uint32_t alpha;
+} gls_glColorMask_t;
 
 
 typedef struct
@@ -476,6 +795,25 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  uint32_t index;
+  uint32_t program;
+  int32_t bufsize;
+} gls_glGetActiveUniform_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t length;
+  int32_t size;
+  uint32_t type;
+  char name[GLS_STRING_SIZE_PLUS];
+} gls_ret_glGetActiveUniform_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t program;
   char name[GLS_STRING_SIZE_PLUS];
 } gls_glGetAttribLocation_t;
@@ -486,6 +824,63 @@ typedef struct
   uint32_t cmd;
   int32_t index;
 } gls_ret_glGetAttribLocation_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+} gls_glGetError_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t error;
+} gls_ret_glGetError_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+  int32_t params;
+} gls_glGetIntegerv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t params;
+} gls_ret_glGetIntegerv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+  float params;
+} gls_glGetFloatv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  float params;
+} gls_ret_glGetFloatv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t name;
+} gls_glGetString_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  char params[GLS_STRING_SIZE_PLUS];
+} gls_ret_glGetString_t;
 
 
 typedef struct
@@ -503,12 +898,29 @@ typedef struct
   char infolog[GLS_STRING_SIZE_PLUS];
 } gls_ret_glGetProgramInfoLog_t;
 
+
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t program;
+  uint32_t pname;
+} gls_glGetProgramiv_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  int32_t params;
+} gls_ret_glGetProgramiv_t;
+
+
 typedef struct
 {
   uint32_t cmd;
   uint32_t shader;
   uint32_t pname;
 } gls_glGetShaderiv_t;
+
 
 typedef struct
 {
@@ -588,6 +1000,25 @@ typedef struct
 typedef struct
 {
   uint32_t cmd;
+  int32_t x;
+  int32_t y;
+  uint32_t width;
+  uint32_t height;
+  uint32_t format;
+  uint32_t type;
+} gls_glReadPixels_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
+  char pixels[4];
+} gls_ret_glReadPixels_t;
+
+
+typedef struct
+{
+  uint32_t cmd;
   uint32_t shader;
   int32_t count;
 } gls_glShaderSource_t;
@@ -595,8 +1026,8 @@ typedef struct
 
 typedef struct
 {
-  uint32_t string[256];
-  int32_t length[256];
+  uint32_t string[GLS_STRING_SIZE_PLUS];
+  int32_t length[GLS_STRING_SIZE_PLUS];
   char data[4];
 } gls_data_glShaderSource_t;
 
@@ -649,6 +1080,23 @@ typedef struct
   uint32_t pname;
   int32_t param;
 } gls_glTexParameteri_t;
+
+
+// Based from gls_glTexImage2D_t code
+typedef struct
+{
+  uint32_t cmd;
+  uint32_t cmd_size;
+  uint32_t target;
+  int32_t level;
+  int32_t xoffset;
+  int32_t yoffset;
+  int32_t width;
+  int32_t height;
+  uint32_t format;
+  uint32_t type;
+  char pixels[4];
+} gls_glTexSubImage2D_t;
 
 
 typedef struct
