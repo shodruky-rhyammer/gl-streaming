@@ -3,6 +3,7 @@
 #include "glserver.h"
 
 int gles_flushCommand(gls_command_t *c) {
+	// LOGD("Flushing command %i\n", c->cmd);
 	switch (c->cmd) {
       case GLSC_glAttachShader:
         glse_glAttachShader();
@@ -192,7 +193,6 @@ int gles_flushCommand(gls_command_t *c) {
         pop_batch_command(sizeof(gls_glXXX_t));
         break;
 */
-	
 	  default:
 	  	return FALSE;
 	}
@@ -201,6 +201,7 @@ int gles_flushCommand(gls_command_t *c) {
 }
 
 int gles_executeCommand(gls_command_t *c) {
+	// LOGD("Executing command %i\n", c->cmd);
 	switch (c->cmd) {
 		case GLSC_glBufferData:
           glse_glBufferData();
@@ -457,6 +458,7 @@ void glse_glGetProgramiv()
   GLSE_SET_COMMAND_PTR(c, glGetProgramiv);
   gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsec_global.tmp_buf.buf;
   glGetProgramiv(c->program, c->pname, &ret->params);
+  // LOGD("GLGetProgramiv from %p return %i", c->pname, ret->params);
   ret->cmd = GLSC_glGetProgramiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetProgramiv_t),(char *)glsec_global.tmp_buf.buf);
 }
@@ -467,7 +469,6 @@ void glse_glGetShaderiv()
   GLSE_SET_COMMAND_PTR(c, glGetShaderiv);
   gls_ret_glGetShaderiv_t *ret = (gls_ret_glGetShaderiv_t *)glsec_global.tmp_buf.buf;
   glGetShaderiv(c->shader, c->pname, &ret->params);
-  // LOGD("GLGetShaderiv from %p return %p or with pointer it become %p", c->pname, ret->params, &ret->params);
   ret->cmd = GLSC_glGetShaderiv;
   glse_cmd_send_data(0,sizeof(gls_ret_glGetShaderiv_t),(char *)glsec_global.tmp_buf.buf);
 }

@@ -406,6 +406,7 @@ GL_APICALL void GL_APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei coun
     {
         if( vt_attrib_pointer[i].isenabled )
             wes_vertex_attrib_pointer(i, first + count);
+		// else printf("Vertex attrib pointer %i was not enabled\n", i);
     }
     glBindBuffer( GL_ARRAY_BUFFER, vbo_bkp );
   GLS_SET_COMMAND_PTR_BATCH(c, glDrawArrays);
@@ -592,8 +593,7 @@ GL_APICALL void GL_APIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint*
     
 	wait_for_data("timeout:glGetProgramiv");
 	gls_ret_glGetProgramiv_t *ret = (gls_ret_glGetProgramiv_t *)glsc_global.tmp_buf.buf;
-	*params = ret->params;
-	printf("glGetProgramiv return %i, it's pointer is %i\n", params, &params);
+	params = ret->params;
 }
 
 

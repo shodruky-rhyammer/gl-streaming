@@ -55,7 +55,7 @@ void server_init(server_context_t *c)
 
 void * server_thread(void * arg)
 {
-#ifdef __ANDROID__ // GL_SERVER
+#ifdef GLS_SERVER // GLS_SERVER
   server_thread_args_t * a = (server_thread_args_t *)arg;
 #else // GL_CLIENT
   server_context_t * a = (server_context_t *)arg;
@@ -63,7 +63,7 @@ void * server_thread(void * arg)
   int quit = FALSE;
 
   while (quit == FALSE) {
-#ifdef __ANDROID__ // GL_SERVER
+#ifdef GLS_SERVER // GLS_SERVER
     char* pushptr = fifo_push_ptr_get(a->fifo);
 #else // GL_CLIENT
     char* pushptr = fifo_push_ptr_get(&a->fifo);
@@ -77,7 +77,7 @@ void * server_thread(void * arg)
         LOGE("Socket recvfrom Error.\n");
         quit = TRUE;
       }
-#ifdef __ANDROID__ // GL_SERVER
+#ifdef GLS_SERVER // GLS_SERVER
     fifo_push_ptr_next(a->fifo);
 #else // GL_CLIENT
     fifo_push_ptr_next(&a->fifo);
@@ -113,7 +113,7 @@ void set_max_mbps(server_context_t *c, unsigned int mbps)
 }
 
 
-// #ifdef __ANDROID__ // GL_SERVER
+// #ifdef GLS_SERVER // GLS_SERVER
 void set_server_address_port(server_context_t *c, char * addr, uint16_t port)
 {
   strncpy(c->server_thread_arg.addr, addr, sizeof(c->server_thread_arg.addr));
@@ -154,7 +154,7 @@ void set_bind_address_port(server_context_t *c, char * addr, uint16_t port)
 void socket_open(server_context_t *c)
 {
 // There's nothing same to merge
-#ifdef __ANDROID__ // GL_SERVER
+#ifdef GLS_SERVER // GLS_SERVER
   c->server_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (c->server_thread_arg.sock_fd == -1)
   {
@@ -216,7 +216,7 @@ void socket_open(server_context_t *c)
 
 void socket_close(server_context_t *c)
 {
-#ifdef __ANDROID__ // GL_SERVER
+#ifdef GLS_SERVER // GLS_SERVER
   close(c->server_thread_arg.sock_fd);
   close(c->popper_thread_arg.sock_fd);
 #else // GL_CLIENT
@@ -225,7 +225,7 @@ void socket_close(server_context_t *c)
 }
 
 
-// #ifdef __ANDROID__ // GL_SERVER
+// #ifdef GLS_SERVER // GLS_SERVER
 void server_run(server_context_t *c, void *(*popper_thread)(void *))
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
@@ -258,7 +258,7 @@ void server_run(server_context_t *c, void *(*popper_thread)(void *))
 }
 
 
-#ifndef __ANDROID__ // GL_CLIENT
+#ifndef GLS_SERVER // GL_CLIENT
 void *server_start(server_context_t *c)
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
@@ -275,7 +275,7 @@ void server_stop(server_context_t *c)
 {
 #ifndef __ANDROID__
     pthread_cancel(c->server_th);
-#endif // __ANDROID__
+#endif // GLS_SERVER
 
     socket_close(c);
     fifo_delete(&c->fifo);
