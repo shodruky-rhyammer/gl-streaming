@@ -2,72 +2,6 @@
 
 #include "glserver.h"
 
-int egl_executeCommand(gls_command_t *c) {
-	switch (c->cmd) {
-        case GLSC_eglBindAPI:
-			glse_eglBindAPI();
-			break;
-		case GLSC_eglChooseConfig:
-			glse_eglChooseConfig();
-			break;
-		case GLSC_eglGetConfigAttrib:
-			glse_eglGetConfigAttrib();
-			break;
-		case GLSC_eglGetConfigs:
-			glse_eglGetConfigs();
-			break;
-		case GLSC_eglGetCurrentContext:
-			glse_eglGetCurrentContext();
-			break;
-		case GLSC_eglGetCurrentDisplay:
-			glse_eglGetCurrentDisplay();
-			break;
-		case GLSC_eglGetCurrentSurface:
-			glse_eglGetCurrentSurface();
-			break;
-        case GLSC_eglGetError:
-			glse_eglGetError();
-			break;
-		case GLSC_eglInitialize:
-			glse_eglInitialize();
-			break;
-        case GLSC_eglQueryContext:
-			glse_eglQueryContext();
-			break;
-        case GLSC_eglQueryString:
-			glse_eglQueryString();
-			break;
-        case GLSC_eglQuerySurface:
-			glse_eglQuerySurface();
-			break;
-		case GLSC_eglTerminate:
-			glse_eglTerminate();
-			break;
-/*
-		case GLSC_eglXXX:
-			glse_eglXXX();
-			break:
-*/
-		default:
-			return FALSE;
-	}
-	
-	check_gl_err(c->cmd);
-	return TRUE;
-}
-
-int egl_flushCommand(gls_command_t *c) {
-	switch (c->cmd) {
-		// Nothing here to flush
-		default:
-			return FALSE;
-	}
-	
-	check_gl_err(c->cmd);
-	return TRUE;
-}
-
-
 void glse_eglBindAPI()
 {
   GLSE_SET_COMMAND_PTR(c, eglBindAPI);
@@ -228,3 +162,67 @@ void glse_eglTerminate()
   glse_cmd_send_data(0,sizeof(gls_ret_eglTerminate_t),(char *)glsec_global.tmp_buf.buf);
 }
 
+int egl_executeCommand(gls_command_t *c) {
+	switch (c->cmd) {
+        case GLSC_eglBindAPI:
+			glse_eglBindAPI();
+			break;
+		case GLSC_eglChooseConfig:
+			glse_eglChooseConfig();
+			break;
+		case GLSC_eglGetConfigAttrib:
+			glse_eglGetConfigAttrib();
+			break;
+		case GLSC_eglGetConfigs:
+			glse_eglGetConfigs();
+			break;
+		case GLSC_eglGetCurrentContext:
+			glse_eglGetCurrentContext();
+			break;
+		case GLSC_eglGetCurrentDisplay:
+			glse_eglGetCurrentDisplay();
+			break;
+		case GLSC_eglGetCurrentSurface:
+			glse_eglGetCurrentSurface();
+			break;
+        case GLSC_eglGetError:
+			glse_eglGetError();
+			break;
+		case GLSC_eglInitialize:
+			glse_eglInitialize();
+			break;
+        case GLSC_eglQueryContext:
+			glse_eglQueryContext();
+			break;
+        case GLSC_eglQueryString:
+			glse_eglQueryString();
+			break;
+        case GLSC_eglQuerySurface:
+			glse_eglQuerySurface();
+			break;
+		case GLSC_eglTerminate:
+			glse_eglTerminate();
+			break;
+/*
+		case GLSC_eglXXX:
+			glse_eglXXX();
+			break:
+*/
+		default:
+			return FALSE;
+	}
+	
+	check_gl_err(c->cmd);
+	return TRUE;
+}
+
+int egl_flushCommand(gls_command_t *c) {
+	switch (c->cmd) {
+		// Nothing here to flush
+		default:
+			return FALSE;
+	}
+	
+	check_gl_err(c->cmd);
+	return TRUE;
+}
