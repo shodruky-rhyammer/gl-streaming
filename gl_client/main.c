@@ -28,6 +28,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// This file is not used on Android port
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +43,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc, char * argv[])
 {
+  glsurfaceview_width = 600;
+  glsurfaceview_height = 360);
+	
   static server_context_t sc;
   int opt;
   char my_ip[GLS_STRING_SIZE_PLUS];

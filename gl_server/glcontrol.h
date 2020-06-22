@@ -55,7 +55,9 @@ extern "C" {
 void check_gl_err(uint32_t cmd);
 
 EGLConfig config;
-
+#ifdef USE_X11
+void make_x_window(Display *x_dpy, EGLDisplay egl_dpy, const char *name, int x, int y, int width, int height, Window *winRet, EGLContext *ctxRet, EGLSurface *surfRet);
+#endif // USE_X11
 void init_egl(graphics_context_t *gc);
 void release_egl(graphics_context_t *gc);
 

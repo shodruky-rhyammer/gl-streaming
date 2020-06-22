@@ -1,6 +1,6 @@
 CFLAGS=-O3 -Wall -DUSE_X11 -DGLS_SERVER
 
-LIBS=-L/opt/vc/lib/ -lGLESv2 -lEGL -lpthread -lrt
+LIBS=-L/opt/vc/lib/ -lX11 -lGLESv2 -lEGL -lpthread -lrt
 # -lopenmaxil -lbcm_host -lvcos -lvchiq_arm 
 INCLUDES=-I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I../common -I. -I./include
 OBJS=fifo.o glcontrol.o server.o serveregl.o servergles.o glserver.o
