@@ -34,9 +34,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "server.h"
 
 
-#define GLSE_TMP_BUFFER_SIZE 2097152
-#define GLSE_OUT_BUFFER_SIZE 2048
+#define TRUE 1
+#define FALSE 0
 
+#define GLSE_TMP_BUFFER_SIZE 2097152
+#define GLSE_OUT_BUFFER_SIZE 4096 // 2048
+
+#define GLSE_SET_COMMAND_PTR(PTR, FUNCNAME) gls_##FUNCNAME##_t *PTR = (gls_##FUNCNAME##_t *)glsec_global.cmd_data;
 
 typedef struct
 {
@@ -53,7 +57,14 @@ extern "C" {
 #endif
 
 extern glse_context_t glsec_global;
+void pop_batch_command(size_t size);
 void * glserver_thread(void * arg);
+
+int egl_executeCommand(gls_command_t *c);
+int egl_flushCommand(gls_command_t *c);
+
+int gles_executeCommand(gls_command_t *c);
+int gles_flushCommand(gls_command_t *c);
 
 #ifdef __cplusplus
 }

@@ -28,40 +28,56 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// This file is not used on Android port
 
+#include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/time.h>
+#include <arpa/inet.h>
+#include <string.h>
 
-#include "fifo.h"
+#include "glserver.h"
 
-int fifo_init(fifo_t *fifo, unsigned int fifo_size_in_bits, unsigned int fifo_packet_size_in_bits)
+
+int main(int argc, char * argv[])
 {
-  fifo->fifo_size = 1 << fifo_size_in_bits;
-  fifo->fifo_packet_size = 1 << fifo_packet_size_in_bits;
-  unsigned int alignment = fifo->fifo_packet_size;
-  fifo->buffer = (char *)malloc(fifo->fifo_size * fifo->fifo_packet_size + alignment);
-  if (fifo->buffer == NULL)
+  glsurfaceview_width = 600;
+  glsurfaceview_height = 360);
+	
+  static server_context_t sc;
+  int opt;
+  char my_ip[GLS_STRING_SIZE_PLUS];
+  char his_ip[GLS_STRING_SIZE_PLUS];
+  uint16_t my_port = 18145;
+  uint16_t his_port = 18146;
+  strncpy(my_ip, "127.0.0.1", GLS_STRING_SIZE);
+  strncpy(his_ip, "127.0.0.1", GLS_STRING_SIZE);
+  while ((opt = getopt(argc, argv, "s:c:h")) != -1)
   {
-    return -1;
+    switch (opt)
+    {
+      case 's':
+        strncpy(my_ip, strtok(optarg, ":"), GLS_STRING_SIZE);
+        my_port = atoi(strtok(NULL, ":"));
+        break;
+      case 'c':
+        strncpy(his_ip, strtok(optarg, ":"), GLS_STRING_SIZE);
+        his_port = atoi(strtok(NULL, ":"));
+        break;
+      case 'h':
+      default:
+        printf("Usage: %s [-s my_ip_address:port] [-c client_ip_address:port]\n", argv[0]);
+        return 0;
+    }
   }
-#if __WORDSIZE == 64
-  fifo->p_start = (char *)(((uint64_t)fifo->buffer + alignment - 1) & (~ ((uint64_t)alignment - 1)));
-#else
-  fifo->p_start = (char *)(((uint32_t)fifo->buffer + alignment - 1) & (~ ((uint32_t)alignment - 1)));
-#endif
-  fifo->idx_reader = 0;
-  fifo->idx_writer = 0;
+  server_init(&sc);
+  set_server_address_port(&sc, my_ip, my_port);
+  set_client_address_port(&sc, his_ip, his_port);
+
+  server_run(&sc, glserver_thread);
+
   return 0;
 }
 
-int fifo_delete(fifo_t *fifo)
-{
-  free(fifo->buffer);
-  fifo->buffer = NULL;
-  fifo->p_start = NULL;
-  fifo->idx_reader = 0;
-  fifo->idx_writer = 0;
-  fifo->fifo_size = 0;
-  fifo->fifo_packet_size = 0;
-  return 0;
-}

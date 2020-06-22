@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<com.kdt.glstreamserver.GLStreamingView
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:id="@+id/main_glstream_surfaceview"/>
+
+	<LinearLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:id="@+id/main_glstream_logview"
+		android:background="#88000000"
+		android:visibility="gone">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"
+			android:text="Server log"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:text="Close"
+			android:onClick="closeLog"/>
+
+		<ScrollView
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:id="@+id/main_glstream_log_scroll">
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:typeface="monospace"/>
+
+		</ScrollView>
+
+	</LinearLayout>
+
+</FrameLayout>
+

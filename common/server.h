@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <arpa/inet.h>
 
 #include "fifo.h"
-
+#include "pthread.h"
 
 #define SLEEP_USEC 1000
 #define FIFO_SIZE_IN_BITS 10
@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX_MBPS 100
 
 
+// GL_SERVER
 typedef struct
 {
   struct sockaddr_in sai;
@@ -56,14 +57,25 @@ typedef struct
 
 typedef struct
 {
-  server_thread_args_t server_thread_arg, popper_thread_arg;
   pthread_t server_th, popper_th;
   int err;
   fifo_t fifo;
+  int sock_fd;
+  size_t max_packet_size;
   unsigned int fifo_packet_size_in_bits;
   unsigned int fifo_size_in_bits;
   unsigned int sleep_usec;
   unsigned int max_mbps;
+  
+  // GL_SERVER
+  server_thread_args_t server_thread_arg, popper_thread_arg;
+  
+  // GL_CLIENT
+  uint16_t port;
+  char addr[256];
+  char bind_addr[256];
+  uint16_t bind_port;
+  struct sockaddr_in sai;
 } server_context_t;
 
 
@@ -71,21 +83,26 @@ typedef struct
 extern "C" {
 #endif
 
-  void * server_thread(void * arg);
+  void* server_thread(void* arg);
   void server_init(server_context_t *c);
-  void server_run(server_context_t *c, void *(*popper_thread)(void *));
-  void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
-  void set_client_address_port(server_context_t *c, char * addr, uint16_t port);
-  void set_client_user_context(server_context_t *c, void *ptr);
   void set_fifo_packet_size_in_bits(server_context_t *c, unsigned int bits);
   void set_fifo_size_in_bits(server_context_t *c, unsigned int bits);
   void set_sleep_time(server_context_t *c, unsigned int usec);
   void set_max_mbps(server_context_t *c, unsigned int mbps);
+  
+  // GL_SERVER
+  void set_server_address_port(server_context_t *c, char * addr, uint16_t port);
+  void set_client_address_port(server_context_t *c, char * addr, uint16_t port);
+  void set_client_user_context(server_context_t *c, void *ptr);
+  void server_run(server_context_t *c, void *(*popper_thread)(void *));
+
+  // GL_CLIENT
   void socket_open(server_context_t *c);
   void socket_close(server_context_t *c);
 
 #ifdef __cplusplus
 }
 #endif
+
 
 

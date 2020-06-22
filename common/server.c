@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "server.h"
-
+#include "fastlog.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -55,26 +55,33 @@ void server_init(server_context_t *c)
 
 void * server_thread(void * arg)
 {
+#ifdef GLS_SERVER // GLS_SERVER
   server_thread_args_t * a = (server_thread_args_t *)arg;
+#else // GL_CLIENT
+  server_context_t * a = (server_context_t *)arg;
+#endif // GL_CLIENT
   int quit = FALSE;
 
-  while (quit == FALSE)
-  {
+  while (quit == FALSE) {
+#ifdef GLS_SERVER // GLS_SERVER
     char* pushptr = fifo_push_ptr_get(a->fifo);
-    if (pushptr == NULL)
-    {
-      printf("FIFO full!\n");
+#else // GL_CLIENT
+    char* pushptr = fifo_push_ptr_get(&a->fifo);
+#endif // GL_CLIENT
+    if (pushptr == NULL) {
+      LOGW("FIFO full!\n");
       usleep(a->sleep_usec);
-    }
-    else
-    {
+    } else {
       int recive_size = recvfrom(a->sock_fd, pushptr, a->max_packet_size, 0, NULL, NULL);
-      if (recive_size == -1)
-      {
-        printf("Socket recvfrom Error.\n");
+      if (recive_size == -1) {
+        LOGE("Socket recvfrom Error.\n");
         quit = TRUE;
       }
-      fifo_push_ptr_next(a->fifo);
+#ifdef GLS_SERVER // GLS_SERVER
+    fifo_push_ptr_next(a->fifo);
+#else // GL_CLIENT
+    fifo_push_ptr_next(&a->fifo);
+#endif // GL_CLIENT
     }
   }
 
@@ -106,6 +113,7 @@ void set_max_mbps(server_context_t *c, unsigned int mbps)
 }
 
 
+// #ifdef GLS_SERVER // GLS_SERVER
 void set_server_address_port(server_context_t *c, char * addr, uint16_t port)
 {
   strncpy(c->server_thread_arg.addr, addr, sizeof(c->server_thread_arg.addr));
@@ -126,20 +134,43 @@ void set_client_user_context(server_context_t *c, void *ptr)
 }
 
 
+// #else // GL_CLIENT
+void set_address_port(server_context_t *c, char * addr, uint16_t port)
+{
+  strncpy(c->addr, addr, sizeof(c->addr));
+  c->port = port;
+}
+
+
+void set_bind_address_port(server_context_t *c, char * addr, uint16_t port)
+{
+  strncpy(c->bind_addr, addr, sizeof(c->bind_addr));
+  c->bind_port = port;
+}
+
+// #endif // GL_CLIENT
+
+
 void socket_open(server_context_t *c)
 {
+// There's nothing same to merge
+#ifdef GLS_SERVER // GLS_SERVER
   c->server_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (c->server_thread_arg.sock_fd == -1)
   {
-    printf("Server Socket Open Error.\n");
-    exit(EXIT_FAILURE);
+    LOGE("Server Socket Open Error.");
+    // exit(EXIT_FAILURE);
+	
+	return;
   }
 
   c->popper_thread_arg.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (c->popper_thread_arg.sock_fd == -1)
   {
-    printf("Client Socket Open Error.\n");
-    exit(EXIT_FAILURE);
+    LOGE("Client Socket Open Error.");
+    // exit(EXIT_FAILURE);
+	
+	return;
   }
 
   c->server_thread_arg.sai.sin_family = AF_INET;
@@ -152,19 +183,49 @@ void socket_open(server_context_t *c)
 
   if (bind(c->server_thread_arg.sock_fd, (struct sockaddr *)&c->server_thread_arg.sai, sizeof(struct sockaddr_in)) == -1)
   {
+    LOGE("Socket Bind Error.");
+    // exit(EXIT_FAILURE);
+	
+	return;
+  }
+#else // GL_CLIENT
+  struct sockaddr_in sai;
+  c->sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (c->sock_fd == -1)
+  {
+    printf("Server Socket Open Error.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  c->sai.sin_family = AF_INET;
+  c->sai.sin_port = htons(c->port);
+  c->sai.sin_addr.s_addr = inet_addr(c->addr);
+
+  sai.sin_family = AF_INET;
+  sai.sin_port = htons(c->bind_port);
+  sai.sin_addr.s_addr = inet_addr(c->bind_addr);
+
+  if (bind(c->sock_fd, (struct sockaddr *)&sai, sizeof(struct sockaddr_in)) == -1)
+  {
     printf("Socket Bind Error.\n");
     exit(EXIT_FAILURE);
   }
+#endif // GL_CLIENT
 }
 
 
 void socket_close(server_context_t *c)
 {
+#ifdef GLS_SERVER // GLS_SERVER
   close(c->server_thread_arg.sock_fd);
   close(c->popper_thread_arg.sock_fd);
+#else // GL_CLIENT
+  close(c->sock_fd);
+#endif // GL_CLIENT
 }
 
 
+// #ifdef GLS_SERVER // GLS_SERVER
 void server_run(server_context_t *c, void *(*popper_thread)(void *))
 {
   fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
@@ -176,16 +237,47 @@ void server_run(server_context_t *c, void *(*popper_thread)(void *))
   c->popper_thread_arg.sleep_usec = c->sleep_usec;
   c->server_thread_arg.max_mbps = c->max_mbps;
   c->popper_thread_arg.max_mbps = c->max_mbps;
-
   socket_open(c);
-
   pthread_create(&c->server_th, NULL, (void* (*)(void*))server_thread, &c->server_thread_arg);
-
   pthread_create(&c->popper_th, NULL, popper_thread, &c->popper_thread_arg);
-
   pthread_join(c->popper_th, NULL);
+  
+  // From https://github.com/tinmaniac/gl-streaming/blob/master/gl_server/server.c#L188
+#ifdef __ANDROID__
+  // this is wrong, but android has no pthread_cancel
+  // see stack overflow for a better solution that uses a SIGUSR1 handler
+  // that I don't have time to implement right now
+  // http://stackoverflow.com/questions/4610086/pthread-cancel-alternatives-in-android-ndk
+  pthread_kill(c->server_th, SIGUSR1);
+#else
   pthread_cancel(c->server_th);
-
+#endif
+  
   socket_close(c);
   fifo_delete(&c->fifo);
 }
+
+
+#ifndef GLS_SERVER // GL_CLIENT
+void *server_start(server_context_t *c)
+{
+  fifo_init(&c->fifo, c->fifo_size_in_bits, c->fifo_packet_size_in_bits);
+  c->max_packet_size = 1 << c->fifo_packet_size_in_bits;
+
+  socket_open(c);
+
+  pthread_create(&c->server_th, NULL, (void* (*)(void*))server_thread, c);
+  return c;
+}
+
+
+void server_stop(server_context_t *c)
+{
+#ifndef __ANDROID__
+    pthread_cancel(c->server_th);
+#endif // GLS_SERVER
+
+    socket_close(c);
+    fifo_delete(&c->fifo);
+}
+#endif // GL_CLIENT
